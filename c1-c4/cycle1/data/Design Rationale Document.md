@@ -8,7 +8,7 @@
 
 > **“Our art carries our stories.”**
 
-![Aunty – photo](cycle1/imgs/persona-aunty-margaret.png "Used with consent")
+![Aunty – photo](../imgs/persona-aunty-margaret.png "Used with consent")
 
 ### Snapshot
 | Field | Detail |
@@ -71,7 +71,7 @@ Aunty Margaret documents weathering cave paintings and narrates oral histories. 
 
 > **“I want to learn respectfully and contribute meaningfully.”**
 
-![Jack – photo](cycle1/imgs/persona-jack-thompson.png "Used with consent")
+![Jack – photo](../imgs/persona-jack-thompson.png "Used with consent")
 
 ### Snapshot
 | Field | Detail |
