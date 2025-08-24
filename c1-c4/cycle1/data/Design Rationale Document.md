@@ -39,6 +39,24 @@ Enable users to explore Indigenous artworks by location and view detailed inform
 ![user-flow-browse](../imgs/user-flow-browse.png)
 
 ---
+### User Flow 3: Save Artwork to Favorites
+
+**Purpose:**  
+Allow users to save artworks to their personal Favorites list for later access.
+
+**Steps:**
+
+1. **Start**
+2. User clicks **"Favorite" button** on the Artwork Detail Page
+3. System checks if user is logged in
+   - **Yes** → Artwork saved → Show confirmation "Added to Favorites"
+   - **No** → Redirect to **Login Page**
+4. **End**
+
+**Flow Diagram:**  
+![user-flow-favorite](../imgs/user-flow-favorite.png)
+
+---
 
 ## Wireframs
 
