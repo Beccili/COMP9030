@@ -258,3 +258,32 @@ Allow users to save artworks to their personal Favorites list for later access.
 | -------- | -------------------------- | ----------------------------------------------------------- | -------------- | ------------ | -------------- | -------------- |
 | 1        | Title                      | Page title (About / Usage Guideline / Ethical & Disclaimer) | Text (Heading) | Text         | Default        |                |
 | 2        | Informational Introduction | Main body text for the info page                            | Text Block     | Text         | Default        |                |
+
+
+### Registered User Features
+![wireframe_Registered User Features](../imgs/wireframe_Registered_User_Features.png)
+| Footnote | Label            | Description                             | Control Type       | Content Type      | Possible Values                                  | Business Rules                                  | Link Destination          |
+| -------- | ---------------- | --------------------------------------- | ----------------- | ---------------- | ----------------------------------------------- | ----------------------------------------------- | ------------------------ |
+| 1        | Username         | User login name                          | Text Input        | String           | 3–20 characters, alphanumeric                  | Required, must be unique                         | N/A                      |
+| 2        | Password         | User login password                      | Password Input    | String           | Minimum 8 characters                            | Required, hashed before storage                 | N/A                      |
+| 3        | User Role        | User type selection                      | Dropdown / Radio  | Enum             | General Public, Artist                          | Required                                        | N/A                      |
+| 4        | Art Title        | Title of the art piece                   | Text Input        | String           | Any text, max 255 characters                   | Required                                        | N/A                      |
+| 5        | Art Description  | Detailed description of the art          | Textarea          | String           | Any text                                       | Required                                        | N/A                      |
+| 6        | Art Type         | Category of the art                      | Dropdown          | Enum             | Painting, Sculpture, Digital, Other           | Required                                        | N/A                      |
+| 7        | Location Pin     | Geographical location                    | Map Picker        | Latitude/Longitude | N/A                                           | Required                                        | N/A                      |
+| 8        | Image Upload     | Upload images of the art                 | File Upload       | JPEG/PNG         | Multiple allowed, max 5MB per file            | Required, stored on server, path saved in DB    | Stored on server, DB path |
+| 9        | My Submissions   | User dashboard of submitted art          | Table / Dashboard | List of submissions | Status: Pending, Approved, Rejected           | Users can edit/delete their own submissions    | Submission edit page      |
+| 10       | Report Content   | Report inappropriate or inaccurate content | Button / Form   | String (reason)  | Inappropriate, Inaccurate, Other              | Only for logged-in users                        | Admin report page         |
+
+### Administrator Features
+![Wireframe](../imgs/wireframe_Administrator_Features.png)
+
+| Footnote | Label                     | Description                           | Control Type      | Content Type      | Possible Values                                               | Business Rules                                                     | Link Destination            |
+| -------- | ------------------------- | ------------------------------------- | ---------------- | ---------------- | ------------------------------------------------------------- | ----------------------------------------------------------------- | -------------------------- |
+| 1        | Admin Username            | Admin login name                       | Text Input        | String           | 3–20 characters, alphanumeric                                 | Required, must be admin account                                     | N/A                        |
+| 2        | Admin Password            | Admin login password                   | Password Input    | String           | Minimum 8 characters                                           | Required, hashed before storage                                     | N/A                        |
+| 3        | Dashboard                 | Overview of key statistics             | Panel / Table     | Stats            | N/A                                                            | Display number of pending submissions, total users                 | Admin Dashboard Page        |
+| 4        | Art Submission Moderation | Review submitted artworks              | Table / Form      | List of submissions | Status: Pending, Approved, Rejected                          | Can Approve, Reject (with reason), Edit, Delete; override location_sensitive_flag | Art Submission Page         |
+| 5        | User Management           | Manage registered users                | Table / Form      | List of users    | Roles: General Public, Artist; Status: Active, Deactivated    | Can change roles, activate/deactivate, delete users                | User Management Page        |
+| 6        | Category / Tag Management | Manage art types and periods           | Form / Table      | Enum             | Art Types: Painting, Sculpture…; Periods: Renaissance, Modern… | Can Add/Edit/Delete categories and periods                          | Category/Tag Management Page|
+| 7        | Reports (Optional)        | Manage reported content                | Table / Form      | List of reports  | Reason: Inappropriate, Inaccurate, Other                      | Only accessible to admins                                          | Reports Page               |
