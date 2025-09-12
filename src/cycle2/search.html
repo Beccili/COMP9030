@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Search — Indigenous Art Atlas</title>
+    <meta
+      name="description"
+      content="Search and filter Indigenous art across regions—discover artworks by type, period, location, and cultural context."
+    />
+
+    <!-- Leaflet CSS -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="homePage/styles.css" />
+  </head>
+  <body>
+    <!-- Skip Link -->
+    <a href="#main-content" class="skip-link">Skip to content</a>
+
+    <!-- Header -->
+    <header class="header" role="banner">
+      <div class="container">
+        <div class="header-content">
+          <div class="logo">
+            <a href="homePage/index.html" class="logo-link">
+              <h1 class="logo-text">Indigenous Art Atlas</h1>
+            </a>
+          </div>
+          <nav class="nav" role="navigation" aria-label="Main navigation">
+            <ul class="nav-list">
+              <li><a href="homePage/index.html#map-section" class="nav-link">Map</a></li>
+              <li><a href="search.html" class="nav-link nav-active">Search</a></li>
+              <li><a href="about.html" class="nav-link">About Us</a></li>
+              <li><a href="#" class="nav-link nav-disabled" title="Coming soon">Register</a></li>
+            </ul>
+            <div class="user-avatar">
+              <div class="avatar-container">
+                <img src="assets/img/user-avatar.png" alt="User avatar" class="avatar-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="avatar-fallback">
+                  <span class="avatar-initials">JD</span>
+                </div>
+                <span class="user-name">John Doe</span>
+              </div>
+            </div>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="main-content" role="main">
+      <!-- Search Header -->
+      <section class="search-header">
+        <div class="container">
+          <h1 class="page-title">Search Indigenous Artworks</h1>
+          <p class="page-description">
+            Discover Indigenous artworks through our comprehensive collection. Use the filters below to find specific pieces by type, period, region, or search by keyword.
+          </p>
+        </div>
+      </section>
+
+      <!-- Search and Filters -->
+      <section class="search-filters-section" aria-labelledby="filters-heading">
+        <div class="container">
+          <h2 id="filters-heading" class="visually-hidden">
+            Search and Filter Options
+          </h2>
+          <div class="search-filters-bar">
+            <div class="search-group-main">
+              <label for="search-input" class="visually-hidden"
+                >Search artworks</label
+              >
+              <input
+                type="search"
+                id="search-input"
+                class="search-input-main"
+                placeholder="Search by title, artist, keywords..."
+                aria-describedby="search-help"
+              />
+              <button class="search-btn" type="button" aria-label="Search">
+                <span>🔍</span>
+              </button>
+              <div id="search-help" class="visually-hidden">
+                Search through artwork titles, artist names, and descriptions
+              </div>
+            </div>
+            <div class="filters-row">
+              <div class="filter-group">
+                <label for="art-type-filter" class="filter-label">Art Type</label>
+                <select id="art-type-filter" class="filter-select">
+                  <option value="">All Types</option>
+                  <option value="Portrait">Portrait</option>
+                  <option value="Painting">Painting</option>
+                  <option value="Installation">Installation</option>
+                  <option value="Sound Installation">Sound Installation</option>
+                  <option value="Glass Installation">Glass Installation</option>
+                  <option value="Cave Art">Cave Art</option>
+                  <option value="Mural">Mural</option>
+                  <option value="Gallery Piece">Gallery Piece</option>
+                  <option value="Rock Painting">Rock Painting</option>
+                  <option value="Sculpture">Sculpture</option>
+                </select>
+              </div>
+              <div class="filter-group">
+                <label for="period-filter" class="filter-label">Period</label>
+                <select id="period-filter" class="filter-select">
+                  <option value="">All Periods</option>
+                  <option value="Ancient">Ancient</option>
+                  <option value="Contemporary">Contemporary</option>
+                </select>
+              </div>
+              <div class="filter-group">
+                <label for="region-filter" class="filter-label">Region</label>
+                <select id="region-filter" class="filter-select">
+                  <option value="">All Regions</option>
+                  <option value="NSW">NSW</option>
+                  <option value="VIC">VIC</option>
+                  <option value="QLD">QLD</option>
+                  <option value="SA">SA</option>
+                  <option value="WA">WA</option>
+                  <option value="NT">NT</option>
+                  <option value="TAS">TAS</option>
+                  <option value="ACT">ACT</option>
+                </select>
+              </div>
+              <div class="sort-group">
+                <label for="sort-select" class="filter-label">Sort by</label>
+                <select id="sort-select" class="filter-select">
+                  <option value="newest">Newest</option>
+                  <option value="title">Title A–Z</option>
+                  <option value="relevance">Relevance</option>
+                </select>
+              </div>
+              <div class="optional-sort-group">
+                <label for="optional-sort" class="filter-label">Optional sorting method</label>
+                <select id="optional-sort" class="filter-select">
+                  <option value="">No additional sorting</option>
+                  <option value="artist">Artist A–Z</option>
+                  <option value="region">Region</option>
+                  <option value="date-added">Date Added</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Results Section -->
+      <section class="search-results-section" aria-labelledby="results-heading">
+        <div class="container">
+          <div class="results-header">
+            <h2 id="results-heading" class="results-title">Search Results</h2>
+            <span id="results-count" class="results-count">9 artworks found</span>
+          </div>
+          <div id="search-results-grid" class="search-results-grid" role="list">
+            <!-- Results will be populated by JavaScript -->
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer" role="contentinfo">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3 class="footer-title">Project Mission</h3>
+            <p class="footer-text">
+              The Indigenous Art Atlas aims to respectfully document and share
+              Indigenous art across Australia, fostering cultural understanding
+              and appreciation while maintaining appropriate cultural protocols.
+            </p>
+          </div>
+          <div class="footer-section">
+            <h3 class="footer-title">Quick Links</h3>
+            <ul class="footer-links">
+              <li><a href="about.html" class="footer-link">About</a></li>
+              <li><a href="guidelines.html" class="footer-link">Guidelines</a></li>
+              <li><a href="ethics.html" class="footer-link">Ethics</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h3 class="footer-title">Acknowledgment of Country</h3>
+            <p class="footer-text">
+              We acknowledge the Traditional Owners of the lands on which this
+              art was created and pay our respects to Elders past, present, and
+              emerging. This atlas exists to honor and celebrate Indigenous
+              cultural heritage.
+            </p>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p class="footer-disclaimer">
+            This is a non-commercial, educational project. All cultural content
+            is shared with respect and appropriate permissions where possible.
+          </p>
+          <p class="footer-copyright">
+            © 2025 Indigenous Art Atlas. Created with respect for Indigenous
+            cultures.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Custom JavaScript -->
+    <script src="js/common-utils.js"></script>
+    <script src="js/common-data.js"></script>
+    <script src="search.js"></script>
+  </body>
+</html>
