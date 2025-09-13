@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Artist Page — Indigenous Art Atlas</title>
+    <link rel="stylesheet" href="homePage/styles.css" />
+    <style>
+      .hero { padding: var(--space-3xl) 0; background: var(--elev-1); border-bottom: 1px solid var(--elev-2); }
+      .hero h1 { margin-bottom: var(--space-sm); }
+      .hero p  { color: var(--muted); }
+      .dash { padding: var(--space-3xl) 0; }
+      .card { background: var(--elev-1); border:1px solid var(--elev-2); border-radius: var(--border-radius-lg); 
+              box-shadow: var(--shadow-md); overflow:hidden; }
+      .card-body { padding: var(--space-xl); }
+      .grid { display:grid; grid-template-columns: 220px 1fr; gap: var(--space-xl); }
+      .avatar { width: 220px; height: 220px; object-fit: cover; border-radius: var(--border-radius-lg); border:1px solid var(--elev-2); }
+      .meta p { margin:6px 0; }
+      .tags .tag{ display:inline-block; padding:2px 8px; margin-right:8px; margin-bottom:8px; background:var(--elev-2); 
+                  border-radius:var(--border-radius); color:var(--muted); font-size: var(--font-size-sm); }
+      .status-badge{display:inline-block;padding:2px 8px;border-radius:var(--border-radius);font-size:var(--font-size-sm);
+        border:1px solid var(--elev-2);margin-left:6px}
+      .status-pending{color:#f0c674;border-color:#f0c67433;background:transparent}
+      .status-approved{color:#8dc891;border-color:#8dc89133;background:transparent}
+      .toolbar{ display:flex; flex-wrap:wrap; gap: var(--space-md); margin-top: var(--space-md); }
+      .section{ margin-top: var(--space-xl); }
+      .list a{ display:inline-block; margin-right:10px; margin-bottom:8px; }
+      .chooser{ margin: var(--space-xl) 0; display:flex; gap: var(--space-md); align-items: center; }
+      .select{ padding:var(--space-sm) var(--space-md); background:var(--elev-2); border:1px solid var(--accent); color:var(--text); border-radius:var(--border-radius); }
+      @media (max-width: 900px){ .grid { grid-template-columns:1fr; } .avatar{ width:100%; height: auto; max-height: 280px; } }
+    </style>
+  </head>
+  <body>
+    <a href="#main" class="skip-link">Skip to content</a>
+
+    <header class="header" role="banner">
+      <div class="container">
+        <div class="header-content">
+          <div class="logo">
+            <a href="homePage/index.html" class="logo-link"><h1 class="logo-text">Indigenous Art Atlas</h1></a>
+          </div>
+          <nav class="nav" role="navigation" aria-label="Main navigation">
+            <ul class="nav-list">
+              <li><a href="homePage/index.html#map-section" class="nav-link">Map</a></li>
+              <li><a href="search.html" class="nav-link">Search</a></li>
+              <li><a href="about.html" class="nav-link">About Us</a></li>
+              <li><a href="register.html" class="nav-link">Register</a></li>
+            </ul>
+            <div class="user-avatar">
+              <div class="avatar-container">
+                <img src="assets/img/user-avatar.png" alt="User avatar" class="avatar-image"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="avatar-fallback"><span class="avatar-initials">JD</span></div>
+                <span class="user-name">John Doe</span>
+              </div>
+            </div>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="hero">
+        <div class="container">
+          <h1 class="page-title">Artist Page</h1>
+          <p class="page-description">View your profile and the links to your published artworks.</p>
+
+          <div class="chooser" id="chooser">
+            <label for="artistNameInput" class="label">Find artist by name:</label>
+            <input id="artistNameInput" class="select" list="artistNameList" placeholder="Type full name (e.g., Vincent Namatjira)"/>
+            <datalist id="artistNameList"></datalist>
+            <button class="btn btn-secondary" id="findBtn">Find</button>
+            <button class="btn btn-secondary" id="shareBtn" title="Copy shareable link">Copy Share Link</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="dash">
+        <div class="container">
+          <div class="card" id="artistCard" style="display:none">
+            <div class="card-body">
+              <div class="grid">
+                <img id="pImg" class="avatar" src="" alt="Artist image">
+                <div>
+                  <h2 id="pName" class="section-title" style="margin-top:0"></h2>
+                  <div class="meta">
+                    <p><strong>Role:</strong> <span id="pRole"></span> <span id="pStatus" class="status-badge"></span></p>
+                    <p id="pEmail"></p>
+                    <div class="tags" id="pTags"></div>
+                  </div>
+
+                  <div class="toolbar">
+                    <a class="btn btn-secondary" href="register.html">Edit My Account</a>
+                    <a class="btn btn-secondary" href="artwork-submit.html" id="submitBtn">Submit Artwork</a>
+                  </div>
+
+                  <div class="section">
+                    <h3 class="section-title">Published Artworks</h3>
+                    <div id="artLinks" class="list"></div>
+                    <p id="noArt" class="page-description" style="display:none">No published artworks yet.</p>
+                    <div style="margin-top: var(--space-md);">
+                      <a class="btn btn-primary" id="viewDetailsBtn" href="#">View your artwork details</a>
+                    </div>
+                  </div>
+
+                  <div class="section" id="bioSec" style="display:none">
+                    <h3 class="section-title">Bio</h3>
+                    <p id="pBio" class="page-description"></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <p id="emptyNote" class="page-description" style="display:none">No artist accounts found. Please create one on the Register page.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer" role="contentinfo">
+      <div class="container">
+        <div class="footer-bottom">
+          <p class="footer-copyright">© Indigenous Art Atlas</p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      const STORE_KEY = "IAA_accounts_v1";
+      const artistNameInput = document.getElementById("artistNameInput");
+      const chooser = document.getElementById("chooser");
+      const artistCard = document.getElementById("artistCard");
+      const emptyNote = document.getElementById("emptyNote");
+      const submitBtn = document.getElementById("submitBtn");
+      const viewDetailsBtn = document.getElementById("viewDetailsBtn");
+      const findBtn = document.getElementById("findBtn");
+
+      const pImg = document.getElementById("pImg");
+      const pName = document.getElementById("pName");
+      const pRole = document.getElementById("pRole");
+      const pStatus = document.getElementById("pStatus");
+      const pEmail = document.getElementById("pEmail");
+      const pTags = document.getElementById("pTags");
+      const pBio = document.getElementById("pBio");
+      const bioSec = document.getElementById("bioSec");
+      const artLinks = document.getElementById("artLinks");
+      const noArt = document.getElementById("noArt");
+
+      function loadAccounts(){
+        try { return JSON.parse(localStorage.getItem(STORE_KEY)) || []; } catch { return []; }
+      }
+      function getParam(name){
+        const u = new URL(window.location.href);
+        return u.searchParams.get(name);
+      }
+      function escapeHtml(str){
+        return String(str || '').replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#039;'}[s]));
+      }
+
+      const all = loadAccounts().filter(a => a.role === "artist");
+      // Build datalist suggestions
+      const nameList = document.getElementById("artistNameList");
+      if (!all.length){
+        emptyNote.style.display = "block";
+        chooser.style.display = "none";
+      } else {
+        nameList.innerHTML = all.map(a=>`<option value="${a.name}"></option>`).join("");
+      }
+
+      // Find artist by name (case-insensitive). Prefer exact match; otherwise first partial match.
+      function findByName(name){
+        if (!name) return null;
+        const norm = name.trim().toLowerCase();
+        let hit = all.find(a => (a.name||'').toLowerCase() === norm);
+        if (!hit) hit = all.find(a => (a.name||'').toLowerCase().includes(norm));
+        return hit || null;
+      }
+
+      if (!all.length){
+        emptyNote.style.display = "block";
+        chooser.style.display = "none";
+      } else {
+        artistSelect.innerHTML = all.map(a=>`<option value="${a.id}">${a.name} (${a.email || 'no-email'})</option>`).join("");
+      }
+
+      function showArtist(id){
+        const a = all.find(x => x.id === id) || all[0];
+        if (!a){ return; }
+        artistCard.style.display = "block";
+        pImg.src = a.imageUrl || "assets/img/user-avatar.png";
+        pImg.onerror = () => { pImg.src = "assets/img/user-avatar.png"; };
+        pName.textContent = a.name || "Artist";
+        pRole.textContent = (a.role||'artist').toUpperCase();
+        const sClass = a.status === "approved" ? "status-approved" : "status-pending";
+        pStatus.className = "status-badge " + sClass;
+        pStatus.textContent = a.status === "approved" ? "Approved" : "Pending Approval";
+        pEmail.innerHTML = a.email ? `<strong>Email:</strong> ${escapeHtml(a.email)}` : "";
+        pTags.innerHTML = "";
+        if (a.region) pTags.innerHTML += `<span class="tag">${escapeHtml(a.region)}</span>`;
+        if (a.nation) pTags.innerHTML += `<span class="tag">${escapeHtml(a.nation)}</span>`;
+
+        if (a.bio){ bioSec.style.display="block"; pBio.textContent = a.bio; } else { bioSec.style.display="none"; }
+
+        artLinks.innerHTML = "";
+        if (Array.isArray(a.artworks) && a.artworks.length){
+          a.artworks.forEach(u => {
+            const link = document.createElement('a');
+            link.className = 'footer-link';
+            link.href = u;
+            link.target = '_blank';
+            link.rel = 'noopener';
+            link.textContent = 'Artwork';
+            artLinks.appendChild(link);
+          });
+          noArt.style.display = "none";
+        }else{
+          noArt.style.display = "block";
+        }
+
+        // enable submit only if approved
+        const eligible = a.status === "approved";
+        submitBtn.classList.toggle("btn-disabled", !eligible);
+        submitBtn.setAttribute("aria-disabled", String(!eligible));
+
+        // build deep-link to auto view artwork details on search page
+        const artistParam = encodeURIComponent(a.name || '');
+        viewDetailsBtn.href = `search.html?artist=${artistParam}&autoview=1`;
+      }
+
+      // open button
+      findBtn.addEventListener("click", () => {
+        const name = artistNameInput.value;
+        const hit = findByName(name);
+        if (!hit){ alert("Artist not found."); return; }
+        showArtist(hit.id);
+        const u = new URL(window.location.href);
+        u.searchParams.set("id", hit.id);
+        u.searchParams.set("name", encodeURIComponent(hit.name||""));
+        history.replaceState(null, "", u.toString());
+      });
+
+      // share link
+      document.getElementById("shareBtn").addEventListener("click", () => {
+        const u = new URL(window.location.href);
+        const n = artistNameInput.value || "";
+        const hit = findByName(n);
+        if (hit) {
+          u.searchParams.set("id", hit.id);
+          u.searchParams.set("name", encodeURIComponent(hit.name||""));
+        }
+        navigator.clipboard.writeText(u.toString()).then(()=>{
+          alert('Link copied!');
+        }, ()=>{ alert('Copy failed.'); });
+      });
+
+      // Auto open by query param
+      const qid = getParam("id");
+      const qname = getParam("name");
+      if (qid){ showArtist(qid); }
+      else if (qname){ const hit = findByName(decodeURIComponent(qname)); if (hit) { artistNameInput.value = hit.name; showArtist(hit.id); } }
+    </script>
+  </body>
+</html>

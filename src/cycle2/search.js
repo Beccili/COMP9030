@@ -3,6 +3,9 @@ const artEntries = (window.AppData && window.AppData.artEntries) || [];
 
 // ===== GLOBAL VARIABLES =====
 let filteredEntries = [...artEntries];
+// Auto open first result once if requested via URL
+window.__autoOpenFirst = false;
+// __AUTO_OPEN_FIRST__ marker
 
 // ===== DOM ELEMENTS =====
 const searchInput = document.getElementById("search-input");
@@ -79,6 +82,15 @@ function renderSearchResults(entries) {
     card.style.cursor = 'pointer';
     resultsGrid.appendChild(card);
   });
+
+  // Auto open first result once if requested
+  if (window.__autoOpenFirst && entries.length > 0) {
+    window.__autoOpenFirst = false;
+    const first = entries[0];
+    try {
+      window.location.href = `${window.Utils.page('detail.html')}?id=${first.id}`;
+    } catch (_) {}
+  }
 }
 
 // ===== FILTERING AND SORTING =====
@@ -200,6 +212,22 @@ document.addEventListener("DOMContentLoaded", function () {
   if (searchBtn) {
     searchBtn.addEventListener("click", applyFilters);
   }
+
+  
+  // Handle deep link: ?artist=<name>&autoview=1
+  try {
+    const sp = new URLSearchParams(window.location.search);
+    const artistParam = sp.get('artist');
+    const autoview = sp.get('autoview');
+    if (artistParam) {
+      if (searchInput) searchInput.value = artistParam;
+      applyFilters();
+      if (autoview === '1' || autoview === 'true') {
+        window.__autoOpenFirst = true;
+        // applyFilters already called; renderSearchResults will redirect
+      }
+    }
+  } catch (_) {}
 
   console.log("Search page initialized successfully");
   console.log(`Loaded ${artEntries.length} artwork entries for search`);
