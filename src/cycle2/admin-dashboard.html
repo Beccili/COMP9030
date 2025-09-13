@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard — Indigenous Art Atlas</title>
+    <meta
+      name="description"
+      content="Administrator dashboard for managing Indigenous Art Atlas content and users."
+    />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="homePage/styles.css" />
+    <link rel="stylesheet" href="admin-dashboard.css" />
+  </head>
+
+  <body>
+    <!-- Skip Link -->
+    <a href="#main-content" class="skip-link">Skip to content</a>
+
+    <!-- Admin Header -->
+    <header class="admin-header" role="banner">
+      <div class="container">
+        <div class="admin-header-content">
+          <div class="admin-logo">
+            <a href="admin-dashboard.html" class="admin-logo-link">
+              <div class="admin-logo-icon"></div>
+              <div class="admin-logo-text">
+                <h1 class="admin-title">Admin Dashboard</h1>
+                <span class="admin-subtitle">Indigenous Art Atlas</span>
+              </div>
+            </a>
+          </div>
+
+          <div class="admin-user-info">
+            <div class="admin-avatar">
+              <div class="admin-avatar-icon">👤</div>
+              <div class="admin-user-details">
+                <span id="admin-user-name" class="admin-user-name"
+                  >System Administrator</span
+                >
+                <span class="admin-user-role">Administrator</span>
+              </div>
+            </div>
+            <button
+              id="admin-logout-btn"
+              class="admin-logout-btn"
+              title="Logout"
+            >
+              <span class="logout-text">Logout</span>
+              <span class="logout-icon">⏻</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="main-content" class="admin-main" role="main">
+      <div class="container">
+        <!-- Dashboard Stats -->
+        <section class="dashboard-stats" aria-labelledby="stats-heading">
+          <h2 id="stats-heading" class="visually-hidden">
+            Dashboard Statistics
+          </h2>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon">🎨</div>
+              <div class="stat-content">
+                <div class="stat-number" id="total-artworks">9</div>
+                <div class="stat-label">Total Artworks</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">👥</div>
+              <div class="stat-content">
+                <div class="stat-number" id="total-users">156</div>
+                <div class="stat-label">Registered Users</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">📊</div>
+              <div class="stat-content">
+                <div class="stat-number" id="monthly-views">2.4k</div>
+                <div class="stat-label">Monthly Views</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">⭐</div>
+              <div class="stat-content">
+                <div class="stat-number" id="featured-artworks">5</div>
+                <div class="stat-label">Featured Items</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Quick Actions -->
+        <section class="quick-actions" aria-labelledby="actions-heading">
+          <h2 id="actions-heading" class="section-title">Quick Actions</h2>
+          <div class="actions-grid">
+            <button class="action-btn" data-action="add-artwork">
+              <div class="action-icon">➕</div>
+              <span class="action-text">Add New Artwork</span>
+            </button>
+            <button class="action-btn" data-action="manage-users">
+              <div class="action-icon">👥</div>
+              <span class="action-text">Manage Users</span>
+            </button>
+            <button class="action-btn" data-action="view-reports">
+              <div class="action-icon">📈</div>
+              <span class="action-text">View Reports</span>
+            </button>
+            <button class="action-btn" data-action="site-settings">
+              <div class="action-icon">⚙️</div>
+              <span class="action-text">Site Settings</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- Artworks Management -->
+        <section class="artworks-management" aria-labelledby="artworks-heading">
+          <div class="section-header">
+            <h2 id="artworks-heading" class="section-title">Manage Artworks</h2>
+            <div class="section-controls">
+              <input
+                type="search"
+                placeholder="Search artworks..."
+                class="search-input"
+                id="artwork-search"
+              />
+              <select class="filter-select" id="artwork-filter">
+                <option value="">All Types</option>
+                <option value="Portrait">Portrait</option>
+                <option value="Painting">Painting</option>
+                <option value="Installation">Installation</option>
+                <option value="Sound Installation">Sound Installation</option>
+                <option value="Glass Installation">Glass Installation</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="artworks-table-container">
+            <table class="artworks-table" id="artworks-table">
+              <thead>
+                <tr>
+                  <th>Artwork</th>
+                  <th>Artist</th>
+                  <th>Type</th>
+                  <th>Region</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="artworks-table-body">
+                <!-- Artwork rows will be populated by JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Recent Activity -->
+        <section class="recent-activity" aria-labelledby="activity-heading">
+          <h2 id="activity-heading" class="section-title">Recent Activity</h2>
+          <div class="activity-list" id="activity-list">
+            <!-- Activity items will be populated by JavaScript -->
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Action Modal -->
+    <div id="action-modal" class="modal-overlay" style="display: none">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="modal-title" class="modal-title">Action</h3>
+          <button id="modal-close" class="modal-close" aria-label="Close modal">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body" id="modal-body">
+          <!-- Modal content will be populated by JavaScript -->
+        </div>
+      </div>
+    </div>
+
+    <!-- No JavaScript Warning -->
+    <noscript>
+      <div class="noscript-warning">
+        <p>
+          This administrative dashboard requires JavaScript to function
+          properly. Please enable JavaScript to manage the system.
+        </p>
+      </div>
+    </noscript>
+
+    <!-- Custom JavaScript -->
+    <script src="js/common-utils.js"></script>
+    <script src="js/common-data.js"></script>
+    <script src="admin-dashboard.js"></script>
+  </body>
+</html>
