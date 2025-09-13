@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Artwork Information Submission</title>
+    <link rel="stylesheet" href="homePage/styles.css" />
+    <style>
+      .form-section{padding:var(--space-3xl) 0;background:var(--elev-1);border-bottom:1px solid var(--elev-2)}
+      .form-card{max-width:960px;margin:0 auto;background:var(--elev-1);border:1px solid var(--elev-2);
+        border-radius:var(--border-radius-lg);box-shadow:var(--shadow-md);padding:var(--space-xl)}
+      .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-lg)}
+      .form-row{display:flex;flex-direction:column;gap:var(--space-xs)}
+      .form-row.full{grid-column:1 / -1}
+      .label{font-size:var(--font-size-sm);color:var(--muted)}
+      .input,.select,.textarea{padding:var(--space-sm) var(--space-md);background:var(--elev-2);border:1px solid var(--accent);
+        border-radius:var(--border-radius);color:var(--text);transition:border-color var(--transition-fast)}
+      .textarea{min-height:140px;resize:vertical}
+      .input:focus,.select:focus,.textarea:focus{border-color:var(--focus);outline:none}
+      .form-actions{display:flex;gap:var(--space-md);margin-top:var(--space-lg)}
+      .hint{color:var(--muted);font-size:var(--font-size-sm)}
+      .disabled-note{color:var(--muted);font-size:var(--font-size-sm);margin-top:4px}
+    </style>
+  </head>
+  <body>
+    <a href="#main-content" class="skip-link">Skip to content</a>
+    <header class="header" role="banner">
+      <div class="container">
+        <div class="header-content">
+          <div class="logo">
+            <a href="homePage/index.html" class="logo-link"><h1 class="logo-text">Indigenous Art Atlas</h1></a>
+          </div>
+          <nav class="nav" role="navigation" aria-label="Main navigation">
+            <ul class="nav-list">
+              <li><a href="homePage/index.html#map-section" class="nav-link">Map</a></li>
+              <li><a href="search.html" class="nav-link">Search</a></li>
+              <li><a href="about.html" class="nav-link">About Us</a></li>
+              <li><a href="register.html" class="nav-link">Register</a></li>
+            </ul>
+            <div class="user-avatar">
+              <div class="avatar-container">
+                <img src="assets/img/user-avatar.png" alt="User avatar" class="avatar-image"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="avatar-fallback"><span class="avatar-initials">JD</span></div>
+                <span class="user-name">John Doe</span>
+              </div>
+            </div>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <main id="main-content" role="main">
+      <section class="search-header">
+        <div class="container">
+          <h1 class="page-title">Artwork Information Submission</h1>
+          <p class="page-description">Only <strong>approved artists</strong> can submit artworks. Submissions are reviewed by admins before publication.</p>
+        </div>
+      </section>
+
+      <section class="form-section">
+        <div class="container">
+          <div class="form-card">
+            <form id="artwork-form" novalidate>
+              <div class="form-grid">
+                <div class="form-row">
+                  <label class="label" for="title">Title *</label>
+                  <input id="title" class="input" type="text" required placeholder="e.g., Caring for Country" />
+                </div>
+                <div class="form-row">
+                  <label class="label" for="artist">Artist *</label>
+                  <input id="artist" class="input" type="text" required placeholder="e.g., Vincent Namatjira" />
+                </div>
+
+                <div class="form-row">
+                  <label class="label" for="artType">Art Type *</label>
+                  <select id="artType" class="select" required>
+                    <option value="Portrait">Portrait</option>
+                    <option value="Painting">Painting</option>
+                    <option value="Installation">Installation</option>
+                    <option value="Sound Installation">Sound Installation</option>
+                    <option value="Glass Installation">Glass Installation</option>
+                    <option value="Cave Art">Cave Art</option>
+                    <option value="Mural">Mural</option>
+                    <option value="Gallery Piece">Gallery Piece</option>
+                    <option value="Rock Painting">Rock Painting</option>
+                    <option value="Sculpture">Sculpture</option>
+                  </select>
+                </div>
+
+                <div class="form-row">
+                  <label class="label" for="period">Period *</label>
+                  <select id="period" class="select" required>
+                    <option value="Ancient">Ancient</option>
+                    <option value="Contemporary">Contemporary</option>
+                  </select>
+                </div>
+
+                <div class="form-row">
+                  <label class="label" for="region">Region *</label>
+                  <select id="region" class="select" required>
+                    <option value="NSW">NSW</option><option value="VIC">VIC</option>
+                    <option value="QLD">QLD</option><option value="SA">SA</option>
+                    <option value="WA">WA</option><option value="NT">NT</option>
+                    <option value="TAS">TAS</option><option value="ACT">ACT</option>
+                  </select>
+                </div>
+
+                <div class="form-row">
+                  <label class="label" for="sensitive">Sensitive *</label>
+                  <select id="sensitive" class="select" required>
+                    <option value="false" selected>false</option>
+                    <option value="true">true</option>
+                  </select>
+                  <p class="hint">If <strong>true</strong>, the address must not be provided.</p>
+                </div>
+
+                <div class="form-row full">
+                  <label class="label" for="address">Address (optional)</label>
+                  <input id="address" class="input" type="text" placeholder="e.g., 123 King William St, Adelaide SA"/>
+                  <p class="disabled-note" id="address-note" style="display:none;">Address disabled because the artwork is marked as sensitive.</p>
+                </div>
+
+                <div class="form-row full">
+                  <label class="label" for="artworkImage">Artwork Image (optional)</label>
+                  <input id="artworkImage" class="input" type="url" placeholder="https://.../image2.jpg" />
+                </div>
+
+                <div class="form-row full">
+                  <label class="label" for="desc">Description</label>
+                  <textarea id="desc" class="textarea" placeholder="Context, story, permissions, etc."></textarea>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Submit</button>
+                <a class="btn btn-secondary" href="register.html">Back to Register</a>
+              </div>
+            </form>
+            <p id="submit-note" class="page-description" style="margin-top:var(--space-md);display:none;"></p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer" role="contentinfo">
+      <div class="container">
+        <div class="footer-bottom">
+          <p class="footer-copyright">© Indigenous Art Atlas</p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      const form = document.getElementById('artwork-form');
+      const note = document.getElementById('submit-note');
+      const sensitiveSel = document.getElementById('sensitive');
+      const addressInput = document.getElementById('address');
+      const addressNote = document.getElementById('address-note');
+      const artworkImageInput = document.getElementById('artworkImage');
+
+      function updateAddressState() {
+        const isSensitive = sensitiveSel.value === 'true';
+        addressInput.disabled = isSensitive;
+        addressNote.style.display = isSensitive ? 'block' : 'none';
+        if (isSensitive) addressInput.value = '';
+      }
+      sensitiveSel.addEventListener('change', updateAddressState);
+      document.addEventListener('DOMContentLoaded', updateAddressState);
+
+      function isValidUrl(v){ try { new URL(v); return true; } catch { return false; } }
+      function setValidity(el, ok, msg){
+        el.setCustomValidity(ok ? '' : msg);
+        if (!ok) el.reportValidity();
+      }
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const title = document.getElementById('title').value.trim();
+        const artist = document.getElementById('artist').value.trim();
+        const artType = document.getElementById('artType').value;
+        const period = document.getElementById('period').value;
+        const region = document.getElementById('region').value;
+        const sensitive = sensitiveSel.value === 'true';
+        const address = addressInput.value.trim();
+        const desc = document.getElementById('desc').value.trim();
+        const artworkImage = artworkImageInput.value.trim();
+
+        if (!title){ setValidity(document.getElementById('title'), false, 'Please enter the title.'); return; }
+        if (!artist){ setValidity(document.getElementById('artist'), false, 'Please enter the artist.'); return; }
+        setValidity(document.getElementById('title'), true, '');
+        setValidity(document.getElementById('artist'), true, '');
+
+        if (sensitive && address){
+          setValidity(addressInput, false, 'Address cannot be provided when sensitive is true.'); 
+          return;
+        } else {
+          setValidity(addressInput, true, '');
+        }
+
+        if (artworkImage && !isValidUrl(artworkImage)) {
+          setValidity(artworkImageInput, false, 'Inappropriate URL format!');
+          return;
+        } else {
+          setValidity(artworkImageInput, true, '');
+        }
+
+        const data = {
+          id: 'w_' + Math.random().toString(36).slice(2) + Date.now().toString(36),
+          title, artist, artType, period, region,
+          sensitive, address: address || null,
+          artworkImage: artworkImage || null,
+          description: desc,
+          status: 'pending'
+        };
+        const key = 'IAA_artwork_submissions_v1';
+        const arr = JSON.parse(localStorage.getItem(key) || '[]');
+        arr.push(data);
+        localStorage.setItem(key, JSON.stringify(arr));
+
+        note.style.display = 'block';
+        note.textContent = 'Submitted! Your artwork is pending admin review.';
+        form.reset();
+        updateAddressState();
+      });
+    </script>
+  </body>
+</html>
