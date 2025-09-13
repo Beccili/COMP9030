@@ -20,7 +20,8 @@
   --space-3xl: 4rem;
 
   /* Typography */
-  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", Arial, sans-serif;
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu,
+    "Helvetica Neue", Arial, sans-serif;
   --font-size-sm: 0.875rem;
   --font-size-base: 1rem;
   --font-size-lg: 1.125rem;
@@ -142,7 +143,6 @@ a:focus {
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
-
   *,
   *::before,
   *::after {
@@ -378,10 +378,12 @@ a:focus {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg,
-      rgba(11, 11, 12, 0.7) 0%,
-      rgba(11, 11, 12, 0.4) 50%,
-      rgba(11, 11, 12, 0.7) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(11, 11, 12, 0.7) 0%,
+    rgba(11, 11, 12, 0.4) 50%,
+    rgba(11, 11, 12, 0.7) 100%
+  );
   display: flex;
   align-items: center;
   justify-content: center;
@@ -530,7 +532,8 @@ a:focus {
 
 /* ===== LEAFLET MAP DARK THEME ===== */
 .leaflet-tile-pane {
-  filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(1.05) saturate(0.8);
+  filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(1.05)
+    saturate(0.8);
 }
 
 .leaflet-control-container {
@@ -1447,7 +1450,6 @@ a:focus {
 }
 
 @media (max-width: 480px) {
-
   .about-paragraph,
   .acknowledgment-text {
     font-size: var(--font-size-base);
@@ -1865,7 +1867,6 @@ a:focus {
 }
 
 @media (max-width: 480px) {
-
   .detail-section,
   .cultural-context-section,
   .related-section {
@@ -2034,6 +2035,470 @@ a:focus {
   padding: var(--space-md);
   text-align: center;
   border-bottom: 1px solid var(--accent);
+}
+
+.login-container {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: var(--space-3xl);
+  align-items: start;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.login-form-wrapper {
+  background-color: var(--elev-1);
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--elev-2);
+  overflow: hidden;
+}
+
+.login-form-card {
+  padding: var(--space-3xl);
+}
+
+.login-form-header {
+  text-align: center;
+  margin-bottom: var(--space-2xl);
+}
+
+.login-form-title {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  margin-bottom: var(--space-md);
+  color: var(--text);
+}
+
+.login-form-description {
+  color: var(--muted);
+  font-size: var(--font-size-base);
+  line-height: 1.6;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.form-label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: var(--space-xs);
+}
+
+.form-input,
+.form-select {
+  padding: var(--space-md) var(--space-lg);
+  background-color: var(--bg);
+  border: 2px solid var(--elev-2);
+  border-radius: var(--border-radius);
+  color: var(--text);
+  font-size: var(--font-size-base);
+  font-family: inherit;
+  transition: all var(--transition-base);
+  width: 100%;
+}
+
+.form-input:focus,
+.form-select:focus {
+  outline: none;
+  border-color: var(--focus);
+  box-shadow: 0 0 0 3px rgba(138, 180, 248, 0.1);
+}
+
+.form-input::placeholder {
+  color: var(--muted);
+}
+
+.form-input-error {
+  border-color: #ff6b6b !important;
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1) !important;
+}
+
+.form-error {
+  color: #ff6b6b;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  margin-top: var(--space-xs);
+  display: none;
+}
+
+.form-help {
+  color: var(--muted);
+  font-size: var(--font-size-sm);
+  line-height: 1.4;
+  margin-top: var(--space-xs);
+}
+
+.password-input-wrapper {
+  position: relative;
+}
+
+.password-toggle {
+  position: absolute;
+  right: var(--space-md);
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: var(--font-size-lg);
+  padding: var(--space-xs);
+  border-radius: var(--border-radius);
+  transition: all var(--transition-fast);
+}
+
+.password-toggle:hover {
+  color: var(--text);
+  background-color: var(--elev-1);
+}
+
+.password-toggle:focus {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+}
+
+.checkbox-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.checkbox-custom {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--accent);
+  border-radius: 3px;
+  background-color: var(--bg);
+  flex-shrink: 0;
+  margin-top: 2px;
+  position: relative;
+  transition: all var(--transition-fast);
+}
+
+.checkbox-input:checked + .checkbox-custom {
+  background-color: var(--focus);
+  border-color: var(--focus);
+}
+
+.checkbox-input:checked + .checkbox-custom::after {
+  content: "✓";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.checkbox-input:focus + .checkbox-custom {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.checkbox-text {
+  color: var(--text);
+  flex: 1;
+}
+
+.checkbox-text .form-link {
+  color: var(--focus);
+  text-decoration: underline;
+  transition: color var(--transition-fast);
+}
+
+.checkbox-text .form-link:hover {
+  color: var(--text);
+}
+
+.form-actions {
+  margin-top: var(--space-lg);
+}
+
+.btn-full {
+  width: 100%;
+  justify-content: center;
+  padding: var(--space-md) var(--space-lg);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+}
+
+.btn-loading {
+  display: none;
+}
+
+.form-links {
+  text-align: center;
+  margin-top: var(--space-lg);
+}
+
+.form-link {
+  color: var(--focus);
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  transition: color var(--transition-fast);
+}
+
+.form-link:hover {
+  color: var(--text);
+  text-decoration: underline;
+}
+
+.login-divider {
+  text-align: center;
+  margin: var(--space-xl) 0;
+  position: relative;
+}
+
+.login-divider::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: var(--elev-2);
+}
+
+.divider-text {
+  background-color: var(--elev-1);
+  padding: 0 var(--space-lg);
+  color: var(--muted);
+  font-size: var(--font-size-sm);
+  position: relative;
+  z-index: 1;
+}
+
+.login-footer {
+  margin-top: var(--space-lg);
+}
+
+.cultural-notice-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+  position: sticky;
+  top: var(--space-xl);
+}
+
+.cultural-notice {
+  background-color: var(--bg);
+  border: 2px solid var(--focus);
+  border-radius: var(--border-radius-lg);
+  padding: var(--space-xl);
+}
+
+.cultural-notice-title {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--focus);
+  margin-bottom: var(--space-md);
+}
+
+.cultural-notice-text {
+  color: var(--muted);
+  line-height: 1.6;
+  font-size: var(--font-size-sm);
+}
+
+.login-benefits {
+  background-color: var(--elev-1);
+  border: 1px solid var(--elev-2);
+  border-radius: var(--border-radius-lg);
+  padding: var(--space-xl);
+}
+
+.benefits-title {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: var(--space-lg);
+}
+
+.benefits-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.benefit-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+}
+
+.benefit-icon {
+  font-size: var(--font-size-lg);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.benefit-text {
+  color: var(--muted);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  flex: 1;
+}
+
+.acknowledgment-notice {
+  background-color: var(--elev-1);
+  border: 1px solid var(--elev-2);
+  border-radius: var(--border-radius-lg);
+  padding: var(--space-lg);
+}
+
+.acknowledgment-notice-title {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: var(--space-sm);
+}
+
+.acknowledgment-notice-text {
+  color: var(--muted);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+}
+
+.auth-notification {
+  position: fixed;
+  top: var(--space-xl);
+  right: var(--space-xl);
+  z-index: 1000;
+  min-width: 300px;
+  max-width: 500px;
+  border-radius: var(--border-radius-lg);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-lg);
+  animation: slideInRight 0.3s ease-out;
+}
+
+.auth-notification-success {
+  background-color: #2d5a2d;
+  border: 1px solid #4a8a4a;
+  color: #a8d8a8;
+}
+
+.auth-notification-error {
+  background-color: #5a2d2d;
+  border: 1px solid #8a4a4a;
+  color: #d8a8a8;
+}
+
+.notification-content {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.notification-icon {
+  font-size: var(--font-size-lg);
+  flex-shrink: 0;
+}
+
+.notification-message {
+  font-size: var(--font-size-sm);
+  line-height: 1.4;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 1024px) {
+  .login-container {
+    grid-template-columns: 1fr;
+    gap: var(--space-xl);
+  }
+
+  .cultural-notice-sidebar {
+    position: static;
+    order: -1;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+}
+
+@media (max-width: 768px) {
+  .login-form-card {
+    padding: var(--space-xl);
+  }
+
+  .login-form-title {
+    font-size: var(--font-size-xl);
+  }
+
+  .cultural-notice,
+  .login-benefits,
+  .acknowledgment-notice {
+    padding: var(--space-lg);
+  }
+
+  .auth-notification {
+    top: var(--space-md);
+    right: var(--space-md);
+    left: var(--space-md);
+    min-width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-form-card {
+    padding: var(--space-lg);
+  }
+
+  .form-input,
+  .form-select {
+    padding: var(--space-sm) var(--space-md);
+  }
+
+  .btn-full {
+    padding: var(--space-sm) var(--space-md);
+    font-size: var(--font-size-base);
+  }
+
+  .cultural-notice,
+  .login-benefits,
+  .acknowledgment-notice {
+    padding: var(--space-md);
+  }
 }
 
 /* ===== RESPONSIVE BREAKPOINTS ===== */

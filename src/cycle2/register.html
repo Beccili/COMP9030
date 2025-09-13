@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register — Indigenous Art Atlas</title>
+    <meta
+      name="description"
+      content="Create your Indigenous Art Atlas account to join our community-driven platform for respectfully documenting and sharing Indigenous art."
+    />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="homePage/styles.css" />
+  </head>
+  <body>
+    <a href="#main-content" class="skip-link">Skip to content</a>
+
+    <header class="header" role="banner">
+      <div class="container">
+        <div class="header-content">
+          <div class="logo">
+            <a href="homePage/index.html" class="logo-link">
+              <h1 class="logo-text">Indigenous Art Atlas</h1>
+            </a>
+          </div>
+          <nav class="nav" role="navigation" aria-label="Main navigation">
+            <ul class="nav-list">
+              <li>
+                <a href="homePage/index.html#map-section" class="nav-link"
+                  >Map</a
+                >
+              </li>
+              <li><a href="search.html" class="nav-link">Search</a></li>
+              <li><a href="about.html" class="nav-link">About Us</a></li>
+              <li>
+                <a href="register.html" class="nav-link nav-active">Register</a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <main id="main-content" role="main">
+      <section class="about-header">
+        <div class="container">
+          <h1 class="page-title">Join Our Community</h1>
+          <p class="page-description">
+            Create your Indigenous Art Atlas account to contribute to our
+            respectful documentation of Indigenous art and connect with our
+            community.
+          </p>
+        </div>
+      </section>
+
+      <section class="about-section">
+        <div class="container">
+          <div class="login-container">
+            <div class="login-form-wrapper">
+              <div class="login-form-card">
+                <div class="login-form-header">
+                  <h2 class="login-form-title">Create Account</h2>
+                  <p class="login-form-description">
+                    Join our community to explore, contribute, and help preserve
+                    Indigenous cultural heritage.
+                  </p>
+                </div>
+
+                <form id="register-form" class="auth-form" novalidate>
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="firstName" class="form-label"
+                        >First Name</label
+                      >
+                      <input
+                        type="text"
+                        id="firstName"
+                        name="firstName"
+                        class="form-input"
+                        placeholder="Enter your first name"
+                        required
+                        aria-describedby="firstName-error"
+                      />
+                      <span
+                        id="firstName-error"
+                        class="form-error"
+                        role="alert"
+                      ></span>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="lastName" class="form-label">Last Name</label>
+                      <input
+                        type="text"
+                        id="lastName"
+                        name="lastName"
+                        class="form-input"
+                        placeholder="Enter your last name"
+                        required
+                        aria-describedby="lastName-error"
+                      />
+                      <span
+                        id="lastName-error"
+                        class="form-error"
+                        role="alert"
+                      ></span>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="email" class="form-label">Email Address</label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      class="form-input"
+                      placeholder="Enter your email address"
+                      required
+                      aria-describedby="email-error"
+                    />
+                    <span
+                      id="email-error"
+                      class="form-error"
+                      role="alert"
+                    ></span>
+                    <span class="form-help"
+                      >We'll use this to send you important updates about the
+                      atlas.</span
+                    >
+                  </div>
+
+                  <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <div class="password-input-wrapper">
+                      <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        class="form-input"
+                        placeholder="Create a strong password"
+                        required
+                        aria-describedby="password-error password-help"
+                      />
+                      <button
+                        type="button"
+                        class="password-toggle"
+                        aria-label="Toggle password visibility"
+                        id="password-toggle"
+                      >
+                        👁️
+                      </button>
+                    </div>
+                    <span
+                      id="password-error"
+                      class="form-error"
+                      role="alert"
+                    ></span>
+                    <span id="password-help" class="form-help">
+                      Must be at least 8 characters with uppercase, lowercase,
+                      number, and special character.
+                    </span>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="confirmPassword" class="form-label"
+                      >Confirm Password</label
+                    >
+                    <div class="password-input-wrapper">
+                      <input
+                        type="password"
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        class="form-input"
+                        placeholder="Confirm your password"
+                        required
+                        aria-describedby="confirmPassword-error"
+                      />
+                      <button
+                        type="button"
+                        class="password-toggle"
+                        aria-label="Toggle password visibility"
+                        id="confirm-password-toggle"
+                      >
+                        👁️
+                      </button>
+                    </div>
+                    <span
+                      id="confirmPassword-error"
+                      class="form-error"
+                      role="alert"
+                    ></span>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="userType" class="form-label"
+                      >Account Type</label
+                    >
+                    <select
+                      id="userType"
+                      name="userType"
+                      class="form-select"
+                      required
+                      aria-describedby="userType-error"
+                    >
+                      <option value="">Select your role</option>
+                      <option value="art-enthusiast">Art Enthusiast</option>
+                      <option value="researcher">Researcher</option>
+                      <option value="educator">Educator</option>
+                      <option value="artist">Artist</option>
+                      <option value="curator">Curator</option>
+                      <option value="community-member">Community Member</option>
+                      <option value="student">Student</option>
+                      <option value="other">Other</option>
+                    </select>
+                    <span
+                      id="userType-error"
+                      class="form-error"
+                      role="alert"
+                    ></span>
+                    <span class="form-help"
+                      >This helps us understand our community and tailor your
+                      experience.</span
+                    >
+                  </div>
+
+                  <div class="form-group">
+                    <label class="checkbox-label">
+                      <input
+                        type="checkbox"
+                        id="terms"
+                        name="terms"
+                        class="checkbox-input"
+                        required
+                      />
+                      <span class="checkbox-custom"></span>
+                      <span class="checkbox-text">
+                        I agree to the
+                        <a href="guidelines.html" class="form-link"
+                          >Community Guidelines</a
+                        >
+                        and
+                        <a href="ethics.html" class="form-link"
+                          >Cultural Ethics Policy</a
+                        >
+                      </span>
+                    </label>
+                    <span
+                      id="terms-error"
+                      class="form-error"
+                      role="alert"
+                    ></span>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="checkbox-label">
+                      <input
+                        type="checkbox"
+                        id="newsletter"
+                        name="newsletter"
+                        class="checkbox-input"
+                      />
+                      <span class="checkbox-custom"></span>
+                      <span class="checkbox-text">
+                        Subscribe to our newsletter for updates about new
+                        artworks and community events
+                      </span>
+                    </label>
+                  </div>
+
+                  <div class="form-actions">
+                    <button
+                      type="submit"
+                      class="btn btn-primary btn-full"
+                      id="register-btn"
+                    >
+                      <span class="btn-text">Create Account</span>
+                      <span class="btn-loading" style="display: none"
+                        >Creating account...</span
+                      >
+                    </button>
+                  </div>
+                </form>
+
+                <div class="login-divider">
+                  <span class="divider-text">Already have an account?</span>
+                </div>
+
+                <div class="login-footer">
+                  <a href="login.html" class="btn btn-secondary btn-full">
+                    Sign In Instead
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div class="cultural-notice-sidebar">
+              <div class="cultural-notice">
+                <div class="cultural-notice-title">Cultural Responsibility</div>
+                <p class="cultural-notice-text">
+                  As a member of our community, you commit to engaging with
+                  Indigenous art and culture with respect, sensitivity, and
+                  acknowledgment of Traditional Knowledge. All contributions
+                  must honor cultural protocols and community guidelines.
+                </p>
+              </div>
+
+              <div class="login-benefits">
+                <h3 class="benefits-title">Community Guidelines</h3>
+                <ul class="benefits-list">
+                  <li class="benefit-item">
+                    <span class="benefit-icon">🤝</span>
+                    <span class="benefit-text"
+                      >Respect Traditional Owners and cultural protocols</span
+                    >
+                  </li>
+                  <li class="benefit-item">
+                    <span class="benefit-icon">📚</span>
+                    <span class="benefit-text"
+                      >Provide accurate, culturally sensitive information</span
+                    >
+                  </li>
+                  <li class="benefit-item">
+                    <span class="benefit-icon">🔒</span>
+                    <span class="benefit-text"
+                      >Honor location sensitivity and privacy requests</span
+                    >
+                  </li>
+                  <li class="benefit-item">
+                    <span class="benefit-icon">💬</span>
+                    <span class="benefit-text"
+                      >Engage in respectful, educational dialogue</span
+                    >
+                  </li>
+                </ul>
+              </div>
+
+              <div class="acknowledgment-notice">
+                <h4 class="acknowledgment-notice-title">
+                  Acknowledgment of Country
+                </h4>
+                <p class="acknowledgment-notice-text">
+                  We acknowledge the Traditional Owners of the lands on which
+                  this art was created and pay our respects to Elders past,
+                  present, and emerging.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer" role="contentinfo">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3 class="footer-title">Project Mission</h3>
+            <p class="footer-text">
+              The Indigenous Art Atlas aims to respectfully document and share
+              Indigenous art across Australia, fostering cultural understanding
+              and appreciation while maintaining appropriate cultural protocols.
+            </p>
+          </div>
+          <div class="footer-section">
+            <h3 class="footer-title">Quick Links</h3>
+            <ul class="footer-links">
+              <li><a href="about.html" class="footer-link">About</a></li>
+              <li>
+                <a href="guidelines.html" class="footer-link">Guidelines</a>
+              </li>
+              <li><a href="ethics.html" class="footer-link">Ethics</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h3 class="footer-title">Acknowledgment of Country</h3>
+            <p class="footer-text">
+              We acknowledge the Traditional Owners of the lands on which this
+              art was created and pay our respects to Elders past, present, and
+              emerging. This atlas exists to honor and celebrate Indigenous
+              cultural heritage.
+            </p>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p class="footer-disclaimer">
+            This is a non-commercial, educational project. All cultural content
+            is shared with respect and appropriate permissions where possible.
+          </p>
+          <p class="footer-copyright">
+            © 2025 Indigenous Art Atlas. Created with respect for Indigenous
+            cultures.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <script src="js/common-utils.js"></script>
+    <script src="js/auth.js"></script>
+  </body>
+</html>
