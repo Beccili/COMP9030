@@ -20,7 +20,8 @@
   --space-3xl: 4rem;
 
   /* Typography */
-  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", Arial, sans-serif;
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu,
+    "Helvetica Neue", Arial, sans-serif;
   --font-size-sm: 0.875rem;
   --font-size-base: 1rem;
   --font-size-lg: 1.125rem;
@@ -142,7 +143,6 @@ a:focus {
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
-
   *,
   *::before,
   *::after {
@@ -281,9 +281,27 @@ a:focus {
   gap: var(--space-sm);
 }
 
+/* Authentication Section */
+.auth-section {
+  margin-left: auto;
+}
+
+.login-section-nav {
+  display: flex;
+  align-items: center;
+}
+
+.login-nav-btn {
+  padding: var(--space-sm) var(--space-lg);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
 /* User Avatar */
 .user-avatar {
-  margin-left: auto;
+  display: flex;
+  align-items: center;
 }
 
 .avatar-container {
@@ -293,6 +311,7 @@ a:focus {
   padding: var(--space-xs) var(--space-sm);
   border-radius: var(--border-radius);
   transition: background-color var(--transition-fast);
+  position: relative;
 }
 
 .avatar-container:hover {
@@ -326,6 +345,39 @@ a:focus {
   color: var(--text);
 }
 
+/* Logout Button */
+.logout-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: var(--space-xs);
+  margin-left: var(--space-sm);
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  font-size: var(--font-size-sm);
+}
+
+.logout-btn:hover {
+  background-color: var(--elev-2);
+  color: var(--text);
+  transform: scale(1.05);
+}
+
+.logout-btn:active {
+  transform: scale(0.95);
+}
+
+.logout-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
 .nav-disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -342,10 +394,26 @@ a:focus {
   .nav {
     flex-direction: column;
     gap: var(--space-md);
+    width: 100%;
   }
 
   .nav-list {
     flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .auth-section {
+    margin-left: 0;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .login-nav-btn {
+    padding: var(--space-sm) var(--space-xl);
+  }
+
+  .avatar-container {
     justify-content: center;
   }
 }
@@ -378,10 +446,12 @@ a:focus {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg,
-      rgba(11, 11, 12, 0.7) 0%,
-      rgba(11, 11, 12, 0.4) 50%,
-      rgba(11, 11, 12, 0.7) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(11, 11, 12, 0.7) 0%,
+    rgba(11, 11, 12, 0.4) 50%,
+    rgba(11, 11, 12, 0.7) 100%
+  );
   display: flex;
   align-items: center;
   justify-content: center;
@@ -530,7 +600,8 @@ a:focus {
 
 /* ===== LEAFLET MAP DARK THEME ===== */
 .leaflet-tile-pane {
-  filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(1.05) saturate(0.8);
+  filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(1.05)
+    saturate(0.8);
 }
 
 .leaflet-control-container {
@@ -1447,7 +1518,6 @@ a:focus {
 }
 
 @media (max-width: 480px) {
-
   .about-paragraph,
   .acknowledgment-text {
     font-size: var(--font-size-base);
@@ -1865,7 +1935,6 @@ a:focus {
 }
 
 @media (max-width: 480px) {
-
   .detail-section,
   .cultural-context-section,
   .related-section {

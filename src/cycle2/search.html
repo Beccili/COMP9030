@@ -35,18 +35,56 @@
           </div>
           <nav class="nav" role="navigation" aria-label="Main navigation">
             <ul class="nav-list">
-              <li><a href="homePage/index.html#map-section" class="nav-link">Map</a></li>
-              <li><a href="search.html" class="nav-link nav-active">Search</a></li>
+              <li>
+                <a href="homePage/index.html#map-section" class="nav-link"
+                  >Map</a
+                >
+              </li>
+              <li>
+                <a href="search.html" class="nav-link nav-active">Search</a>
+              </li>
               <li><a href="about.html" class="nav-link">About Us</a></li>
+
               <li><a href="register.html" class="nav-link">Register</a></li>
+
             </ul>
-            <div class="user-avatar">
-              <div class="avatar-container">
-                <img src="assets/img/user-avatar.png" alt="User avatar" class="avatar-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                <div class="avatar-fallback">
-                  <span class="avatar-initials">JD</span>
+
+            <!-- User Authentication Section -->
+            <div class="auth-section">
+              <!-- Login Button (shown when not logged in) -->
+              <div id="login-section" class="login-section-nav">
+                <a href="login.html" class="btn btn-primary login-nav-btn"
+                  >Login</a
+                >
+              </div>
+
+              <!-- User Avatar (shown when logged in) -->
+              <div id="user-section" class="user-avatar" style="display: none">
+                <div class="avatar-container">
+                  <img
+                    id="user-avatar-image"
+                    src="assets/img/user-avatar.png"
+                    alt="User avatar"
+                    class="avatar-image"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                  />
+                  <div class="avatar-fallback">
+                    <span id="user-avatar-initials" class="avatar-initials"
+                      >TU</span
+                    >
+                  </div>
+                  <span id="user-display-name" class="user-name"
+                    >Test User</span
+                  >
+                  <button
+                    id="logout-btn"
+                    class="logout-btn"
+                    title="Logout"
+                    aria-label="Logout"
+                  >
+                    <span class="logout-icon">⏻</span>
+                  </button>
                 </div>
-                <span class="user-name">John Doe</span>
               </div>
             </div>
           </nav>
@@ -61,7 +99,9 @@
         <div class="container">
           <h1 class="page-title">Search Indigenous Artworks</h1>
           <p class="page-description">
-            Discover Indigenous artworks through our comprehensive collection. Use the filters below to find specific pieces by type, period, region, or search by keyword.
+            Discover Indigenous artworks through our comprehensive collection.
+            Use the filters below to find specific pieces by type, period,
+            region, or search by keyword.
           </p>
         </div>
       </section>
@@ -93,7 +133,9 @@
             </div>
             <div class="filters-row">
               <div class="filter-group">
-                <label for="art-type-filter" class="filter-label">Art Type</label>
+                <label for="art-type-filter" class="filter-label"
+                  >Art Type</label
+                >
                 <select id="art-type-filter" class="filter-select">
                   <option value="">All Types</option>
                   <option value="Portrait">Portrait</option>
@@ -139,7 +181,9 @@
                 </select>
               </div>
               <div class="optional-sort-group">
-                <label for="optional-sort" class="filter-label">Optional sorting method</label>
+                <label for="optional-sort" class="filter-label"
+                  >Optional sorting method</label
+                >
                 <select id="optional-sort" class="filter-select">
                   <option value="">No additional sorting</option>
                   <option value="artist">Artist A–Z</option>
@@ -157,7 +201,9 @@
         <div class="container">
           <div class="results-header">
             <h2 id="results-heading" class="results-title">Search Results</h2>
-            <span id="results-count" class="results-count">9 artworks found</span>
+            <span id="results-count" class="results-count"
+              >9 artworks found</span
+            >
           </div>
           <div id="search-results-grid" class="search-results-grid" role="list">
             <!-- Results will be populated by JavaScript -->
@@ -182,7 +228,9 @@
             <h3 class="footer-title">Quick Links</h3>
             <ul class="footer-links">
               <li><a href="about.html" class="footer-link">About</a></li>
-              <li><a href="guidelines.html" class="footer-link">Guidelines</a></li>
+              <li>
+                <a href="guidelines.html" class="footer-link">Guidelines</a>
+              </li>
               <li><a href="ethics.html" class="footer-link">Ethics</a></li>
             </ul>
           </div>
@@ -212,6 +260,7 @@
     <!-- Custom JavaScript -->
     <script src="js/common-utils.js"></script>
     <script src="js/common-data.js"></script>
+    <script src="homePage/user-auth.js"></script>
     <script src="search.js"></script>
   </body>
 </html>
