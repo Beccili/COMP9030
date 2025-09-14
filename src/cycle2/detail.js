@@ -247,3 +247,11 @@ document.addEventListener('DOMContentLoaded', function () {
   console.log('Loaded artwork:', currentArtwork.title, 'by', currentArtwork.artist);
 });
 
+/*
+#-# START COMMENT BLOCK #-#
+AI Tool used: ChatGPT GPT-5 (OpenAI) via Cursor
+AI-Acknowledgement.md line: 16
+AI helped me complete the vast majority of lengthy, repetitive code. It significantly saved me time, allowing me to focus on bug fixes and multi-file code integration.
+#-# END COMMENT BLOCK #-#
+*/
+

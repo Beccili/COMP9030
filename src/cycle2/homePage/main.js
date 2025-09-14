@@ -267,3 +267,11 @@ document.addEventListener("DOMContentLoaded", function () {
     `Loaded ${artEntries.length} contemporary Aboriginal artwork entries (5 complete, 4 placeholders)`
   );
 });
+
+/*
+#-# START COMMENT BLOCK #-#
+AI Tool used: ChatGPT GPT-5 (OpenAI) via Cursor
+AI-Acknowledgement.md line: 20
+AI helped me complete the vast majority of lengthy, repetitive code. It significantly saved me time, allowing me to focus on bug fixes and multi-file code integration.
+#-# END COMMENT BLOCK #-#
+*/

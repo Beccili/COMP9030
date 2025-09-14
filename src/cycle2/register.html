@@ -56,12 +56,37 @@
               <li><a href="about.html" class="nav-link">About Us</a></li>
               <li><a href="register.html" class="nav-link nav-active">Register</a></li>
             </ul>
-            <div class="user-avatar">
-              <div class="avatar-container">
-                <img src="assets/img/user-avatar.png" alt="User avatar" class="avatar-image"
-                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                <div class="avatar-fallback"><span class="avatar-initials">JD</span></div>
-                <span class="user-name">John Doe</span>
+
+            <!-- User Authentication Section -->
+            <div class="auth-section">
+              <!-- Login Button (shown when not logged in) -->
+              <div id="login-section" class="login-section-nav">
+                <a href="login.html" class="btn btn-primary login-nav-btn">Login</a>
+              </div>
+
+              <!-- User Avatar (shown when logged in) -->
+              <div id="user-section" class="user-avatar" style="display: none">
+                <div class="avatar-container">
+                  <img
+                    id="user-avatar-image"
+                    src="assets/img/user-avatar.png"
+                    alt="User avatar"
+                    class="avatar-image"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                  />
+                  <div class="avatar-fallback">
+                    <span id="user-avatar-initials" class="avatar-initials">TU</span>
+                  </div>
+                  <span id="user-display-name" class="user-name">Test User</span>
+                  <button
+                    id="logout-btn"
+                    class="logout-btn"
+                    title="Logout"
+                    aria-label="Logout"
+                  >
+                    <span class="logout-icon">⏻</span>
+                  </button>
+                </div>
               </div>
             </div>
           </nav>
@@ -72,12 +97,15 @@
     <main id="main-content" role="main">
       <section class="search-header">
         <div class="container">
-          <h1 class="page-title">Account Registration</h1>
+          <h1 class="page-title">Register</h1>
           <p class="page-description">Register as a <strong>user</strong> or an <strong>artist</strong>. Your account must be approved by an admin before you can submit artworks. Approved artworks will be displayed on the site.</p>
+          <!-- Hidden for now: Artist page link -->
+          <!--
           <p class="page-description" style="margin-top: var(--space-md)">
             If you are an already-registered artist, click this button to visit your artist page
             <a class="btn btn-secondary" href="artist.html" style="margin-left:12px">Artist Page</a>
           </p>
+          -->
         </div>
       </section>
 
@@ -95,6 +123,10 @@
                 <div class="form-row">
                   <label class="label" for="email">Contact Email *</label>
                   <input id="email" class="input" type="email" required placeholder="name@example.com" />
+                </div>
+                <div class="form-row">
+                  <label class="label" for="password">Password *</label>
+                  <input id="password" class="input" type="password" required placeholder="Enter your password" />
                 </div>
                 <div class="form-row">
                   <label class="label" for="role">Role *</label>
@@ -130,28 +162,12 @@
               <div class="form-actions">
                 <button class="btn btn-primary" type="submit" id="saveBtn">Submit</button>
                 <button class="btn btn-secondary" type="button" id="resetBtn">Reset</button>
-                <a class="btn btn-secondary" href="artwork-submit.html" id="submitArtworkBtn">Artwork Information Submission Form</a>
-        
               </div>
             </form>
           </div>
         </div>
       </section>
 
-      <section class="list-section" aria-labelledby="list-heading">
-        <div class="container">
-          <h2 id="list-heading" class="section-title">Accounts</h2>
-          <div class="list-grid" id="artist-list" role="list"></div>
-        </div>
-      </section>
-
-      <dialog id="viewDialog" aria-labelledby="viewTitle" aria-modal="true">
-        <h3 id="viewTitle" class="page-title" style="font-size:var(--font-size-2xl);margin-bottom:var(--space-md)">Account</h3>
-        <div id="viewBody" class="page-description"></div>
-        <div class="form-actions" style="margin-top:var(--space-xl)">
-          <button class="btn btn-secondary" onclick="document.getElementById('viewDialog').close()">Close</button>
-        </div>
-      </dialog>
     </main>
 
     <footer class="footer" role="contentinfo">
@@ -162,6 +178,14 @@
       </div>
     </footer>
 
+    <script src="homePage/user-auth.js" defer></script>
     <script src="register.js" defer></script>
   </body>
 </html>
+<!--
+#-# START COMMENT BLOCK #-#
+AI Tool used: ChatGPT GPT-5 (OpenAI) via Cursor
+AI-Acknowledgement.md line: 30
+AI helped me complete the vast majority of lengthy, repetitive code. It significantly saved me time, allowing me to focus on bug fixes and multi-file code integration.
+#-# END COMMENT BLOCK #-#
+-->
