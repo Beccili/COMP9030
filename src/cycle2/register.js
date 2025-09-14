@@ -8,18 +8,16 @@ const nameInput = document.getElementById("name");
 const nationInput = document.getElementById("nation");
 const regionSelect = document.getElementById("region");
 const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
 const imageInput = document.getElementById("imageUrl");
 const bioInput = document.getElementById("bio");
 const roleSelect = document.getElementById("role");
 
-const listEl = document.getElementById("artist-list");
-const viewDialog = document.getElementById("viewDialog");
-const viewBody = document.getElementById("viewBody");
+// Removed list elements as we're not showing accounts on this page anymore
 
 const resetBtn = document.getElementById("resetBtn");
 const exportBtn = document.getElementById("exportBtn");
 const importFile = document.getElementById("importFile");
-const submitArtworkBtn = document.getElementById("submitArtworkBtn");
 
 function loadAccounts() {
   try { return JSON.parse(localStorage.getItem(STORE_KEY)) || []; }
@@ -67,6 +65,12 @@ function applyEmailValidity(){
   else if (!isValidEmail(v)) emailInput.setCustomValidity("Inappropriate email format!");
   else emailInput.setCustomValidity("");
 }
+function applyPasswordValidity(){
+  const v = passwordInput.value;
+  if (!v) passwordInput.setCustomValidity("Please enter a password.");
+  else if (v.length < 6) passwordInput.setCustomValidity("Password must be at least 6 characters.");
+  else passwordInput.setCustomValidity("");
+}
 function applyUrlValidity(){
   const i = imageInput.value.trim();
   if (i && !isValidUrl(i)) imageInput.setCustomValidity("Inappropriate URL format!"); else imageInput.setCustomValidity("");
@@ -75,74 +79,12 @@ nameInput.addEventListener("input", applyNameValidity);
 nameInput.addEventListener("blur", ()=>{applyNameValidity(); if(!nameInput.checkValidity()) nameInput.reportValidity();});
 emailInput.addEventListener("input", applyEmailValidity);
 emailInput.addEventListener("blur", ()=>{applyEmailValidity(); if(!emailInput.checkValidity()) emailInput.reportValidity();});
+passwordInput.addEventListener("input", applyPasswordValidity);
+passwordInput.addEventListener("blur", ()=>{applyPasswordValidity(); if(!passwordInput.checkValidity()) passwordInput.reportValidity();});
 imageInput.addEventListener("input", applyUrlValidity);
 imageInput.addEventListener("blur", ()=>{applyUrlValidity(); if(!imageInput.checkValidity()) imageInput.reportValidity();});
 
-function renderList() {
-  const accounts = loadAccounts();
-  listEl.innerHTML = "";
-  if (accounts.length === 0) {
-    listEl.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:var(--space-2xl)">
-      No accounts yet. Use the form above to add one.
-    </div>`;
-    return;
-  }
-
-  accounts.forEach(acc => {
-    const card = document.createElement("div");
-    card.className = "artist-card";
-    card.setAttribute("role", "listitem");
-
-    const cover = document.createElement("img");
-    cover.className = "artist-cover";
-    cover.alt = `${acc.name} profile image`;
-    cover.loading = "lazy";
-    cover.src = acc.imageUrl || "assets/img/user-avatar.png";
-    cover.onerror = () => { cover.src = "assets/img/user-avatar.png"; };
-
-    const statusClass = acc.status === "approved" ? "status-approved" : "status-pending";
-    const statusText = acc.status === "approved" ? "Approved" : "Pending Approval";
-
-    const body = document.createElement("div");
-    body.className = "artist-content";
-    body.innerHTML = `
-      <h3 class="artist-title">${acc.name}</h3>
-      <p class="artist-sub">${acc.role ? acc.role.toUpperCase() : "USER"} 
-        <span class="status-badge ${statusClass}">${statusText}</span>
-      </p>
-      <p class="subtle">${acc.email ? acc.email : ""}</p>
-      ${acc.bio?`<p style="margin-top:var(--space-sm);color:var(--muted);line-height:1.6">${escapeHtml(acc.bio).slice(0,180)}${acc.bio.length>180?"…":""}</p>`:""}
-      <div style="margin-top:var(--space-sm)">
-        ${acc.nation?`<span class="tag">${escapeHtml(acc.nation)}</span>`:""}
-        ${acc.region?`<span class="tag">${escapeHtml(acc.region)}</span>`:""}
-      </div>
-      ${acc.role === "artist" && acc.artworks && acc.artworks.length ? `
-        <div style="margin-top:var(--space-md)">
-          <strong>Published Artworks:</strong>
-          <div class="links-list">${acc.artworks.map(u=>`<a class="footer-link" href="${u}" target="_blank" rel="noopener">${prettyLabelFromArtworkUrl(u)}</a>`).join("")}</div>
-        </div>` : ""}
-      <div class="card-actions">
-        <button class="btn btn-secondary" type="button" aria-label="View" data-act="view">View</button>
-        <button class="btn btn-secondary" type="button" aria-label="Edit" data-act="edit">Edit</button>
-        <button class="btn btn-report"   type="button" aria-label="Delete" data-act="del">Delete</button>
-        ${acc.role==="artist" && acc.status==="approved" ? `<a class="btn btn-secondary" href="artwork-submit.html">Submit Artwork</a>` : ""}
-      </div>
-    `;
-
-    body.addEventListener("click", (e) => {
-      const btn = e.target.closest("button,a.btn");
-      if (!btn) return;
-      const act = btn.dataset.act;
-      if (act === "view")      openView(acc);
-      else if (act === "edit") fillForm(acc);
-      else if (act === "del")  removeAccount(acc.id);
-    });
-
-    card.appendChild(cover);
-    card.appendChild(body);
-    listEl.appendChild(card);
-  });
-}
+// Removed renderList function as accounts are now shown on the account page
 
 function escapeHtml(str) {
   return String(str).replace(/[&<>\"']/g, s => ({
@@ -150,61 +92,22 @@ function escapeHtml(str) {
   }[s]));
 }
 
-function openView(a) {
-  const statusClass = a.status === "approved" ? "status-approved" : "status-pending";
-  const statusText = a.status === "approved" ? "Approved" : "Pending Approval";
-  const artLinks = (a.role==="artist" && a.artworks && a.artworks.length)
-    ? `<div style="margin-top:var(--space-md)"><strong>Published Artworks</strong><div class="links-list">${a.artworks.map(u=>`<a class="footer-link" href="${u}" target="_blank" rel="noopener">${prettyLabelFromArtworkUrl(u)}</a>`).join("")}</div></div>`
-    : "";
-  viewBody.innerHTML = `
-    <div style="display:grid;grid-template-columns:160px 1fr;gap:var(--space-lg)">
-      <img src="${a.imageUrl || "assets/img/user-avatar.png"}" alt="${a.name}" style="width:160px;height:160px;object-fit:cover;border-radius:var(--border-radius);border:1px solid var(--elev-2)"/>
-      <div>
-        <p><strong>Name:</strong> ${a.name}</p>
-        <p><strong>Role:</strong> ${a.role ? a.role.toUpperCase():"USER"} <span class="status-badge ${statusClass}">${statusText}</span></p>
-        ${a.nation?`<p><strong>Nation/Language:</strong> ${a.nation}</p>`:""}
-        ${a.region?`<p><strong>Region:</strong> ${a.region}</p>`:""}
-        ${a.email?`<p><strong>Email:</strong> ${a.email}</p>`:""}
-        ${a.bio?`<div style="margin-top:var(--space-md)"><strong>Bio</strong><p style="color:var(--muted);line-height:1.7;margin-top:var(--space-xs)">${escapeHtml(a.bio)}</p></div>`:""}
-        ${artLinks}
-      </div>
-    </div>
-  `;
-  if (typeof viewDialog.showModal === "function") viewDialog.showModal(); else alert("Dialog: " + a.name);
-}
+// Removed openView function as accounts are now shown on the account page
 
-function fillForm(a) {
-  idInput.value = a.id;
-  nameInput.value = a.name || "";
-  emailInput.value = a.email || "";
-  roleSelect.value = a.role || "user";
-  regionSelect.value = a.region || "";
-  nationInput.value = a.nation || "";
-  imageInput.value = a.imageUrl || "";
-  bioInput.value = a.bio || "";
-  nameInput.focus();
-  document.getElementById("saveBtn").textContent = "Update";
-}
+// Removed fillForm function as editing is now done on the account page
 
-function removeAccount(id) {
-  if (!confirm("Delete this account?")) return;
-  const accounts = loadAccounts().filter(a => a.id !== id);
-  saveAccounts(accounts);
-  renderList();
-  form.reset();
-  idInput.value = "";
-  document.getElementById("saveBtn").textContent = "Save";
-}
+// Removed removeAccount function as account management is now on the account page
 
 form.addEventListener("submit", (e) => {
   e.preventDefault();
-  applyNameValidity(); applyEmailValidity(); applyUrlValidity();
+  applyNameValidity(); applyEmailValidity(); applyPasswordValidity(); applyUrlValidity();
   if (!form.checkValidity()) { form.reportValidity(); return; }
 
   const acc = {
     id: idInput.value || uid(),
     name: nameInput.value.trim(),
     email: emailInput.value.trim(),
+    password: passwordInput.value,  // In real app, this should be hashed
     role: roleSelect.value,
     region: regionSelect.value,
     nation: nationInput.value.trim(),
@@ -227,10 +130,14 @@ form.addEventListener("submit", (e) => {
   }
   saveAccounts(list);
 
-  renderList();
+  // Redirect to account page after successful registration
+  alert("Account created successfully! Redirecting to account page...");
+  setTimeout(() => {
+    window.location.href = "account.html";
+  }, 1500);
   form.reset();
   idInput.value = "";
-  document.getElementById("saveBtn").textContent = "Save";
+  document.getElementById("saveBtn").textContent = "Submit";
 });
 
 resetBtn.addEventListener("click", () => {
@@ -261,14 +168,14 @@ importFile && importFile.addEventListener("change", async (e) => {
   }
 });
 
-/* Disable top-level submission button when not eligible (not artist or not approved) */
-function updateSubmitBtnState(){
-  const id = idInput.value;
-  const list = loadAccounts();
-  const found = list.find(a=>a.id===id);
-  const eligible = found && found.role==="artist" && found.status==="approved";
-  submitArtworkBtn.classList.toggle("btn-disabled", !eligible);
-  submitArtworkBtn.setAttribute("aria-disabled", String(!eligible));
-}
-form.addEventListener("input", updateSubmitBtnState);
-document.addEventListener("DOMContentLoaded", () => { renderList(); updateSubmitBtnState(); });
+document.addEventListener("DOMContentLoaded", () => { 
+  console.log("Register page initialized");
+});
+
+/*
+#-# START COMMENT BLOCK #-#
+AI Tool used: ChatGPT GPT-5 (OpenAI) via Cursor
+AI-Acknowledgement.md line: 31
+AI helped me complete the vast majority of lengthy, repetitive code. It significantly saved me time, allowing me to focus on bug fixes and multi-file code integration.
+#-# END COMMENT BLOCK #-#
+*/

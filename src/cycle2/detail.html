@@ -32,13 +32,37 @@
               <li><a href="about.html" class="nav-link">About Us</a></li>
               <li><a href="register.html" class="nav-link">Register</a></li>
             </ul>
-            <div class="user-avatar">
-              <div class="avatar-container">
-                <img src="assets/img/user-avatar.png" alt="User avatar" class="avatar-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                <div class="avatar-fallback">
-                  <span class="avatar-initials">JD</span>
+
+            <!-- User Authentication Section -->
+            <div class="auth-section">
+              <!-- Login Button (shown when not logged in) -->
+              <div id="login-section" class="login-section-nav">
+                <a href="login.html" class="btn btn-primary login-nav-btn">Login</a>
+              </div>
+
+              <!-- User Avatar (shown when logged in) -->
+              <div id="user-section" class="user-avatar" style="display: none">
+                <div class="avatar-container">
+                  <img
+                    id="user-avatar-image"
+                    src="assets/img/user-avatar.png"
+                    alt="User avatar"
+                    class="avatar-image"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                  />
+                  <div class="avatar-fallback">
+                    <span id="user-avatar-initials" class="avatar-initials">TU</span>
+                  </div>
+                  <span id="user-display-name" class="user-name">Test User</span>
+                  <button
+                    id="logout-btn"
+                    class="logout-btn"
+                    title="Logout"
+                    aria-label="Logout"
+                  >
+                    <span class="logout-icon">⏻</span>
+                  </button>
                 </div>
-                <span class="user-name">John Doe</span>
               </div>
             </div>
           </nav>
@@ -279,6 +303,14 @@
     <!-- Custom JavaScript -->
     <script src="js/common-utils.js"></script>
     <script src="js/common-data.js"></script>
+    <script src="homePage/user-auth.js"></script>
     <script src="detail.js"></script>
   </body>
 </html>
+<!--
+#-# START COMMENT BLOCK #-#
+AI Tool used: ChatGPT GPT-5 (OpenAI) via Cursor
+AI-Acknowledgement.md line: 15
+AI helped me complete the vast majority of lengthy, repetitive code. It significantly saved me time, allowing me to focus on bug fixes and multi-file code integration.
+#-# END COMMENT BLOCK #-#
+-->

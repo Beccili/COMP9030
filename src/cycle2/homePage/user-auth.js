@@ -102,6 +102,9 @@ class UserAuth {
       if (loginSection) loginSection.style.display = "none";
       if (userSection) userSection.style.display = "block";
 
+      // Hide Register nav button when logged in
+      this.toggleRegisterButton(false);
+
       // Update user information
       if (userDisplayName) {
         userDisplayName.textContent =
@@ -129,10 +132,120 @@ class UserAuth {
           }
         }
       }
+
+      // Make avatar clickable to go to account page
+      this.setupAvatarClickHandler();
     } else {
       // Show login section, hide user section
       if (loginSection) loginSection.style.display = "block";
       if (userSection) userSection.style.display = "none";
+      
+      // Show Register nav button when not logged in
+      this.toggleRegisterButton(true);
+    }
+  }
+
+  toggleRegisterButton(show) {
+    // Find all Register nav links
+    const registerLinks = document.querySelectorAll('a.nav-link[href*="register"]');
+    registerLinks.forEach(link => {
+      // Find the parent li element
+      const parentLi = link.closest('li');
+      if (parentLi) {
+        parentLi.style.display = show ? 'block' : 'none';
+      }
+    });
+
+    // Also add/show Account link when logged in
+    if (!show) {
+      this.addAccountNavLink();
+    } else {
+      this.removeAccountNavLink();
+    }
+  }
+
+  addAccountNavLink() {
+    // Check if Account link already exists
+    if (document.querySelector('.account-nav-item')) {
+      return;
+    }
+
+    // Find the nav list
+    const navList = document.querySelector('.nav-list');
+    if (!navList) return;
+
+    // Create Account nav item
+    const accountLi = document.createElement('li');
+    accountLi.className = 'account-nav-item';
+    
+    const accountLink = document.createElement('a');
+    accountLink.href = window.location.pathname.includes("homePage") 
+      ? "../account.html" 
+      : "account.html";
+    accountLink.className = 'nav-link';
+    accountLink.textContent = 'Account';
+    
+    // Mark as active if on account page
+    if (window.location.pathname.includes('account.html')) {
+      accountLink.classList.add('nav-active');
+    }
+    
+    accountLi.appendChild(accountLink);
+    
+    // Insert before the Register item or at the end
+    const registerLinks = navList.querySelectorAll('a[href*="register"]');
+    if (registerLinks.length > 0) {
+      const registerLi = registerLinks[0].closest('li');
+      if (registerLi && registerLi.parentNode === navList) {
+        navList.insertBefore(accountLi, registerLi);
+      } else {
+        navList.appendChild(accountLi);
+      }
+    } else {
+      navList.appendChild(accountLi);
+    }
+  }
+
+  removeAccountNavLink() {
+    // Remove the Account nav link when logged out
+    const accountNavItems = document.querySelectorAll('.account-nav-item');
+    accountNavItems.forEach(item => item.remove());
+  }
+
+  setupAvatarClickHandler() {
+    const avatarContainer = document.querySelector(".avatar-container");
+    if (avatarContainer && !avatarContainer.hasAttribute("data-click-handler")) {
+      // Mark that we've added the handler to avoid duplicates
+      avatarContainer.setAttribute("data-click-handler", "true");
+      
+      // Add cursor pointer style and title to indicate it's clickable
+      avatarContainer.style.cursor = "pointer";
+      avatarContainer.title = "Click to view account";
+      
+      // Add click event listener
+      avatarContainer.addEventListener("click", (e) => {
+        // Don't navigate if clicking the logout button
+        if (e.target.closest("#logout-btn")) {
+          return;
+        }
+        
+        // Navigate to account page
+        window.location.href = window.location.pathname.includes("homePage") 
+          ? "../account.html" 
+          : "account.html";
+      });
+
+      // Add hover effect
+      avatarContainer.addEventListener("mouseenter", () => {
+        avatarContainer.style.opacity = "0.8";
+        avatarContainer.style.transform = "scale(1.05)";
+        avatarContainer.style.transition = "all 0.2s ease";
+      });
+      
+      avatarContainer.addEventListener("mouseleave", () => {
+        avatarContainer.style.opacity = "1";
+        avatarContainer.style.transform = "scale(1)";
+      });
     }
   }
 
@@ -176,6 +289,12 @@ class UserAuth {
 let userAuth;
 
 document.addEventListener("DOMContentLoaded", function () {
+  // Prevent multiple initializations
+  if (window.userAuth) {
+    console.log("User authentication already initialized");
+    return;
+  }
+  
   userAuth = new UserAuth();
 
   // Make userAuth available globally for debugging
@@ -188,3 +307,11 @@ document.addEventListener("DOMContentLoaded", function () {
 if (typeof module !== "undefined" && module.exports) {
   module.exports = UserAuth;
 }
+
+/*
+#-# START COMMENT BLOCK #-#
+AI Tool used: ChatGPT GPT-5 (OpenAI) via Cursor
+AI-Acknowledgement.md line: 22
+AI helped me complete the vast majority of lengthy, repetitive code. It significantly saved me time, allowing me to focus on bug fixes and multi-file code integration.
+#-# END COMMENT BLOCK #-#
+*/

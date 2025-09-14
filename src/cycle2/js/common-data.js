@@ -14,7 +14,7 @@
       region: "SA",
       coords: { lat: -26.9, lng: 133.1 },
       location_sensitivity: "general",
-      images: ["assets/img/art01.png"],
+      images: ["assets/img/art01.png", "assets/img/art02.png", "assets/img/art03.png"],
       dateAdded: "2025-09-10",
       submitter: "art_historian",
       sensitive: false,
@@ -30,7 +30,7 @@
       region: "SA",
       coords: { lat: -26.9, lng: 133.1 },
       location_sensitivity: "general",
-      images: ["assets/img/art02.png"],
+      images: ["assets/img/art02.png", "assets/img/art03.png", "assets/img/art04.png", "assets/img/art05.png"],
       dateAdded: "2025-09-09",
       submitter: "iwantja_arts",
       sensitive: false,
@@ -46,7 +46,7 @@
       region: "QLD",
       coords: { lat: -27.4698, lng: 153.0251 },
       location_sensitivity: "exact",
-      images: ["assets/img/art03.png"],
+      images: ["assets/img/art03.png", "assets/img/art04.png", "assets/img/art01.png"],
       dateAdded: "2025-09-08",
       submitter: "qagoma_curator",
       sensitive: true,
@@ -62,7 +62,7 @@
       region: "QLD",
       coords: { lat: -27.4, lng: 153.4 },
       location_sensitivity: "general",
-      images: ["assets/img/art04.png"],
+      images: ["assets/img/art04.png", "assets/img/art05.png", "assets/img/art01.png"],
       dateAdded: "2025-09-07",
       submitter: "adelaide_biennial",
       sensitive: false,
@@ -167,4 +167,12 @@
     regionCentroids,
   };
 })();
+
+/*
+#-# START COMMENT BLOCK #-#
+AI Tool used: ChatGPT GPT-5 (OpenAI) via Cursor
+AI-Acknowledgement.md line: 24
+AI helped me complete the vast majority of lengthy, repetitive code. It significantly saved me time, allowing me to focus on bug fixes and multi-file code integration.
+#-# END COMMENT BLOCK #-#
+*/
 

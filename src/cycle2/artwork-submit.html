@@ -37,12 +37,37 @@
               <li><a href="about.html" class="nav-link">About Us</a></li>
               <li><a href="register.html" class="nav-link">Register</a></li>
             </ul>
-            <div class="user-avatar">
-              <div class="avatar-container">
-                <img src="assets/img/user-avatar.png" alt="User avatar" class="avatar-image"
-                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                <div class="avatar-fallback"><span class="avatar-initials">JD</span></div>
-                <span class="user-name">John Doe</span>
+
+            <!-- User Authentication Section -->
+            <div class="auth-section">
+              <!-- Login Button (shown when not logged in) -->
+              <div id="login-section" class="login-section-nav">
+                <a href="login.html" class="btn btn-primary login-nav-btn">Login</a>
+              </div>
+
+              <!-- User Avatar (shown when logged in) -->
+              <div id="user-section" class="user-avatar" style="display: none">
+                <div class="avatar-container">
+                  <img
+                    id="user-avatar-image"
+                    src="assets/img/user-avatar.png"
+                    alt="User avatar"
+                    class="avatar-image"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                  />
+                  <div class="avatar-fallback">
+                    <span id="user-avatar-initials" class="avatar-initials">TU</span>
+                  </div>
+                  <span id="user-display-name" class="user-name">Test User</span>
+                  <button
+                    id="logout-btn"
+                    class="logout-btn"
+                    title="Logout"
+                    aria-label="Logout"
+                  >
+                    <span class="logout-icon">⏻</span>
+                  </button>
+                </div>
               </div>
             </div>
           </nav>
@@ -122,8 +147,9 @@
                 </div>
 
                 <div class="form-row full">
-                  <label class="label" for="artworkImage">Artwork Image (optional)</label>
-                  <input id="artworkImage" class="input" type="url" placeholder="https://.../image2.jpg" />
+                  <label class="label" for="artworkImages">Artwork Images *</label>
+                  <input id="artworkImages" class="input" type="file" accept="image/*" multiple required />
+                  <p class="hint">Select one or more images of your artwork. Supported formats: JPG, PNG, GIF, WebP</p>
                 </div>
 
                 <div class="form-row full">
@@ -151,13 +177,14 @@
       </div>
     </footer>
 
+    <script src="homePage/user-auth.js"></script>
     <script>
       const form = document.getElementById('artwork-form');
       const note = document.getElementById('submit-note');
       const sensitiveSel = document.getElementById('sensitive');
       const addressInput = document.getElementById('address');
       const addressNote = document.getElementById('address-note');
-      const artworkImageInput = document.getElementById('artworkImage');
+      const artworkImagesInput = document.getElementById('artworkImages');
 
       function updateAddressState() {
         const isSensitive = sensitiveSel.value === 'true';
@@ -185,12 +212,17 @@
         const sensitive = sensitiveSel.value === 'true';
         const address = addressInput.value.trim();
         const desc = document.getElementById('desc').value.trim();
-        const artworkImage = artworkImageInput.value.trim();
+        const artworkImages = artworkImagesInput.files;
 
         if (!title){ setValidity(document.getElementById('title'), false, 'Please enter the title.'); return; }
         if (!artist){ setValidity(document.getElementById('artist'), false, 'Please enter the artist.'); return; }
+        if (!artworkImages || artworkImages.length === 0){ 
+          setValidity(artworkImagesInput, false, 'Please select at least one artwork image.'); 
+          return; 
+        }
         setValidity(document.getElementById('title'), true, '');
         setValidity(document.getElementById('artist'), true, '');
+        setValidity(artworkImagesInput, true, '');
 
         if (sensitive && address){
           setValidity(addressInput, false, 'Address cannot be provided when sensitive is true.'); 
@@ -199,20 +231,23 @@
           setValidity(addressInput, true, '');
         }
 
-        if (artworkImage && !isValidUrl(artworkImage)) {
-          setValidity(artworkImageInput, false, 'Inappropriate URL format!');
-          return;
-        } else {
-          setValidity(artworkImageInput, true, '');
-        }
+        // Convert files to base64 for storage (in real app, would upload to server)
+        const imageFiles = Array.from(artworkImages).map(file => ({
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          // In real app, would be uploaded URL or file path
+          data: `[File: ${file.name} - ${Math.round(file.size/1024)}KB]`
+        }));
 
         const data = {
           id: 'w_' + Math.random().toString(36).slice(2) + Date.now().toString(36),
           title, artist, artType, period, region,
           sensitive, address: address || null,
-          artworkImage: artworkImage || null,
+          artworkImages: imageFiles,
           description: desc,
-          status: 'pending'
+          status: 'pending',
+          submittedAt: new Date().toISOString()
         };
         const key = 'IAA_artwork_submissions_v1';
         const arr = JSON.parse(localStorage.getItem(key) || '[]');
@@ -227,3 +262,10 @@
     </script>
   </body>
 </html>
+<!--
+#-# START COMMENT BLOCK #-#
+AI Tool used: ChatGPT GPT-5 (OpenAI) via Cursor
+AI-Acknowledgement.md line: 14
+AI helped me complete the vast majority of lengthy, repetitive code. It significantly saved me time, allowing me to focus on bug fixes and multi-file code integration.
+#-# END COMMENT BLOCK #-#
+-->
