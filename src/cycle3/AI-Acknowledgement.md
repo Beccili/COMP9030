@@ -32,6 +32,147 @@ AI provided minor assistance with:
 - Optimization of JSON file operations
 - Assistance with writing detailed code comments and function documentation
 
+### Frontend-Backend Integration (Cycle 3)
+
+For the frontend-backend integration phase, AI assistance was crucial in implementing the dynamic data loading functionality for the search and detail pages.
+
+**Search Page Implementation (search.html + search.js):**
+
+AI provided the complete backend integration architecture:
+
+```javascript
+// Backend API configuration
+const API_BASE_URL = "../backend";
+
+// Fetch all artworks from backend API
+async function fetchArtworks() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/artworks.php`);
+    const result = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.message || "Failed to fetch artworks");
+    }
+
+    return result.data;
+  } catch (error) {
+    console.error("Error fetching artworks:", error);
+    throw error;
+  }
+}
+
+// Apply filters and search with backend data
+function applyFilters() {
+  const searchTerm = searchInput.value.toLowerCase().trim();
+  const artTypeValue = artTypeFilter.value;
+  const periodValue = periodFilter.value;
+  const regionValue = regionFilter.value;
+  const sortValue = sortSelect.value;
+  const optionalSortValue = optionalSort.value;
+
+  // Filter artworks (only show approved ones)
+  filteredArtworks = allArtworks.filter((artwork) => {
+    // Only show approved artworks
+    if (artwork.status !== "approved") return false;
+
+    // Search filter
+    const matchesSearch =
+      !searchTerm ||
+      artwork.title.toLowerCase().includes(searchTerm) ||
+      artwork.artist.toLowerCase().includes(searchTerm) ||
+      (artwork.description &&
+        artwork.description.toLowerCase().includes(searchTerm));
+
+    // Art type filter
+    const matchesArtType = !artTypeValue || artwork.artType === artTypeValue;
+
+    // Period filter
+    const matchesPeriod = !periodValue || artwork.period === periodValue;
+
+    // Region filter
+    const matchesRegion = !regionValue || artwork.region === regionValue;
+
+    return matchesSearch && matchesArtType && matchesPeriod && matchesRegion;
+  });
+
+  // Sort artworks
+  sortArtworks(filteredArtworks, sortValue, optionalSortValue);
+
+  // Re-render results
+  renderSearchResults(filteredArtworks);
+}
+```
+
+**Detail Page Implementation (detail.html + detail.js):**
+
+AI provided the dynamic artwork loading system:
+
+```javascript
+// Fetch artwork from backend API
+async function fetchArtwork(artworkId) {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/artworks.php?id=${artworkId}`
+    );
+    const result = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.message || "Failed to fetch artwork");
+    }
+
+    return result.data;
+  } catch (error) {
+    console.error("Error fetching artwork:", error);
+    throw error;
+  }
+}
+
+// Fetch related artworks from backend API
+async function fetchRelatedArtworks(currentArtwork) {
+  try {
+    // Get all approved artworks first
+    const response = await fetch(`${API_BASE_URL}/artworks.php`);
+    const result = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.message || "Failed to fetch related artworks");
+    }
+
+    const allArtworks = result.data;
+
+    // Filter for related artworks (same artist, art type, or region, excluding current)
+    const related = allArtworks
+      .filter(
+        (artwork) =>
+          artwork.id !== currentArtwork.id &&
+          artwork.status === "approved" &&
+          (artwork.artist === currentArtwork.artist ||
+            artwork.artType === currentArtwork.artType ||
+            artwork.region === currentArtwork.region)
+      )
+      .slice(0, 3);
+
+    return related;
+  } catch (error) {
+    console.error("Error fetching related artworks:", error);
+    return [];
+  }
+}
+```
+
+**AI Contributions for Frontend Integration:**
+
+- Complete backend API integration architecture
+- Real-time search functionality with debouncing (300ms delay)
+- Multi-criteria filtering system (type, period, region)
+- Advanced sorting algorithms with primary and secondary sort options
+- Error handling and loading states
+- Dynamic result rendering with responsive grid layout
+- Image carousel functionality with thumbnail navigation
+- Intelligent related artwork recommendation algorithm
+- Cultural sensitivity handling for location information
+- Automated file path correction and migration scripts
+
 ### Specific Code Assistance Examples
 
 **Example 1: JSON File Operations Optimization**
@@ -212,8 +353,14 @@ require_once 'config.php';
 
 I independently designed and implemented the complete Indigenous Art Atlas backend system. This included analyzing the existing frontend requirements, architecting the backend solution, implementing all CRUD operations, designing the authentication system, and creating the admin management functionality.
 
-The AI assistance was limited to code formatting suggestions and documentation improvements. All core functionality, business logic, security implementations, and system architecture were developed through my own analysis and programming work. The backend successfully meets all cycle3 requirements through my independent implementation of a functional PHP-based API system with JSON data persistence.
+For the frontend-backend integration phase, I planned and coordinated the data migration from static frontend data to dynamic backend API consumption. I identified the specific requirements for search functionality, detail page loading, and related artwork recommendations. However, the implementation of the complex JavaScript integration code, including the API calls, filtering logic, sorting algorithms, and error handling, was provided by AI assistance.
 
-## Reference
+The AI assistance was most significant in the frontend integration phase, providing the complete JavaScript implementation for dynamic data loading. For the backend development, AI assistance was limited to code formatting suggestions and documentation improvements. All core backend functionality, business logic, security implementations, and system architecture were developed through my own analysis and programming work. The complete system successfully meets all cycle3 requirements through my independent backend implementation combined with AI-assisted frontend integration.
+
+## References
 
 Claude 3.5 Sonnet. (October 2024). Anthropic. https://claude.ai
+
+ChatGPT GPT-5. (2025). OpenAI. https://chat.openai.com
+
+Claude 4 Opus. (2024). Anthropic. https://claude.ai
