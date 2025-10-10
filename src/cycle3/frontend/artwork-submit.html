@@ -6,6 +6,7 @@
     <title>Artwork Information Submission</title>
     <link rel="stylesheet" href="homePage/styles.css" />
     <style>
+      /* Keep the same lightweight styles as the original page */
       .form-section{padding:var(--space-3xl) 0;background:var(--elev-1);border-bottom:1px solid var(--elev-2)}
       .form-card{max-width:960px;margin:0 auto;background:var(--elev-1);border:1px solid var(--elev-2);
         border-radius:var(--border-radius-lg);box-shadow:var(--shadow-md);padding:var(--space-xl)}
@@ -20,10 +21,12 @@
       .form-actions{display:flex;gap:var(--space-md);margin-top:var(--space-lg)}
       .hint{color:var(--muted);font-size:var(--font-size-sm)}
       .disabled-note{color:var(--muted);font-size:var(--font-size-sm);margin-top:4px}
+      @media(max-width:900px){.form-grid{grid-template-columns:1fr}}
     </style>
   </head>
   <body>
     <a href="#main-content" class="skip-link">Skip to content</a>
+
     <header class="header" role="banner">
       <div class="container">
         <div class="header-content">
@@ -38,35 +41,18 @@
               <li><a href="register.html" class="nav-link">Register</a></li>
             </ul>
 
-            <!-- User Authentication Section -->
+            <!-- Auth slot; your existing user-auth.js may toggle visibility -->
             <div class="auth-section">
-              <!-- Login Button (shown when not logged in) -->
               <div id="login-section" class="login-section-nav">
                 <a href="login.html" class="btn btn-primary login-nav-btn">Login</a>
               </div>
-
-              <!-- User Avatar (shown when logged in) -->
               <div id="user-section" class="user-avatar" style="display: none">
                 <div class="avatar-container">
-                  <img
-                    id="user-avatar-image"
-                    src="assets/img/user-avatar.png"
-                    alt="User avatar"
-                    class="avatar-image"
-                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-                  />
-                  <div class="avatar-fallback">
-                    <span id="user-avatar-initials" class="avatar-initials">TU</span>
-                  </div>
-                  <span id="user-display-name" class="user-name">Test User</span>
-                  <button
-                    id="logout-btn"
-                    class="logout-btn"
-                    title="Logout"
-                    aria-label="Logout"
-                  >
-                    <span class="logout-icon">⏻</span>
-                  </button>
+                  <img id="user-avatar-image" src="assets/img/user-avatar.png" alt="User avatar" class="avatar-image"
+                       onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                  <div class="avatar-fallback"><span id="user-avatar-initials" class="avatar-initials">TU</span></div>
+                  <span id="user-display-name" class="user-name">User</span>
+                  <button id="logout-btn" class="logout-btn" title="Logout" aria-label="Logout"><span class="logout-icon">⏻</span></button>
                 </div>
               </div>
             </div>
@@ -86,6 +72,7 @@
       <section class="form-section">
         <div class="container">
           <div class="form-card">
+            <!-- NOTE: IDs align with artwork-submit.js -->
             <form id="artwork-form" novalidate>
               <div class="form-grid">
                 <div class="form-row">
@@ -149,7 +136,7 @@
                 <div class="form-row full">
                   <label class="label" for="artworkImages">Artwork Images *</label>
                   <input id="artworkImages" class="input" type="file" accept="image/*" multiple required />
-                  <p class="hint">Select one or more images of your artwork. Supported formats: JPG, PNG, GIF, WebP</p>
+                  <p class="hint">Select one or more images of your artwork. In the current backend, images are not uploaded yet.</p>
                 </div>
 
                 <div class="form-row full">
@@ -172,100 +159,19 @@
     <footer class="footer" role="contentinfo">
       <div class="container">
         <div class="footer-bottom">
-          <p class="footer-copyright">© Indigenous Art Atlas</p>
+          <p class="footer-content">© Indigenous Art Atlas</p>
         </div>
       </div>
     </footer>
 
-    <script src="homePage/user-auth.js"></script>
-    <script>
-      const form = document.getElementById('artwork-form');
-      const note = document.getElementById('submit-note');
-      const sensitiveSel = document.getElementById('sensitive');
-      const addressInput = document.getElementById('address');
-      const addressNote = document.getElementById('address-note');
-      const artworkImagesInput = document.getElementById('artworkImages');
+    <!-- Optional: your existing auth helper (kept for header toggles) -->
+    <script src="homePage/user-auth.js" defer></script>
 
-      function updateAddressState() {
-        const isSensitive = sensitiveSel.value === 'true';
-        addressInput.disabled = isSensitive;
-        addressNote.style.display = isSensitive ? 'block' : 'none';
-        if (isSensitive) addressInput.value = '';
-      }
-      sensitiveSel.addEventListener('change', updateAddressState);
-      document.addEventListener('DOMContentLoaded', updateAddressState);
+    <!-- API host override (optional when backend is on another origin) -->
+    <script>window.API_BASE = window.API_BASE || ""; /* e.g., 'http://localhost/backend' */</script>
 
-      function isValidUrl(v){ try { new URL(v); return true; } catch { return false; } }
-      function setValidity(el, ok, msg){
-        el.setCustomValidity(ok ? '' : msg);
-        if (!ok) el.reportValidity();
-      }
-
-      form.addEventListener('submit', (e) => {
-        e.preventDefault();
-
-        const title = document.getElementById('title').value.trim();
-        const artist = document.getElementById('artist').value.trim();
-        const artType = document.getElementById('artType').value;
-        const period = document.getElementById('period').value;
-        const region = document.getElementById('region').value;
-        const sensitive = sensitiveSel.value === 'true';
-        const address = addressInput.value.trim();
-        const desc = document.getElementById('desc').value.trim();
-        const artworkImages = artworkImagesInput.files;
-
-        if (!title){ setValidity(document.getElementById('title'), false, 'Please enter the title.'); return; }
-        if (!artist){ setValidity(document.getElementById('artist'), false, 'Please enter the artist.'); return; }
-        if (!artworkImages || artworkImages.length === 0){ 
-          setValidity(artworkImagesInput, false, 'Please select at least one artwork image.'); 
-          return; 
-        }
-        setValidity(document.getElementById('title'), true, '');
-        setValidity(document.getElementById('artist'), true, '');
-        setValidity(artworkImagesInput, true, '');
-
-        if (sensitive && address){
-          setValidity(addressInput, false, 'Address cannot be provided when sensitive is true.'); 
-          return;
-        } else {
-          setValidity(addressInput, true, '');
-        }
-
-        // Convert files to base64 for storage (in real app, would upload to server)
-        const imageFiles = Array.from(artworkImages).map(file => ({
-          name: file.name,
-          size: file.size,
-          type: file.type,
-          // In real app, would be uploaded URL or file path
-          data: `[File: ${file.name} - ${Math.round(file.size/1024)}KB]`
-        }));
-
-        const data = {
-          id: 'w_' + Math.random().toString(36).slice(2) + Date.now().toString(36),
-          title, artist, artType, period, region,
-          sensitive, address: address || null,
-          artworkImages: imageFiles,
-          description: desc,
-          status: 'pending',
-          submittedAt: new Date().toISOString()
-        };
-        const key = 'IAA_artwork_submissions_v1';
-        const arr = JSON.parse(localStorage.getItem(key) || '[]');
-        arr.push(data);
-        localStorage.setItem(key, JSON.stringify(arr));
-
-        note.style.display = 'block';
-        note.textContent = 'Submitted! Your artwork is pending admin review.';
-        form.reset();
-        updateAddressState();
-      });
-    </script>
+    <!-- Import the new module scripts -->
+    <script type="module" src="api.js"></script>
+    <script type="module" src="artwork-submit.js"></script>
   </body>
 </html>
-<!--
-#-# START COMMENT BLOCK #-#
-AI Tool used: ChatGPT GPT-5 (OpenAI) via Cursor
-AI-Acknowledgement.md line: 14
-AI helped me complete the vast majority of lengthy, repetitive code. It significantly saved me time, allowing me to focus on bug fixes and multi-file code integration.
-#-# END COMMENT BLOCK #-#
--->
