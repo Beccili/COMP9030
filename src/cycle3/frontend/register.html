@@ -7,7 +7,6 @@
     <meta name="description" content="Register a user or artist account. Admin approves accounts and artworks before public display."/>
     <link rel="stylesheet" href="homePage/styles.css" />
     <style>
-      /* Keep the same lightweight styles as the original page */
       .form-section{padding:var(--space-3xl) 0;background:var(--elev-1);border-bottom:1px solid var(--elev-2)}
       .form-card{max-width:900px;margin:0 auto;background:var(--elev-1);border:1px solid var(--elev-2);
         border-radius:var(--border-radius-lg);box-shadow:var(--shadow-md);padding:var(--space-xl)}
@@ -20,6 +19,24 @@
       .textarea{min-height:120px;resize:vertical}
       .input:focus,.select:focus,.textarea:focus{border-color:var(--focus);outline:none}
       .form-actions{display:flex;gap:var(--space-md);margin-top:var(--space-lg);flex-wrap:wrap}
+      .list-section{padding:var(--space-3xl) 0}
+      .list-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:var(--space-xl)}
+      .artist-card{background:var(--elev-1);border:1px solid var(--elev-2);border-radius:var(--border-radius-lg);
+        overflow:hidden;transition:all var(--transition-base)}
+      .artist-card:hover{transform:scale(1.01);box-shadow:var(--shadow-lg);border-color:var(--accent)}
+      .artist-cover{width:100%;aspect-ratio:4/3;object-fit:cover;border-bottom:1px solid var(--elev-2)}
+      .artist-content{padding:var(--space-lg)}
+      .artist-title{font-size:var(--font-size-lg);font-weight:600;margin-bottom:var(--space-xs)}
+      .artist-sub{color:var(--muted);margin-bottom:var(--space-sm)}
+      .tag{display:inline-block;padding:2px 8px;background:var(--elev-2);color:var(--muted);border-radius:var(--border-radius);
+        font-size:var(--font-size-sm);margin-right:6px;margin-bottom:6px}
+      .status-badge{display:inline-block;padding:2px 8px;border-radius:var(--border-radius);font-size:var(--font-size-sm);border:1px solid var(--elev-2);margin-left:6px}
+      .status-pending{color:#f0c674;border-color:#f0c67433;background:transparent}
+      .status-approved{color:#8dc891;border-color:#8dc89133;background:transparent}
+      .links-list a{display:inline-block;margin-right:10px;margin-bottom:8px}
+      dialog{border:none;border-radius:var(--border-radius-lg);background:var(--elev-1);color:var(--text);
+        padding:var(--space-xl);width:min(720px,90vw)}
+      dialog::backdrop{background:rgba(0,0,0,.6)}
       @media(max-width:900px){.form-grid{grid-template-columns:1fr}}
     </style>
   </head>
@@ -40,18 +57,35 @@
               <li><a href="register.html" class="nav-link nav-active">Register</a></li>
             </ul>
 
-            <!-- Auth slot; your existing user-auth.js may toggle visibility -->
+            <!-- User Authentication Section -->
             <div class="auth-section">
+              <!-- Login Button (shown when not logged in) -->
               <div id="login-section" class="login-section-nav">
                 <a href="login.html" class="btn btn-primary login-nav-btn">Login</a>
               </div>
+
+              <!-- User Avatar (shown when logged in) -->
               <div id="user-section" class="user-avatar" style="display: none">
                 <div class="avatar-container">
-                  <img id="user-avatar-image" src="assets/img/user-avatar.png" alt="User avatar" class="avatar-image"
-                       onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-                  <div class="avatar-fallback"><span id="user-avatar-initials" class="avatar-initials">TU</span></div>
-                  <span id="user-display-name" class="user-name">User</span>
-                  <button id="logout-btn" class="logout-btn" title="Logout" aria-label="Logout"><span class="logout-icon">⏻</span></button>
+                  <img
+                    id="user-avatar-image"
+                    src="assets/img/user-avatar.png"
+                    alt="User avatar"
+                    class="avatar-image"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                  />
+                  <div class="avatar-fallback">
+                    <span id="user-avatar-initials" class="avatar-initials">TU</span>
+                  </div>
+                  <span id="user-display-name" class="user-name">Test User</span>
+                  <button
+                    id="logout-btn"
+                    class="logout-btn"
+                    title="Logout"
+                    aria-label="Logout"
+                  >
+                    <span class="logout-icon">⏻</span>
+                  </button>
                 </div>
               </div>
             </div>
@@ -64,9 +98,14 @@
       <section class="search-header">
         <div class="container">
           <h1 class="page-title">Register</h1>
-          <p class="page-description">
-            Register as a <strong>user</strong> or an <strong>artist</strong>. Your account must be approved by an admin before you can submit artworks.
+          <p class="page-description">Register as a <strong>user</strong> or an <strong>artist</strong>. Your account must be approved by an admin before you can submit artworks. Approved artworks will be displayed on the site.</p>
+          <!-- Hidden for now: Artist page link -->
+          <!--
+          <p class="page-description" style="margin-top: var(--space-md)">
+            If you are an already-registered artist, click this button to visit your artist page
+            <a class="btn btn-secondary" href="artist.html" style="margin-left:12px">Artist Page</a>
           </p>
+          -->
         </div>
       </section>
 
@@ -74,8 +113,8 @@
         <div class="container">
           <h2 id="form-heading" class="section-title">Create or Edit Account</h2>
           <div class="form-card">
-            <!-- NOTE: IDs align with register.js -->
             <form id="artist-form" novalidate>
+              <input type="hidden" id="artist-id" />
               <div class="form-grid">
                 <div class="form-row">
                   <label class="label" for="name">Full Name *</label>
@@ -96,20 +135,39 @@
                     <option value="user" selected>User</option>
                   </select>
                 </div>
+                <div class="form-row">
+                  <label class="label" for="region">Region / State</label>
+                  <select id="region" class="select">
+                    <option value="">Select region</option>
+                    <option value="NSW">NSW</option><option value="VIC">VIC</option>
+                    <option value="QLD">QLD</option><option value="SA">SA</option>
+                    <option value="WA">WA</option><option value="NT">NT</option>
+                    <option value="TAS">TAS</option><option value="ACT">ACT</option>
+                  </select>
+                </div>
+                <div class="form-row">
+                  <label class="label" for="nation">Nation / Language Group</label>
+                  <input id="nation" class="input" type="text" placeholder="e.g., Kaurna, Yolŋu, ..." />
+                </div>
                 <div class="form-row full">
-                  <p class="page-description" style="margin:0">
-                    By registering, you agree that your account will be reviewed by an administrator before you can submit artworks.
-                  </p>
+                  <label class="label" for="imageUrl">Profile Image URL</label>
+                  <input id="imageUrl" class="input" type="url" placeholder="https://.../photo.jpg (optional)" />
+                </div>
+                <div class="form-row full">
+                  <label class="label" for="bio">Bio (optional)</label>
+                  <textarea id="bio" class="textarea" placeholder="Short biography, statement, or notes..."></textarea>
                 </div>
               </div>
+
               <div class="form-actions">
                 <button class="btn btn-primary" type="submit" id="saveBtn">Submit</button>
-                <button class="btn btn-secondary" type="reset" id="resetBtn">Reset</button>
+                <button class="btn btn-secondary" type="button" id="resetBtn">Reset</button>
               </div>
             </form>
           </div>
         </div>
       </section>
+
     </main>
 
     <footer class="footer" role="contentinfo">
@@ -120,14 +178,14 @@
       </div>
     </footer>
 
-    <!-- Optional: your existing auth helper (kept for header toggles) -->
     <script src="homePage/user-auth.js" defer></script>
-
-    <!-- API host override (optional when backend is on another origin) -->
-    <script>window.API_BASE = window.API_BASE || ""; /* e.g., 'http://localhost/backend' */</script>
-
-    <!-- Import the new module scripts -->
-    <script type="module" src="api.js"></script>
-    <script type="module" src="register.js"></script>
+    <script src="register.js" defer></script>
   </body>
 </html>
+<!--
+#-# START COMMENT BLOCK #-#
+AI Tool used: ChatGPT GPT-5 (OpenAI) via Cursor
+AI-Acknowledgement.md line: 30
+AI helped me complete the vast majority of lengthy, repetitive code. It significantly saved me time, allowing me to focus on bug fixes and multi-file code integration.
+#-# END COMMENT BLOCK #-#
+-->
