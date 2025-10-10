@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>API Test - Indigenous Art Atlas</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background: #f5f5f5;
+      }
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+      }
+      .test-section {
+        margin: 20px 0;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+      button {
+        padding: 8px 16px;
+        margin: 5px;
+        background: #007cba;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #005a87;
+      }
+      .result {
+        margin: 10px 0;
+        padding: 10px;
+        background: #f8f9fa;
+        border-left: 4px solid #007cba;
+        white-space: pre-wrap;
+        font-family: monospace;
+      }
+      .error {
+        border-left-color: #dc3545;
+        background: #f8d7da;
+      }
+      input,
+      textarea {
+        width: 100%;
+        padding: 8px;
+        margin: 5px 0;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Indigenous Art Atlas API Test</h1>
+
+      <div class="test-section">
+        <h3>1. API Status</h3>
+        <button onclick="testApiStatus()">Test API Status</button>
+        <div id="status-result" class="result"></div>
+      </div>
+
+      <div class="test-section">
+        <h3>2. User Login</h3>
+        <input
+          type="text"
+          id="login-username"
+          placeholder="Username"
+          value="testuser"
+        />
+        <input
+          type="password"
+          id="login-password"
+          placeholder="Password"
+          value="password123"
+        />
+        <button onclick="testLogin()">Login</button>
+        <div id="login-result" class="result"></div>
+      </div>
+
+      <div class="test-section">
+        <h3>3. Admin Login</h3>
+        <input
+          type="text"
+          id="admin-username"
+          placeholder="Admin Username"
+          value="admin"
+        />
+        <input
+          type="password"
+          id="admin-password"
+          placeholder="Admin Password"
+          value="admin123"
+        />
+        <button onclick="testAdminLogin()">Admin Login</button>
+        <div id="admin-login-result" class="result"></div>
+      </div>
+
+      <div class="test-section">
+        <h3>4. User Registration</h3>
+        <input
+          type="text"
+          id="reg-name"
+          placeholder="Full Name"
+          value="Test Artist"
+        />
+        <input
+          type="email"
+          id="reg-email"
+          placeholder="Email"
+          value="artist@test.com"
+        />
+        <input
+          type="password"
+          id="reg-password"
+          placeholder="Password"
+          value="password123"
+        />
+        <select id="reg-role">
+          <option value="user">User</option>
+          <option value="artist" selected>Artist</option>
+        </select>
+        <button onclick="testRegister()">Register</button>
+        <div id="register-result" class="result"></div>
+      </div>
+
+      <div class="test-section">
+        <h3>5. Get Artworks</h3>
+        <button onclick="testGetArtworks()">Get All Artworks</button>
+        <button onclick="testGetPendingArtworks()">
+          Get Pending Artworks (Admin)
+        </button>
+        <div id="artworks-result" class="result"></div>
+      </div>
+
+      <div class="test-section">
+        <h3>6. Submit Artwork</h3>
+        <input
+          type="text"
+          id="art-title"
+          placeholder="Artwork Title"
+          value="Test Artwork"
+        />
+        <input
+          type="text"
+          id="art-artist"
+          placeholder="Artist Name"
+          value="Test Artist"
+        />
+        <select id="art-type">
+          <option value="Painting">Painting</option>
+          <option value="Sculpture">Sculpture</option>
+        </select>
+        <select id="art-period">
+          <option value="Contemporary">Contemporary</option>
+          <option value="Ancient">Ancient</option>
+        </select>
+        <select id="art-region">
+          <option value="NSW">NSW</option>
+          <option value="VIC">VIC</option>
+        </select>
+        <textarea id="art-description" placeholder="Description">
+A beautiful test artwork</textarea
+        >
+        <button onclick="testSubmitArtwork()">Submit Artwork</button>
+        <div id="submit-artwork-result" class="result"></div>
+      </div>
+    </div>
+
+    <script>
+      let currentSession = null;
+      let adminSession = null;
+
+      async function apiCall(
+        endpoint,
+        method = "GET",
+        data = null,
+        sessionId = null
+      ) {
+        try {
+          let url = endpoint;
+          if (sessionId) {
+            url += (url.includes("?") ? "&" : "?") + "session_id=" + sessionId;
+          }
+
+          const options = {
+            method: method,
+            headers: {
+              "Content-Type": "application/json",
+            },
+          };
+
+          if (data) {
+            options.body = JSON.stringify(data);
+          }
+
+          const response = await fetch(url, options);
+          const result = await response.json();
+          return result;
+        } catch (error) {
+          return { success: false, message: error.message };
+        }
+      }
+
+      function displayResult(elementId, result) {
+        const element = document.getElementById(elementId);
+        element.textContent = JSON.stringify(result, null, 2);
+        element.className = result.success ? "result" : "result error";
+      }
+
+      async function testApiStatus() {
+        const result = await apiCall("index.php");
+        displayResult("status-result", result);
+      }
+
+      async function testLogin() {
+        const username = document.getElementById("login-username").value;
+        const password = document.getElementById("login-password").value;
+
+        const result = await apiCall("auth.php?action=login", "POST", {
+          username: username,
+          password: password,
+        });
+
+        if (result.success && result.data && result.data.session_id) {
+          currentSession = result.data.session_id;
+        }
+
+        displayResult("login-result", result);
+      }
+
+      async function testAdminLogin() {
+        const username = document.getElementById("admin-username").value;
+        const password = document.getElementById("admin-password").value;
+
+        const result = await apiCall("auth.php?action=login", "POST", {
+          username: username,
+          password: password,
+        });
+
+        if (result.success && result.data && result.data.session_id) {
+          adminSession = result.data.session_id;
+        }
+
+        displayResult("admin-login-result", result);
+      }
+
+      async function testRegister() {
+        const name = document.getElementById("reg-name").value;
+        const email = document.getElementById("reg-email").value;
+        const password = document.getElementById("reg-password").value;
+        const role = document.getElementById("reg-role").value;
+
+        const result = await apiCall("auth.php?action=register", "POST", {
+          name: name,
+          email: email,
+          password: password,
+          role: role,
+        });
+
+        displayResult("register-result", result);
+      }
+
+      async function testGetArtworks() {
+        const result = await apiCall("artworks.php");
+        displayResult("artworks-result", result);
+      }
+
+      async function testGetPendingArtworks() {
+        if (!adminSession) {
+          displayResult("artworks-result", {
+            success: false,
+            message: "Please login as admin first",
+          });
+          return;
+        }
+
+        const result = await apiCall(
+          "admin.php?action=pending_artworks",
+          "GET",
+          null,
+          adminSession
+        );
+        displayResult("artworks-result", result);
+      }
+
+      async function testSubmitArtwork() {
+        if (!currentSession) {
+          displayResult("submit-artwork-result", {
+            success: false,
+            message: "Please login first",
+          });
+          return;
+        }
+
+        const title = document.getElementById("art-title").value;
+        const artist = document.getElementById("art-artist").value;
+        const artType = document.getElementById("art-type").value;
+        const period = document.getElementById("art-period").value;
+        const region = document.getElementById("art-region").value;
+        const description = document.getElementById("art-description").value;
+
+        const result = await apiCall(
+          "artworks.php",
+          "POST",
+          {
+            title: title,
+            artist: artist,
+            artType: artType,
+            period: period,
+            region: region,
+            description: description,
+            sensitive: false,
+          },
+          currentSession
+        );
+
+        displayResult("submit-artwork-result", result);
+      }
+    </script>
+  </body>
+</html>
