@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CSS Test</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+      }
+      .test-section {
+        margin: 20px 0;
+        padding: 15px;
+        border: 1px solid #ccc;
+      }
+      .css-status {
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 5px;
+      }
+      .success {
+        background-color: #d4edda;
+        color: #155724;
+      }
+      .error {
+        background-color: #f8d7da;
+        color: #721c24;
+      }
+      .info {
+        background-color: #d1ecf1;
+        color: #0c5460;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>CSS Loading Test</h1>
+
+    <div class="test-section">
+      <h2>CSS File Status</h2>
+      <div id="css-status" class="css-status info">Checking CSS files...</div>
+    </div>
+
+    <div class="test-section">
+      <h2>Test CSS Classes</h2>
+      <p>
+        If CSS is loading correctly, the elements below should have proper
+        styling:
+      </p>
+
+      <div
+        class="header"
+        style="
+          background: var(--bg, #f0f0f0);
+          color: var(--text, #000);
+          padding: 20px;
+          margin: 10px 0;
+        "
+      >
+        <h1 class="logo-text">Indigenous Art Atlas</h1>
+        <nav class="nav">
+          <ul
+            class="nav-list"
+            style="list-style: none; padding: 0; display: flex; gap: 20px"
+          >
+            <li>
+              <a
+                href="#"
+                class="nav-link"
+                style="color: var(--link, #007cba); text-decoration: none"
+                >Search</a
+              >
+            </li>
+            <li>
+              <a
+                href="#"
+                class="nav-link"
+                style="color: var(--link, #007cba); text-decoration: none"
+                >About</a
+              >
+            </li>
+          </ul>
+        </nav>
+      </div>
+
+      <div
+        class="container"
+        style="max-width: 800px; margin: 0 auto; padding: 20px"
+      >
+        <div
+          class="artwork-card"
+          style="
+            border: 1px solid var(--elev-2, #ddd);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+          "
+        >
+          <h3 class="artwork-title">Test Artwork</h3>
+          <p class="artwork-artist">by Test Artist</p>
+          <div
+            class="artwork-tags"
+            style="display: flex; gap: 10px; margin: 10px 0"
+          >
+            <span
+              class="artwork-tag"
+              style="
+                background: var(--accent, #eee);
+                padding: 5px 10px;
+                border-radius: 3px;
+              "
+              >Painting</span
+            >
+            <span
+              class="artwork-tag"
+              style="
+                background: var(--accent, #eee);
+                padding: 5px 10px;
+                border-radius: 3px;
+              "
+              >Contemporary</span
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="test-section">
+      <h2>CSS Variables Test</h2>
+      <div id="css-vars" class="css-status info">Checking CSS variables...</div>
+    </div>
+
+    <script>
+      // Test CSS loading
+      function testCSSLoading() {
+        const statusEl = document.getElementById("css-status");
+        const varsEl = document.getElementById("css-vars");
+
+        // Test if CSS file is loaded
+        const testEl = document.createElement("div");
+        testEl.className = "header";
+        testEl.style.display = "none";
+        document.body.appendChild(testEl);
+
+        const computedStyle = window.getComputedStyle(testEl);
+        const bgColor = computedStyle.backgroundColor;
+
+        if (bgColor && bgColor !== "rgba(0, 0, 0, 0)") {
+          statusEl.textContent = "✅ CSS file loaded successfully!";
+          statusEl.className = "css-status success";
+        } else {
+          statusEl.textContent = "❌ CSS file not loaded properly";
+          statusEl.className = "css-status error";
+        }
+
+        document.body.removeChild(testEl);
+
+        // Test CSS variables
+        const rootStyles = getComputedStyle(document.documentElement);
+        const bgVar = rootStyles.getPropertyValue("--bg");
+        const textVar = rootStyles.getPropertyValue("--text");
+
+        if (bgVar && textVar) {
+          varsEl.textContent = `✅ CSS variables loaded! --bg: ${bgVar.trim()}, --text: ${textVar.trim()}`;
+          varsEl.className = "css-status success";
+        } else {
+          varsEl.textContent = "❌ CSS variables not loaded";
+          varsEl.className = "css-status error";
+        }
+      }
+
+      // Run test when page loads
+      window.addEventListener("load", testCSSLoading);
+
+      // Also test after a delay to catch dynamically loaded CSS
+      setTimeout(testCSSLoading, 1000);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Guidelines — Indigenous Art Atlas</title>
+    <meta
+      name="description"
+      content="Usage guidelines for respectfully engaging with Indigenous art documentation and cultural protocols."
+    />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="homePage/styles.css" />
+  </head>
+  <body>
+    <!-- Skip Link -->
+    <a href="#main-content" class="skip-link">Skip to content</a>
+
+    <!-- Header -->
+    <header class="header" role="banner">
+      <div class="container">
+        <div class="header-content">
+          <div class="logo">
+            <a href="homePage/index.html" class="logo-link">
+              <h1 class="logo-text">Indigenous Art Atlas</h1>
+            </a>
+          </div>
+          <nav class="nav" role="navigation" aria-label="Main navigation">
+            <ul class="nav-list">
+              <li><a href="homePage/index.html#map-section" class="nav-link">Map</a></li>
+              <li><a href="search.html" class="nav-link">Search</a></li>
+              <li><a href="about.html" class="nav-link">About Us</a></li>
+              <li><a href="register.html" class="nav-link">Register</a></li>
+            </ul>
+
+            <!-- User Authentication Section -->
+            <div class="auth-section">
+              <!-- Login Button (shown when not logged in) -->
+              <div id="login-section" class="login-section-nav">
+                <a href="login.html" class="btn btn-primary login-nav-btn">Login</a>
+              </div>
+
+              <!-- User Avatar (shown when logged in) -->
+              <div id="user-section" class="user-avatar" style="display: none">
+                <div class="avatar-container">
+                  <img
+                    id="user-avatar-image"
+                    src="assets/img/user-avatar.png"
+                    alt="User avatar"
+                    class="avatar-image"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                  />
+                  <div class="avatar-fallback">
+                    <span id="user-avatar-initials" class="avatar-initials">TU</span>
+                  </div>
+                  <span id="user-display-name" class="user-name">Test User</span>
+                  <button
+                    id="logout-btn"
+                    class="logout-btn"
+                    title="Logout"
+                    aria-label="Logout"
+                  >
+                    <span class="logout-icon">⏻</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="main-content" role="main">
+      <!-- Guidelines Header -->
+      <section class="about-header">
+        <div class="container">
+          <h1 class="page-title">Usage Guidelines</h1>
+          <p class="page-description">
+            Learn how to respectfully engage with Indigenous art documentation and understand the cultural protocols we follow.
+          </p>
+        </div>
+      </section>
+
+      <!-- About Our Guidelines Section -->
+      <section class="about-header">
+        <div class="container">
+          <h2 class="page-title">About Our Guidelines</h2>
+          <div class="page-description">
+            <p>
+              Our usage guidelines have been developed in consultation with Indigenous communities, 
+              cultural experts, and Traditional Owners to ensure respectful and appropriate engagement 
+              with Indigenous art and cultural heritage materials.
+            </p>
+            <p style="margin-top: var(--space-md);">
+              These guidelines reflect our commitment to cultural protocol, educational integrity, 
+              and the protection of sensitive cultural information. They serve as a framework 
+              for both content creators and platform users to engage meaningfully and respectfully 
+              with Indigenous cultural heritage.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Our Guidelines Section -->
+      <section class="values-section">
+        <div class="container">
+          <h2 class="section-title">Our Guidelines</h2>
+          <div class="values-grid">
+            <div class="value-card">
+              <div class="value-icon">👁️</div>
+              <h3 class="value-title">Respectful Viewing</h3>
+              <p class="value-description">
+                Approach all artworks with respect and cultural awareness. Consider the 
+                cultural context and spiritual significance of the works you're exploring.
+              </p>
+            </div>
+            <div class="value-card">
+              <div class="value-icon">📍</div>
+              <h3 class="value-title">Location Sensitivity</h3>
+              <p class="value-description">
+                Understand that some locations are culturally sensitive. Respect location 
+                privacy measures and do not attempt to identify specific sacred sites.
+              </p>
+            </div>
+            <div class="value-card">
+              <div class="value-icon">💬</div>
+              <h3 class="value-title">Appropriate Language</h3>
+              <p class="value-description">
+                Use respectful language when discussing Indigenous art and culture. 
+                Avoid appropriation and acknowledge the cultural origins of artistic practices.
+              </p>
+            </div>
+            <div class="value-card">
+              <div class="value-icon">🚫</div>
+              <h3 class="value-title">No Commercial Use</h3>
+              <p class="value-description">
+                This platform is for educational purposes only. Do not use artwork 
+                information for commercial purposes without proper permissions.
+              </p>
+            </div>
+            <div class="value-card">
+              <div class="value-icon">🔄</div>
+              <h3 class="value-title">Share Responsibly</h3>
+              <p class="value-description">
+                When sharing information from this platform, maintain cultural context 
+                and include appropriate acknowledgments and cultural warnings.
+              </p>
+            </div>
+            <div class="value-card">
+              <div class="value-icon">📢</div>
+              <h3 class="value-title">Report Concerns</h3>
+              <p class="value-description">
+                If you encounter content that may be inappropriate or culturally insensitive, 
+                please use our reporting system to bring it to our attention.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer" role="contentinfo">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3 class="footer-title">Project Mission</h3>
+            <p class="footer-text">
+              The Indigenous Art Atlas aims to respectfully document and share
+              Indigenous art across Australia, fostering cultural understanding
+              and appreciation while maintaining appropriate cultural protocols.
+            </p>
+          </div>
+          <div class="footer-section">
+            <h3 class="footer-title">Quick Links</h3>
+            <ul class="footer-links">
+              <li><a href="about.html" class="footer-link">About</a></li>
+              <li><a href="guidelines.html" class="footer-link">Guidelines</a></li>
+              <li><a href="ethics.html" class="footer-link">Ethics</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h3 class="footer-title">Acknowledgment of Country</h3>
+            <p class="footer-text">
+              We acknowledge the Traditional Owners of the lands on which this
+              art was created and pay our respects to Elders past, present, and
+              emerging. This atlas exists to honor and celebrate Indigenous
+              cultural heritage.
+            </p>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p class="footer-disclaimer">
+            This is a non-commercial, educational project. All cultural content
+            is shared with respect and appropriate permissions where possible.
+          </p>
+          <p class="footer-copyright">
+            © 2025 Indigenous Art Atlas. Created with respect for Indigenous
+            cultures.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <script src="homePage/user-auth.js"></script>
+  </body>
+</html>
+<!--
+#-# START COMMENT BLOCK #-#
+AI Tool used: ChatGPT GPT-5 (OpenAI) via Cursor
+AI-Acknowledgement.md line: 18
+AI helped me complete the vast majority of lengthy, repetitive code. It significantly saved me time, allowing me to focus on bug fixes and multi-file code integration.
+#-# END COMMENT BLOCK #-#
+-->
