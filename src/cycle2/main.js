@@ -1,3 +1,6 @@
+// ===== Import API =====
+import api from './api.js';
+
 // ===== Constants =====
 const TYPE_OPTIONS = ['Portrait', 'Painting', 'Installation', 'Sound Installation', 'Glass Installation', 'Cave Art', 'Mural', 'Gallery Piece', 'Rock Painting', 'Sculpture'];
 const REGION_OPTIONS = ['All regions', 'NSW', 'VIC', 'QLD', 'SA', 'WA', 'NT', 'TAS', 'ACT'];
@@ -388,9 +391,51 @@ function ArtworkDetail(a) {
 
 // --- Actions ---
 function log(action, target, meta = '') { state.data.audit.push({ ts: Date.now(), actor: 'u_admin1', action, target, meta }); }
-function approve(id) { const a = state.data.artworks.find(x => x.id === id); if (!a) return; a.status = 'approved'; log('approve_artwork', id, a.title); toast('Approved: ' + a.title); render(); }
-function reject(id) { const a = state.data.artworks.find(x => x.id === id); if (!a) return; a.status = 'rejected'; log('reject_artwork', id, a.title); toast('Rejected: ' + a.title); render(); }
-function flag(id) { const a = state.data.artworks.find(x => x.id === id); if (!a) return; a.status = 'flagged'; log('flag_artwork', id, a.title); toast('Flagged: ' + a.title); render(); }
+
+async function approve(id) { 
+  const a = state.data.artworks.find(x => x.id === id); 
+  if (!a) return; 
+  try {
+    await api.adminApproveArtwork(id);
+    a.status = 'approved'; 
+    log('approve_artwork', id, a.title); 
+    toast('Approved: ' + a.title); 
+    render();
+  } catch (error) {
+    console.error('Approve error:', error);
+    toast('Error approving artwork: ' + error.message);
+  }
+}
+
+async function reject(id) { 
+  const a = state.data.artworks.find(x => x.id === id); 
+  if (!a) return; 
+  try {
+    await api.adminRejectArtwork(id, 'Rejected by admin');
+    a.status = 'rejected'; 
+    log('reject_artwork', id, a.title); 
+    toast('Rejected: ' + a.title); 
+    render();
+  } catch (error) {
+    console.error('Reject error:', error);
+    toast('Error rejecting artwork: ' + error.message);
+  }
+}
+
+async function flag(id) { 
+  const a = state.data.artworks.find(x => x.id === id); 
+  if (!a) return; 
+  try {
+    await api.updateArtworkStatus(id, 'flagged');
+    a.status = 'flagged'; 
+    log('flag_artwork', id, a.title); 
+    toast('Flagged: ' + a.title); 
+    render();
+  } catch (error) {
+    console.error('Flag error:', error);
+    toast('Error flagging artwork: ' + error.message);
+  }
+}
 
 function selectArtwork(id) {
   // update selection and re-render UI
@@ -420,12 +465,21 @@ function previewArtwork(id) {
 }
 
 // Immediate update for single field (used by Description in view mode)
-function updateArtworkField(id, field, value) {
+async function updateArtworkField(id, field, value) {
   const a = state.data.artworks.find(x => x.id === id); if (!a) return;
   if (field === 'sensitive') { a.sensitive = (value === 'true' || value === true); if (a.sensitive) { a.address = ''; } }
   else { a[field] = value; }
-  log('update_artwork_' + field, id, String(value));
-  toast('Saved'); render();
+  
+  try {
+    const artistName = userName(a.artistId);
+    await api.updateArtwork(id, a, artistName);
+    log('update_artwork_' + field, id, String(value));
+    toast('Saved'); 
+    render();
+  } catch (error) {
+    console.error('Update error:', error);
+    toast('Error saving: ' + error.message);
+  }
 }
 
 // Edit mode helpers
@@ -441,14 +495,23 @@ function updateDraft(field, value) {
   else { d[field] = value; }
   if (field === 'sensitive') render();
 }
-function saveArtworkEdit() {
+async function saveArtworkEdit() {
   const id = state.editing.artworkId; const d = state.editing.draft;
   if (!id || !d) return;
   const a = state.data.artworks.find(x => x.id === id); if (!a) return;
-  ['region', 'sensitive', 'address', 'artistId', 'type', 'period', 'date', 'intro'].forEach(k => a[k] = d[k]);
-  log('save_artwork_edit', id, JSON.stringify({ region: a.region, sensitive: a.sensitive }));
-  state.editing.artworkId = null; state.editing.draft = null;
-  toast('Changes saved'); render();
+  
+  try {
+    const artistName = userName(d.artistId);
+    await api.updateArtwork(id, d, artistName);
+    ['region', 'sensitive', 'address', 'artistId', 'type', 'period', 'date', 'intro'].forEach(k => a[k] = d[k]);
+    log('save_artwork_edit', id, JSON.stringify({ region: a.region, sensitive: a.sensitive }));
+    state.editing.artworkId = null; state.editing.draft = null;
+    toast('Changes saved'); 
+    render();
+  } catch (error) {
+    console.error('Save error:', error);
+    toast('Error saving changes: ' + error.message);
+  }
 }
 function cancelArtworkEdit() { state.editing.artworkId = null; state.editing.draft = null; toast('Changes discarded'); render(); }
 
@@ -600,11 +663,115 @@ function newUser() {
   });
 }
 
-function toggleUser(id) { const u = state.data.users.find(u => u.id === id); if (!u) return; u.status = u.status === 'active' ? 'inactive' : 'active'; log('toggle_user', id, u.status); toast('User ' + (u.status === 'active' ? 'activated' : 'deactivated')); render(); }
-function removeUser(id) { const idx = state.data.users.findIndex(u => u.id === id); if (idx < 0) return; const name = state.data.users[idx].name; state.data.users.splice(idx, 1); log('remove_user', id, name); toast('Removed ' + name); render(); }
-function changeRole(id, newRole) { const u = state.data.users.find(x => x.id === id); if (!u) return; const prev = u.role; u.role = newRole; log('change_user_role', id, `${prev} -> ${newRole}`); toast('Role updated'); render(); }
-function changeUserStatus(id, newStatus) { const u = state.data.users.find(x => x.id === id); if (!u) return; const prev = u.status; u.status = newStatus; log('change_user_status', id, `${prev} -> ${newStatus}`); openModal('Status updated', `<div>User <strong>${u.name}</strong> is now <span class=\"pill ${newStatus === 'active' ? 'ok' : 'warn'}\">${newStatus}</span>.</div>`); render(); }
-function changeArtworkPeriod(artId, period) { const a = state.data.artworks.find(x => x.id === artId); if (!a) return; a.period = period; log('update_artwork_period', artId, period); toast('Period updated'); render(); }
+async function toggleUser(id) { 
+  const u = state.data.users.find(u => u.id === id); 
+  if (!u) return; 
+  const newStatus = u.status === 'active' ? 'inactive' : 'active';
+  try {
+    await api.adminSetUserStatus(id, newStatus);
+    u.status = newStatus; 
+    log('toggle_user', id, u.status); 
+    toast('User ' + (u.status === 'active' ? 'activated' : 'deactivated')); 
+    render();
+  } catch (error) {
+    console.error('Toggle user error:', error);
+    toast('Error updating user status: ' + error.message);
+  }
+}
+
+function removeUser(id) { 
+  const idx = state.data.users.findIndex(u => u.id === id); 
+  if (idx < 0) return; 
+  const name = state.data.users[idx].name; 
+  state.data.users.splice(idx, 1); 
+  log('remove_user', id, name); 
+  toast('Removed ' + name); 
+  render(); 
+}
+
+async function changeRole(id, newRole) { 
+  const u = state.data.users.find(x => x.id === id); 
+  if (!u) return; 
+  const prev = u.role; 
+  try {
+    await api.adminUpdateUser(id, { role: newRole });
+    u.role = newRole; 
+    log('change_user_role', id, `${prev} -> ${newRole}`); 
+    toast('Role updated'); 
+    render();
+  } catch (error) {
+    console.error('Change role error:', error);
+    toast('Error updating role: ' + error.message);
+  }
+}
+
+async function changeUserStatus(id, newStatus) { 
+  const u = state.data.users.find(x => x.id === id); 
+  if (!u) return; 
+  const prev = u.status; 
+  try {
+    await api.adminSetUserStatus(id, newStatus);
+    u.status = newStatus; 
+    log('change_user_status', id, `${prev} -> ${newStatus}`); 
+    openModal('Status updated', `<div>User <strong>${u.name}</strong> is now <span class=\"pill ${newStatus === 'active' ? 'ok' : 'warn'}\">${newStatus}</span>.</div>`); 
+    render();
+  } catch (error) {
+    console.error('Change status error:', error);
+    toast('Error updating status: ' + error.message);
+  }
+}
+
+function changeArtworkPeriod(artId, period) { 
+  const a = state.data.artworks.find(x => x.id === artId); 
+  if (!a) return; 
+  a.period = period; 
+  log('update_artwork_period', artId, period); 
+  toast('Period updated'); 
+  render(); 
+}
+
+// ===== Data Initialization =====
+async function initializeData() {
+  try {
+    // Check if user is logged in and is admin
+    const sessionId = api.getSessionId();
+    if (!sessionId) {
+      console.warn('No session found, using test data');
+      return;
+    }
+
+    // Verify session and get user
+    const sessionData = await api.apiVerifySession();
+    const user = sessionData.user;
+    
+    if (user.role !== 'admin') {
+      alert('Admin access required');
+      window.location.href = 'login.html';
+      return;
+    }
+
+    // Load data from backend
+    console.log('Loading data from backend...');
+    
+    // Load users
+    const users = await api.adminGetUsers();
+    state.data.users = users;
+    
+    // Load all artworks (including pending for admin)
+    const allArtworks = await api.getArtworks({ status: '' });
+    state.data.artworks = allArtworks;
+    
+    console.log(`Loaded ${users.length} users and ${allArtworks.length} artworks from backend`);
+    toast('Data loaded from server');
+    
+    render();
+  } catch (error) {
+    console.error('Data initialization error:', error);
+    console.warn('Using test data as fallback');
+    toast('Using test data (backend not available)');
+    render();
+  }
+}
 
 // ===== Render & Events =====
 function render() {
@@ -617,7 +784,8 @@ function render() {
 $('#globalSearch').addEventListener('input', (e) => { state.filters.search = e.target.value.toLowerCase(); render(); });
 document.addEventListener('click', (e) => { if (e.target.matches('[data-close]')) closeModal(); if (e.target.id === 'modal') closeModal(); });
 
-render();
+// Initialize app with backend data
+initializeData();
 
 /*
 #-# START COMMENT BLOCK #-#

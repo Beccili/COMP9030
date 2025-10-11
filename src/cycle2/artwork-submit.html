@@ -178,6 +178,9 @@
     </footer>
 
     <script src="homePage/user-auth.js"></script>
+    <script type="module">
+      import api from './api.js';
+    </script>
     <script>
       const form = document.getElementById('artwork-form');
       const note = document.getElementById('submit-note');
@@ -201,7 +204,7 @@
         if (!ok) el.reportValidity();
       }
 
-      form.addEventListener('submit', (e) => {
+      form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
         const title = document.getElementById('title').value.trim();
@@ -231,33 +234,84 @@
           setValidity(addressInput, true, '');
         }
 
-        // Convert files to base64 for storage (in real app, would upload to server)
-        const imageFiles = Array.from(artworkImages).map(file => ({
-          name: file.name,
-          size: file.size,
-          type: file.type,
-          // In real app, would be uploaded URL or file path
-          data: `[File: ${file.name} - ${Math.round(file.size/1024)}KB]`
-        }));
+        // Import API module dynamically
+        const api = await import('./api.js').then(m => m.default);
 
-        const data = {
-          id: 'w_' + Math.random().toString(36).slice(2) + Date.now().toString(36),
-          title, artist, artType, period, region,
-          sensitive, address: address || null,
-          artworkImages: imageFiles,
-          description: desc,
-          status: 'pending',
-          submittedAt: new Date().toISOString()
-        };
-        const key = 'IAA_artwork_submissions_v1';
-        const arr = JSON.parse(localStorage.getItem(key) || '[]');
-        arr.push(data);
-        localStorage.setItem(key, JSON.stringify(arr));
+        // Disable submit button
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Uploading images...';
 
-        note.style.display = 'block';
-        note.textContent = 'Submitted! Your artwork is pending admin review.';
-        form.reset();
-        updateAddressState();
+        try {
+          // First, upload images to server
+          let uploadedImages = [];
+          if (artworkImages.length > 0) {
+            const formData = new FormData();
+            Array.from(artworkImages).forEach((file, index) => {
+              formData.append('images[]', file);
+            });
+
+            const sessionId = localStorage.getItem('atlas_session_id');
+            const uploadResponse = await fetch(`/cycle3/backend/upload.php?session_id=${sessionId}`, {
+              method: 'POST',
+              body: formData
+            });
+
+            const uploadResult = await uploadResponse.json();
+            if (!uploadResult.success) {
+              throw new Error(uploadResult.message || 'Image upload failed');
+            }
+
+            uploadedImages = uploadResult.data.files.map(f => ({
+              name: f.name,
+              size: f.size,
+              type: f.type
+            }));
+          }
+
+          submitBtn.textContent = 'Submitting artwork...';
+
+          const artworkData = {
+            title, 
+            artist, 
+            type: artType,
+            period, 
+            region,
+            sensitive, 
+            address: address || null,
+            intro: desc,
+            artworkImages: uploadedImages
+          };
+
+          // Submit artwork to backend
+          await api.createArtwork(artworkData, artist);
+          
+          // Also save to localStorage for backwards compatibility
+          const localData = {
+            id: 'w_' + Math.random().toString(36).slice(2) + Date.now().toString(36),
+            ...artworkData,
+            status: 'pending',
+            submittedAt: new Date().toISOString()
+          };
+          const key = 'IAA_artwork_submissions_v1';
+          const arr = JSON.parse(localStorage.getItem(key) || '[]');
+          arr.push(localData);
+          localStorage.setItem(key, JSON.stringify(arr));
+
+          note.style.display = 'block';
+          note.style.color = 'var(--success, green)';
+          note.textContent = 'Submitted successfully! Your artwork is pending admin review.';
+          form.reset();
+          updateAddressState();
+        } catch (error) {
+          console.error('Submission error:', error);
+          note.style.display = 'block';
+          note.style.color = 'var(--danger, red)';
+          note.textContent = 'Submission failed: ' + (error.message || 'Please try again.');
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Submit Artwork';
+        }
       });
     </script>
   </body>

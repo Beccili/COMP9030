@@ -1,6 +1,8 @@
-/* Account Register — Vanilla JS, localStorage only */
+/* Account Register — Vanilla JS with Backend Integration */
 
-const STORE_KEY = "IAA_accounts_v1"; // accounts (user or artist)
+import { apiRegister } from './api.js';
+
+const STORE_KEY = "IAA_accounts_v1"; // accounts (user or artist) - legacy fallback
 
 const form = document.getElementById("artist-form");
 const idInput = document.getElementById("artist-id");
@@ -98,46 +100,59 @@ function escapeHtml(str) {
 
 // Removed removeAccount function as account management is now on the account page
 
-form.addEventListener("submit", (e) => {
+form.addEventListener("submit", async (e) => {
   e.preventDefault();
   applyNameValidity(); applyEmailValidity(); applyPasswordValidity(); applyUrlValidity();
   if (!form.checkValidity()) { form.reportValidity(); return; }
 
-  const acc = {
-    id: idInput.value || uid(),
+  const userData = {
     name: nameInput.value.trim(),
     email: emailInput.value.trim(),
-    password: passwordInput.value,  // In real app, this should be hashed
+    password: passwordInput.value,
     role: roleSelect.value,
     region: regionSelect.value,
     nation: nationInput.value.trim(),
     imageUrl: imageInput.value.trim(),
-    bio: bioInput.value.trim(),
-    status: "pending",      // Admin will set to "approved" on review
-    artworks: []            // Admin can add published artwork links later
+    bio: bioInput.value.trim()
   };
 
-  const list = loadAccounts();
-  const idx = list.findIndex(a => a.id === acc.id);
-  if (idx >= 0) {
-    // Preserve server/admin-managed fields if present
-    const prev = list[idx];
-    acc.status = prev.status || acc.status;
-    acc.artworks = Array.isArray(prev.artworks) ? prev.artworks : [];
-    list[idx] = acc;
-  } else {
-    list.push(acc);
-  }
-  saveAccounts(list);
+  // Disable form while submitting
+  const submitBtn = document.getElementById("saveBtn");
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Submitting...";
 
-  // Redirect to account page after successful registration
-  alert("Account created successfully! Redirecting to account page...");
-  setTimeout(() => {
-    window.location.href = "account.html";
-  }, 1500);
-  form.reset();
-  idInput.value = "";
-  document.getElementById("saveBtn").textContent = "Submit";
+  try {
+    // Register via backend API
+    const user = await apiRegister(userData);
+    
+    // Also save to localStorage for backwards compatibility
+    const acc = {
+      id: user.id,
+      ...userData,
+      status: "pending",
+      artworks: []
+    };
+    const list = loadAccounts();
+    list.push(acc);
+    saveAccounts(list);
+
+    // Show success message
+    alert("Registration successful! Your account is pending admin approval. You will be notified when approved.");
+    
+    // Redirect to login page
+    setTimeout(() => {
+      window.location.href = "login.html";
+    }, 1500);
+    
+    form.reset();
+    idInput.value = "";
+  } catch (error) {
+    console.error("Registration error:", error);
+    alert("Registration failed: " + (error.message || "Unknown error. Please try again."));
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Submit";
+  }
 });
 
 resetBtn.addEventListener("click", () => {

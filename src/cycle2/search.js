@@ -1,8 +1,9 @@
-// Shared entries from common data
-const artEntries = (window.AppData && window.AppData.artEntries) || [];
+// Import API module
+import api from './api.js';
 
 // ===== GLOBAL VARIABLES =====
-let filteredEntries = [...artEntries];
+let artEntries = [];
+let filteredEntries = [];
 // Auto open first result once if requested via URL
 window.__autoOpenFirst = false;
 // __AUTO_OPEN_FIRST__ marker
@@ -183,10 +184,57 @@ function sortEntries(entries, sortBy, secondarySort) {
 // Debounced search handler
 const debouncedApplyFilters = window.Utils.debounce(applyFilters, 300);
 
+// ===== DATA LOADING =====
+
+// Load artworks from backend
+async function loadArtworks() {
+  try {
+    console.log('Loading artworks from backend...');
+    const artworks = await api.getArtworks({ status: 'approved' });
+    
+    // Convert backend format to search page format
+    artEntries = artworks.map(artwork => ({
+      id: artwork.id,
+      title: artwork.title,
+      artist: artwork.artist || 'Unknown Artist',
+      description: artwork.intro || '',
+      artType: artwork.type || 'Artwork',
+      period: artwork.period || 'modern',
+      region: artwork.region || '',
+      sensitive: artwork.sensitive || false,
+      coords: artwork.coords || { lat: -25.2744, lng: 133.7751 },
+      location_sensitivity: artwork.sensitive ? 'general' : 'exact',
+      images: artwork.artworkImages && artwork.artworkImages.length > 0
+        ? artwork.artworkImages.map(img => img.name || img)
+        : ['assets/img/art01.png'],
+      dateAdded: artwork.submitted || artwork.date || '',
+      submitter: artwork.submitter || ''
+    }));
+    
+    filteredEntries = [...artEntries];
+    console.log(`Loaded ${artEntries.length} artworks from backend`);
+    
+    // Re-apply filters if any
+    applyFilters();
+  } catch (error) {
+    console.error('Failed to load artworks from backend:', error);
+    // Show error message
+    resultsGrid.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align: center; padding: var(--space-3xl); color: var(--danger, red);">
+        <p style="font-size: var(--font-size-lg);">Failed to load artworks from server.</p>
+        <p style="font-size: var(--font-size-base); margin-top: var(--space-sm);">${error.message}</p>
+      </div>
+    `;
+  }
+}
+
 // ===== INITIALIZATION =====
 
 // Initialize the search page when DOM is loaded
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
+  // Load artworks from backend first
+  await loadArtworks();
+  
   // Initial render of all results
   renderSearchResults(filteredEntries);
 
