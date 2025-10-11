@@ -357,6 +357,34 @@ For the frontend-backend integration phase, I planned and coordinated the data m
 
 The AI assistance was most significant in the frontend integration phase, providing the complete JavaScript implementation for dynamic data loading. For the backend development, AI assistance was limited to code formatting suggestions and documentation improvements. All core backend functionality, business logic, security implementations, and system architecture were developed through my own analysis and programming work. The complete system successfully meets all cycle3 requirements through my independent backend implementation combined with AI-assisted frontend integration.
 
+
+
+
+## Role of AI in My Assignment
+
+### Understanding Interfaces and Sessions
+Through AI’s explanations, I learned how session IDs work for passing credentials and validating authentication between the frontend and backend. This helped me fix where to store and include the session ID after login.
+
+### Tracing the Call Chain
+When the login button didn’t respond, AI guided me to first use `console.log` to check if the event listener was attached, then verify the `querySelector` and element IDs. This helped me locate timing and DOM structure issues.
+
+### Request and Fallback Strategy
+From the example, I understood the idea of using **“POST first, then GET if needed”** in the `apiDo` function. I added proper error messages and retry handling, which helped me understand why both `id` and `artwork_id` need to be sent.
+
+### Path and Resource Alignment
+When I changed the comment to English (e.g., *relative path from public/ to api/*), I also double-checked the `../api` structure to prevent 404 errors.
+
+### Debugging Skills
+I learned to use **Disable cache + hard refresh**, check request/response status in the Network tab, and read Console errors for undefined functions or empty selectors. All these debugging steps were executed by myself.
+
+### Robustness and Edge Cases
+Following the guidance, I added error catching and empty-data handling for `fetch`, replacing mock data with real API responses to improve reliability.
+
+### Summary
+AI mainly helped me understand the logic, highlight key ideas, and build a debugging process.  
+All actual coding, integration, and final testing were completed independently by me.
+
+
 ## References
 
 Claude 3.5 Sonnet. (October 2024). Anthropic. https://claude.ai
