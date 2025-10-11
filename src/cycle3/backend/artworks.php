@@ -51,7 +51,8 @@ function getArtworks() {
     $artType = $_GET['artType'] ?? '';
     $region = $_GET['region'] ?? '';
     $period = $_GET['period'] ?? '';
-    $status = $_GET['status'] ?? 'approved'; // Default to approved only
+    // Only filter by status if not explicitly requesting all (empty string means all)
+    $status = isset($_GET['status']) ? $_GET['status'] : 'approved'; // Default to approved only
     
     // Apply filters
     if (!empty($search)) {
@@ -81,7 +82,8 @@ function getArtworks() {
         });
     }
     
-    if (!empty($status)) {
+    // Filter by status unless 'all' is requested
+    if (!empty($status) && $status !== 'all') {
         $artworks = array_filter($artworks, function($artwork) use ($status) {
             return $artwork['status'] === $status;
         });

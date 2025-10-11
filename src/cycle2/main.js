@@ -72,8 +72,8 @@ const closeModal = () => $('#modal').classList.remove('show');
 function focusMain() { setTimeout(() => $('#app').focus(), 0); }
 function deepClone(o) { return JSON.parse(JSON.stringify(o)); }
 
-function userName(id) { const u = state.data.users.find(u => u.id === id); return u ? u.name : id; }
-function artTitle(id) { const a = state.data.artworks.find(a => a.id === id); return a ? `${a.title} (${a.location})` : id; }
+function userName(id) { const u = state.data.users.find(u => u.id === id); return u ? u.name : (id || 'Unknown'); }
+function artTitle(id) { const a = state.data.artworks.find(a => a.id === id); return a ? (a.location ? `${a.title} (${a.location})` : a.title) : id; }
 function short(s, n = 90) { if (!s) return ''; return s.length > n ? s.slice(0, n - 1) + '…' : s; }
 
 // ===== Filter setters =====
@@ -121,7 +121,7 @@ function Artworks() {
       : (row.artworkImage ? '1 image' : '-');
     return `<tr>
       <td><a href="#" onclick="previewArtwork('${row.id}');return false;">${row.title}</a></td>
-      <td>${userName(row.artistId)}</td>
+      <td>${row.artist || userName(row.artistId)}</td>
       <td>${row.type}</td>
       <td>${periodLabel}</td>
       <td>${row.region}</td>
@@ -290,12 +290,24 @@ function Table({ columns, rows }) {
   </table>`
 }
 function RowActions(row) {
-  return `<div class="actions">
-    <button class="btn" onclick="previewArtwork('${row.id}')">Preview</button>
-    <button class="btn ok" onclick="approve('${row.id}')">Approve</button>
-    <button class="btn warn" onclick="flag('${row.id}')">Flag</button>
-    <button class="btn danger" onclick="reject('${row.id}')">Reject</button>
-  </div>`
+  const actions = [`<button class="btn" onclick="window.previewArtwork('${row.id}')">Preview</button>`];
+  
+  // Show Approve button only for pending/flagged artworks
+  if (row.status === 'pending' || row.status === 'flagged') {
+    actions.push(`<button class="btn ok" onclick="window.approve('${row.id}')">Approve</button>`);
+  }
+  
+  // Show Flag button only for approved/pending artworks
+  if (row.status === 'approved' || row.status === 'pending') {
+    actions.push(`<button class="btn warn" onclick="window.flag('${row.id}')">Flag</button>`);
+  }
+  
+  // Show Reject button only for pending/flagged artworks
+  if (row.status === 'pending' || row.status === 'flagged') {
+    actions.push(`<button class="btn danger" onclick="window.reject('${row.id}')">Reject</button>`);
+  }
+  
+  return `<div class="actions">${actions.join('')}</div>`;
 }
 function roleSelect(row) {
   return `<select class="form-control" onchange="changeRole('${row.id}', this.value)">
@@ -751,17 +763,14 @@ async function initializeData() {
     }
 
     // Load data from backend
-    console.log('Loading data from backend...');
-    
     // Load users
     const users = await api.adminGetUsers();
     state.data.users = users;
     
     // Load all artworks (including pending for admin)
-    const allArtworks = await api.getArtworks({ status: '' });
+    const allArtworks = await api.getArtworks({ status: 'all' });
     state.data.artworks = allArtworks;
     
-    console.log(`Loaded ${users.length} users and ${allArtworks.length} artworks from backend`);
     toast('Data loaded from server');
     
     render();
@@ -786,6 +795,29 @@ document.addEventListener('click', (e) => { if (e.target.matches('[data-close]')
 
 // Initialize app with backend data
 initializeData();
+
+// ===== Export functions to global scope for onclick handlers =====
+window.approve = approve;
+window.reject = reject;
+window.flag = flag;
+window.previewArtwork = previewArtwork;
+window.selectArtwork = selectArtwork;
+window.startEditArtwork = startEditArtwork;
+window.updateDraft = updateDraft;
+window.saveArtworkEdit = saveArtworkEdit;
+window.cancelArtworkEdit = cancelArtworkEdit;
+window.updateArtworkField = updateArtworkField;
+window.reviewReport = reviewReport;
+window.openUser = openUser;
+window.newUser = newUser;
+window.toggleUser = toggleUser;
+window.removeUser = removeUser;
+window.changeRole = changeRole;
+window.changeUserStatus = changeUserStatus;
+window.changeArtworkPeriod = changeArtworkPeriod;
+window.setArtFilter = setArtFilter;
+window.setUserFilter = setUserFilter;
+window.closeModal = closeModal;
 
 /*
 #-# START COMMENT BLOCK #-#

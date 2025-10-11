@@ -1,5 +1,5 @@
-// Shared entries
-const artEntries = (window.AppData && window.AppData.artEntries) || [];
+// Import API module
+import api from './api.js';
 
 // ===== GLOBAL VARIABLES =====
 let currentArtwork = null;
@@ -85,9 +85,20 @@ function populateArtworkDetails(artwork) {
   document.getElementById('artist-info').textContent = artwork.artistInfo || 'Artist information not available';
   document.getElementById('artist-name').textContent = artwork.artist;
 
-  const locationText = artwork.sensitive
-    ? window.Utils.getSensitiveLocationDisplay(artwork)
-    : `${artwork.region} (${window.Utils.getLocationNotice(artwork)})`;
+  let locationText;
+  if (artwork.sensitive) {
+    locationText = window.Utils.getSensitiveLocationDisplay(artwork) || artwork.region;
+  } else {
+    const locationNotice = window.Utils.getLocationNotice(artwork);
+    if (locationNotice) {
+      locationText = `${artwork.region} (${locationNotice})`;
+    } else if (artwork.address) {
+      locationText = `${artwork.region} (${artwork.address})`;
+    } else {
+      locationText = artwork.region;
+    }
+  }
+  
   document.getElementById('artwork-location').textContent = locationText;
   document.getElementById('artwork-period').textContent = artwork.period;
 
@@ -111,9 +122,20 @@ function getRelatedArtworks(currentArtwork) {
     .slice(0, 3);
 }
 
-function renderRelatedArtworks(artwork) {
+function renderRelatedArtworksFromList(artwork, allArtworks) {
   const relatedContainer = document.getElementById('related-artworks');
-  const relatedArtworks = getRelatedArtworks(artwork);
+  
+  // Find related artworks from the provided list
+  const relatedArtworks = allArtworks
+    .filter(a => 
+      a.id !== artwork.id && (
+        a.artist === artwork.artist ||
+        a.artType === artwork.artType ||
+        a.region === artwork.region
+      )
+    )
+    .slice(0, 3);
+  
   if (relatedArtworks.length === 0) {
     relatedContainer.innerHTML = '<p style="text-align: center; color: var(--muted);">No related artworks found.</p>';
     return;
@@ -215,22 +237,82 @@ window.showReportForm = showReportForm;
 window.closeReportForm = closeReportForm;
 window.submitReport = submitReport;
 
+// ===== DATA LOADING =====
+
+async function loadArtworkById(artworkId) {
+  try {
+    const artwork = await api.getArtwork(artworkId);
+    
+    // Convert to detail page format
+    return {
+      id: artwork.id,
+      title: artwork.title,
+      artist: artwork.artist || 'Unknown Artist',
+      description: artwork.intro || '',
+      artType: artwork.type || 'Artwork',
+      period: artwork.period || 'modern',
+      region: artwork.region || '',
+      sensitive: artwork.sensitive || false,
+      address: artwork.address || '', // Pass through address
+      coords: artwork.coords,
+      location_sensitivity: artwork.sensitive ? 'general' : 'exact',
+      images: artwork.artworkImages && artwork.artworkImages.length > 0
+        ? artwork.artworkImages.map(img => img.name || img)
+        : ['assets/img/art01.png'],
+      dateAdded: artwork.submitted || artwork.date || '',
+      submitter: artwork.submitter || ''
+    };
+  } catch (error) {
+    console.error('Failed to load artwork:', error);
+    throw error;
+  }
+}
+
+async function loadAllArtworks() {
+  try {
+    const artworks = await api.getArtworks({ status: 'approved' });
+    return artworks.map(artwork => ({
+      id: artwork.id,
+      title: artwork.title,
+      artist: artwork.artist || 'Unknown Artist',
+      description: artwork.intro || '',
+      artType: artwork.type || 'Artwork',
+      period: artwork.period || 'modern',
+      region: artwork.region || '',
+      images: artwork.artworkImages && artwork.artworkImages.length > 0
+        ? artwork.artworkImages.map(img => img.name || img)
+        : ['assets/img/art01.png']
+    }));
+  } catch (error) {
+    console.error('Failed to load artworks for related items:', error);
+    return [];
+  }
+}
+
 // ===== INITIALIZATION =====
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
   const artworkId = getArtworkIdFromURL();
   if (!artworkId) {
     window.location.href = window.Utils.page('search.html');
     return;
   }
-  currentArtwork = artEntries.find(artwork => artwork.id === artworkId);
-  if (!currentArtwork) {
+  
+  try {
+    // Load the specific artwork from backend
+    currentArtwork = await loadArtworkById(artworkId);
+    
+    // Populate the page
+    populateArtworkDetails(currentArtwork);
+    
+    // Load all artworks for related items
+    const allArtworks = await loadAllArtworks();
+    renderRelatedArtworksFromList(currentArtwork, allArtworks);
+  } catch (error) {
     document.getElementById('artwork-title').textContent = 'Artwork Not Found';
-    document.getElementById('artwork-description').textContent = 'The requested artwork could not be found. Please check the URL or return to search.';
+    document.getElementById('artwork-description').textContent = 'The requested artwork could not be found or failed to load from server.';
     return;
   }
-  populateArtworkDetails(currentArtwork);
-  renderRelatedArtworks(currentArtwork);
   const prevBtn = document.querySelector('.carousel-prev');
   const nextBtn = document.querySelector('.carousel-next');
   if (prevBtn) prevBtn.onclick = previousImage;

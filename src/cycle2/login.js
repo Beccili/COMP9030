@@ -257,7 +257,6 @@ document.addEventListener("DOMContentLoaded", function () {
     usernameInput.focus();
   }
 
-  console.log("Login page initialized successfully");
 });
 
 /*

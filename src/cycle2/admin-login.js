@@ -1,6 +1,9 @@
 // ===== ADMIN LOGIN FUNCTIONALITY =====
 
-// Test admin data
+// Import API module
+import { apiLogin } from './api.js';
+
+// Test admin data (legacy)
 const TEST_ADMINS = {
   admin: {
     username: "admin",
@@ -97,21 +100,31 @@ function validateAdminForm() {
   return isValid;
 }
 
-function authenticateAdmin(username, password) {
-  // Simulate network delay
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const admin = TEST_ADMINS[username.toLowerCase()];
-      if (admin && admin.password === password) {
-        resolve({ success: true, admin: admin });
-      } else {
-        resolve({
-          success: false,
-          message: "Invalid administrator credentials",
-        });
+async function authenticateAdmin(username, password) {
+  try {
+    const result = await apiLogin(username, password);
+    // Check if user is actually an admin
+    if (result.user.role !== 'admin') {
+      return {
+        success: false,
+        message: "Admin access required. Please use regular login."
+      };
+    }
+    return {
+      success: true,
+      admin: {
+        username: result.user.username,
+        displayName: result.user.name,
+        role: result.user.role,
+        permissions: ["manage_artworks", "manage_users", "view_analytics"]
       }
-    }, 1200);
-  });
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.message || "Invalid administrator credentials"
+    };
+  }
 }
 
 function saveAdminSession(admin) {
@@ -140,7 +153,7 @@ function redirectToAdminDashboard() {
     formContainer.insertBefore(successMessage, formContainer.firstChild);
   }
 
-  // Redirect after a short delay
+  // Redirect after a short delay to the actual admin dashboard
   setTimeout(() => {
     window.location.href = "admin-dashboard.html";
   }, 1500);
@@ -277,8 +290,6 @@ document.addEventListener("DOMContentLoaded", function () {
   if (adminUsernameInput && !localStorage.getItem("atlas_admin_logged_in")) {
     adminUsernameInput.focus();
   }
-
-  console.log("Admin login page initialized successfully");
 });
 
 /*

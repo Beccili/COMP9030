@@ -183,9 +183,7 @@ importFile && importFile.addEventListener("change", async (e) => {
   }
 });
 
-document.addEventListener("DOMContentLoaded", () => { 
-  console.log("Register page initialized");
-});
+document.addEventListener("DOMContentLoaded", () => {});
 
 /*
 #-# START COMMENT BLOCK #-#

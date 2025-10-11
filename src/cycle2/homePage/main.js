@@ -8,7 +8,6 @@ const regionCentroids = (window.AppData && window.AppData.regionCentroids) || {}
 // Load artworks from backend on initialization
 async function loadArtworksFromBackend() {
   try {
-    console.log('Loading artworks from backend...');
     const artworks = await api.getArtworks({ status: 'approved' });
     
     // Convert backend artworks to frontend format for the map
@@ -28,8 +27,6 @@ async function loadArtworksFromBackend() {
         ? artwork.artworkImages.map(img => img.name || img)
         : ['assets/img/art01.png'] // Fallback image
     }));
-    
-    console.log(`Loaded ${artEntries.length} artworks from backend`);
     
     // Update showcase entries
     showcaseEntries = artEntries.slice(0, 5);
@@ -316,10 +313,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     });
   }
 
-  console.log("Indigenous Art Atlas initialized successfully");
-  console.log(
-    `Loaded ${artEntries.length} contemporary Aboriginal artwork entries (5 complete, 4 placeholders)`
-  );
+
 });
 
 /*

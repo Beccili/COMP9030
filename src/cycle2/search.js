@@ -189,7 +189,6 @@ const debouncedApplyFilters = window.Utils.debounce(applyFilters, 300);
 // Load artworks from backend
 async function loadArtworks() {
   try {
-    console.log('Loading artworks from backend...');
     const artworks = await api.getArtworks({ status: 'approved' });
     
     // Convert backend format to search page format
@@ -212,7 +211,6 @@ async function loadArtworks() {
     }));
     
     filteredEntries = [...artEntries];
-    console.log(`Loaded ${artEntries.length} artworks from backend`);
     
     // Re-apply filters if any
     applyFilters();

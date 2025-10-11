@@ -35,6 +35,7 @@ export function fromServerArtwork(serverArt) {
   return {
     id: serverArt.id,
     title: serverArt.title,
+    artist: serverArt.artist || 'Unknown Artist', // Artist name from backend
     artistId: serverArt.submitted_by || '',
     type: serverArt.artType,
     period: serverArt.period,
@@ -53,7 +54,12 @@ export function fromServerArtwork(serverArt) {
     booth: serverArt.booth || '',
     tags: serverArt.tags || [],
     artworkImages: Array.isArray(serverArt.images) 
-      ? serverArt.images.map(img => typeof img === 'string' ? { name: img } : img)
+      ? serverArt.images.map(img => {
+          const filename = typeof img === 'string' ? img : (img.name || '');
+          // If filename doesn't include path, prepend assets/img/
+          const fullPath = filename.includes('/') ? filename : `assets/img/${filename}`;
+          return { name: fullPath };
+        })
       : [],
     submitter: serverArt.submitted_by
   };
@@ -211,7 +217,8 @@ export async function getArtworks(filters = {}) {
   if (filters.artType) params.append('artType', filters.artType);
   if (filters.region) params.append('region', filters.region);
   if (filters.period) params.append('period', filters.period);
-  if (filters.status) params.append('status', filters.status);
+  // Include status even if empty string (to get all artworks)
+  if ('status' in filters) params.append('status', filters.status);
   
   const queryString = params.toString();
   const url = `${API_BASE}/artworks.php${queryString ? '?' + queryString : ''}`;
