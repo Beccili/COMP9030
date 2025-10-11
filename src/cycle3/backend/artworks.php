@@ -148,6 +148,20 @@ function createArtwork($input) {
         sendError('Address cannot be provided when artwork is marked as sensitive');
     }
     
+    // Validate and extract coordinates
+    $coords = null;
+    if (!$sensitive && isset($input['coords']) && is_array($input['coords'])) {
+        $lat = floatval($input['coords']['lat'] ?? null);
+        $lng = floatval($input['coords']['lng'] ?? null);
+        if ($lat >= -90 && $lat <= 90 && $lng >= -180 && $lng <= 180 && $lat != 0 && $lng != 0) {
+            $coords = ['lat' => $lat, 'lng' => $lng];
+        }
+    }
+    
+    if ($sensitive && isset($input['coords']) && !empty($input['coords'])) {
+        sendError('Coordinates cannot be provided when artwork is marked as sensitive');
+    }
+    
     // Create new artwork
     $artwork = [
         'id' => generateId('art'),
@@ -158,6 +172,7 @@ function createArtwork($input) {
         'region' => $input['region'],
         'sensitive' => $sensitive,
         'address' => $sensitive ? null : (trim($input['address'] ?? '') ?: null),
+        'coords' => $coords,
         'description' => trim($input['description'] ?? ''),
         'status' => 'pending', // Requires admin approval
         'submitted_by' => $user['id'],
@@ -235,6 +250,24 @@ function updateArtwork($id, $input) {
         if (isset($input[$field])) {
             $artwork[$field] = $input[$field];
         }
+    }
+    
+    // Handle coordinates update
+    if (isset($input['coords'])) {
+        if ($artwork['sensitive']) {
+            $artwork['coords'] = null;
+        } elseif (is_array($input['coords'])) {
+            $lat = floatval($input['coords']['lat'] ?? null);
+            $lng = floatval($input['coords']['lng'] ?? null);
+            if ($lat >= -90 && $lat <= 90 && $lng >= -180 && $lng <= 180 && $lat != 0 && $lng != 0) {
+                $artwork['coords'] = ['lat' => $lat, 'lng' => $lng];
+            }
+        }
+    }
+    
+    // Clear coords if artwork becomes sensitive
+    if (isset($input['sensitive']) && $input['sensitive']) {
+        $artwork['coords'] = null;
     }
     
     $artworks[$artworkIndex] = $artwork;

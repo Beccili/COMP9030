@@ -53,6 +53,7 @@ export function fromServerArtwork(serverArt) {
     nature: serverArt.nature || '',
     booth: serverArt.booth || '',
     tags: serverArt.tags || [],
+    coords: serverArt.coords || null,
     artworkImages: Array.isArray(serverArt.images) 
       ? serverArt.images.map(img => {
           const filename = typeof img === 'string' ? img : (img.name || '');
@@ -77,6 +78,7 @@ export function toServerArtwork(frontendArt, artistName = '') {
     region: frontendArt.region,
     sensitive: !!frontendArt.sensitive,
     address: frontendArt.sensitive ? null : (frontendArt.address?.trim() || null),
+    coords: frontendArt.sensitive ? null : (frontendArt.coords || null),
     description: frontendArt.intro || '',
     images: (frontendArt.artworkImages || []).map(img => 
       typeof img === 'string' ? img : (img.name || '')

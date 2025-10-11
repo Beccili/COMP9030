@@ -146,6 +146,18 @@
                   <p class="disabled-note" id="address-note" style="display:none;">Address disabled because the artwork is marked as sensitive.</p>
                 </div>
 
+                <div class="form-row">
+                  <label class="label" for="latitude">Latitude (optional)</label>
+                  <input id="latitude" class="input" type="number" step="0.000001" min="-90" max="90" placeholder="e.g., -34.9285"/>
+                  <p class="hint">Decimal degrees. Leave empty to use region center.</p>
+                </div>
+
+                <div class="form-row">
+                  <label class="label" for="longitude">Longitude (optional)</label>
+                  <input id="longitude" class="input" type="number" step="0.000001" min="-180" max="180" placeholder="e.g., 138.6007"/>
+                  <p class="disabled-note" id="coords-note" style="display:none;">Coordinates disabled because the artwork is marked as sensitive.</p>
+                </div>
+
                 <div class="form-row full">
                   <label class="label" for="artworkImages">Artwork Images *</label>
                   <input id="artworkImages" class="input" type="file" accept="image/*" multiple required />
@@ -187,13 +199,23 @@
       const sensitiveSel = document.getElementById('sensitive');
       const addressInput = document.getElementById('address');
       const addressNote = document.getElementById('address-note');
+      const latInput = document.getElementById('latitude');
+      const lngInput = document.getElementById('longitude');
+      const coordsNote = document.getElementById('coords-note');
       const artworkImagesInput = document.getElementById('artworkImages');
 
       function updateAddressState() {
         const isSensitive = sensitiveSel.value === 'true';
         addressInput.disabled = isSensitive;
         addressNote.style.display = isSensitive ? 'block' : 'none';
-        if (isSensitive) addressInput.value = '';
+        latInput.disabled = isSensitive;
+        lngInput.disabled = isSensitive;
+        coordsNote.style.display = isSensitive ? 'block' : 'none';
+        if (isSensitive) {
+          addressInput.value = '';
+          latInput.value = '';
+          lngInput.value = '';
+        }
       }
       sensitiveSel.addEventListener('change', updateAddressState);
       document.addEventListener('DOMContentLoaded', updateAddressState);
@@ -214,6 +236,8 @@
         const region = document.getElementById('region').value;
         const sensitive = sensitiveSel.value === 'true';
         const address = addressInput.value.trim();
+        const lat = latInput.value.trim();
+        const lng = lngInput.value.trim();
         const desc = document.getElementById('desc').value.trim();
         const artworkImages = artworkImagesInput.files;
 
@@ -230,9 +254,22 @@
         if (sensitive && address){
           setValidity(addressInput, false, 'Address cannot be provided when sensitive is true.'); 
           return;
-        } else {
-          setValidity(addressInput, true, '');
         }
+        
+        if (sensitive && (lat || lng)){
+          setValidity(latInput, false, 'Coordinates cannot be provided when sensitive is true.'); 
+          return;
+        }
+        
+        // Validate coordinates - both or neither
+        if ((lat && !lng) || (!lat && lng)) {
+          setValidity(lat ? lngInput : latInput, false, 'Please provide both latitude and longitude, or leave both empty.');
+          return;
+        }
+        
+        setValidity(addressInput, true, '');
+        setValidity(latInput, true, '');
+        setValidity(lngInput, true, '');
 
         // Import API module dynamically
         const api = await import('./api.js').then(m => m.default);
@@ -271,6 +308,12 @@
 
           submitBtn.textContent = 'Submitting artwork...';
 
+          // Build coordinates object if both lat/lng provided
+          const coords = (lat && lng) ? {
+            lat: parseFloat(lat),
+            lng: parseFloat(lng)
+          } : null;
+
           const artworkData = {
             title, 
             artist, 
@@ -279,6 +322,7 @@
             region,
             sensitive, 
             address: address || null,
+            coords: coords,
             intro: desc,
             artworkImages: uploadedImages
           };
