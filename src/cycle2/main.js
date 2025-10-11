@@ -17,30 +17,9 @@ const state = {
     users: { text: '', role: '' }
   },
   data: {
-    users: [
-      { id: 'u_vincent', name: 'Vincent Namatjira', email: 'vincent@iap.demo', role: 'artist', region: 'SA', status: 'active', created: '2025-09-05', gender: 'male', phone: '', dob: '1983-01-01', nation: 'Western Arrernte', bio: 'Contemporary Indigenous artist known for political portraits and Archibald Prize winner.' },
-      { id: 'u_kaylene', name: 'Kaylene Whiskey', email: 'kaylene@iap.demo', role: 'artist', region: 'SA', status: 'active', created: '2025-09-05', gender: 'female', phone: '', dob: '1976-01-01', nation: 'Yankunytjatjara', bio: 'Pop-inflected painter blending Anangu culture with global icons.' },
-      { id: 'u_tony', name: 'Tony Albert', email: 'tony@iap.demo', role: 'artist', region: 'QLD', status: 'active', created: '2025-09-05', gender: 'male', phone: '', dob: '1981-01-01', nation: 'Yidinji', bio: 'Installation artist interrogating Aboriginalia and national narratives.' },
-      { id: 'u_megan', name: 'Megan Cope', email: 'megan@iap.demo', role: 'artist', region: 'QLD', status: 'active', created: '2025-09-05', gender: 'female', phone: '', dob: '1982-01-01' },
-      { id: 'u_yhonnie', name: 'Yhonnie Scarce', email: 'yhonnie@iap.demo', role: 'artist', region: 'SA', status: 'active', created: '2025-09-05', gender: 'female', phone: '', dob: '1973-01-01' },
-      { id: 'u_user1', name: 'Alex Guest', email: 'alex@iap.demo', role: 'user', region: 'VIC', status: 'active', created: '2025-09-06', gender: '', phone: '', dob: '' },
-      { id: 'u_admin1', name: 'Site Admin', email: 'admin@iap.demo', role: 'admin', region: 'SA', status: 'active', created: '2025-09-01', gender: '', phone: '', dob: '' },
-    ],
-    artworks: [
-      { id: 'a_2001', title: 'Karlu Karlu petroglyph', theme: 'Ancestral stories', date: '2025-08-31', nature: 'rock art', type: 'Rock Painting', country: 'AU', location: 'Tennant Creek, NT', submitter: 'u_vincent', artistId: 'u_vincent', status: 'pending', tags: ['rock', 'ancestral'], booth: 'B12', submitted: '2025-08-31', region: 'NT', sensitive: true, address: '', period: 'ancient', intro: 'Petroglyph site associated with ancestral stories.' },
-      { id: 'a_2002', title: 'Ngarrindjeri weaving – basket', theme: 'Weaving tradition', date: '2025-08-20', nature: 'weaving', type: 'Sculpture', country: 'AU', location: 'Adelaide SA museum', submitter: 'u_kaylene', artistId: 'u_kaylene', status: 'approved', tags: ['weaving', 'museum'], booth: 'A03', submitted: '2025-08-20', region: 'SA', sensitive: false, address: 'North Terrace, Adelaide SA', period: 'modern', intro: 'Basket weaving representing living cultural practice.' },
-      { id: 'a_2003', title: 'Street mural – Kaurna welcome', theme: 'Welcome to Country', date: '2025-08-22', nature: 'mural', type: 'Mural', country: 'AU', location: 'Rundle St, Adelaide', submitter: 'u_tony', artistId: 'u_tony', status: 'flagged', tags: ['public', 'contemporary'], booth: 'Outdoor-07', submitted: '2025-08-22', region: 'SA', sensitive: false, address: 'Rundle St, Adelaide SA', period: 'modern', intro: 'Public mural acknowledging Kaurna Country.' },
-      { id: 'a_vincent_2020', title: 'Stand Strong for Who You Are', theme: 'Identity & history', date: '2020-01-01', nature: 'painting', type: 'Portrait', country: 'AU', location: 'Indulkana, APY Lands SA', submitter: 'u_vincent', artistId: 'u_vincent', status: 'approved', tags: ['portrait', 'contemporary'], booth: 'V01', submitted: '2025-09-05', region: 'SA', sensitive: false, address: 'Indulkana, APY Lands', period: 'modern', intro: 'Bold contemporary portrait engaging with identity and history.', artworkImages: [{ name: 'portrait_main.jpg', size: 2048000, type: 'image/jpeg' }, { name: 'portrait_detail.jpg', size: 1536000, type: 'image/jpeg' }] },
-      { id: 'a_kaylene_2017', title: 'Kaylene TV', theme: 'Pop & Anangu culture', date: '2017-01-01', nature: 'painting', type: 'Painting', country: 'AU', location: 'Indulkana, APY Lands SA', submitter: 'u_kaylene', artistId: 'u_kaylene', status: 'approved', tags: ['pop', 'female-icons'], booth: 'K01', submitted: '2025-09-05', region: 'SA', sensitive: false, address: 'Indulkana, APY Lands', period: 'modern', intro: 'Pop-inflected painting blending Anangu culture with global icons.' },
-      { id: 'a_tony_2008', title: 'Sorry', theme: 'Aboriginalia & apology', date: '2008-02-13', nature: 'installation', type: 'Installation', country: 'AU', location: 'Brisbane QLD / Sydney NSW', submitter: 'u_tony', artistId: 'u_tony', status: 'approved', tags: ['installation', 'text'], booth: 'T01', submitted: '2025-09-05', region: 'QLD', sensitive: false, address: 'GOMA Brisbane', period: 'modern', intro: 'Installation interrogating Aboriginalia and national apology.', artworkImages: [{ name: 'installation_view1.jpg', size: 3072000, type: 'image/jpeg' }, { name: 'installation_view2.jpg', size: 2560000, type: 'image/jpeg' }, { name: 'installation_detail.jpg', size: 1792000, type: 'image/jpeg' }] },
-      { id: 'a_megan_2020', title: 'Untitled Death Song', theme: 'Ecology & mining legacy', date: '2020-01-01', nature: 'sound sculpture', type: 'Sound Installation', country: 'AU', location: 'Minjerribah QLD / Melbourne VIC', submitter: 'u_megan', artistId: 'u_megan', status: 'approved', tags: ['sound', 'sculpture'], booth: 'M01', submitted: '2025-09-05', region: 'QLD', sensitive: false, address: 'Minjerribah QLD', period: 'modern', intro: 'Site-responsive sound work on ecologies and mining.' },
-      { id: 'a_yhonnie_2015', title: 'Thunder Raining Poison', theme: 'Memory & nuclear tests', date: '2015-01-01', nature: 'glass installation', type: 'Glass Installation', country: 'AU', location: 'SA / VIC', submitter: 'u_yhonnie', artistId: 'u_yhonnie', status: 'approved', tags: ['glass', 'installation'], booth: 'Y01', submitted: '2025-09-05', region: 'SA', sensitive: false, address: 'Melbourne VIC', period: 'modern', intro: 'Hand-blown glass installation reflecting on nuclear tests.' },
-    ],
-    reports: [
-      { id: 'r_3001', artwork: 'a_2003', reason: 'Cultural sensitivity concerns', detail: 'Caption uses non-approved terminology and may be culturally insensitive', email: 'reporter1@example.com', created: '2025-09-02', status: 'open' },
-      { id: 'r_3002', artwork: 'a_2002', reason: 'Copyright violation', detail: 'Missing consent verification documentation from community', email: '', created: '2025-08-24', status: 'open' },
-      { id: 'r_3003', artwork: 'a_vincent_2020', reason: 'Inaccurate information', detail: 'Location information appears to be incorrect based on local knowledge', email: 'community@example.org', created: '2025-09-01', status: 'closed', decision: 'approved' },
-    ],
+    users: [],
+    artworks: [],
+    reports: [],
     reservations: [],
     audit: []
   }
@@ -541,17 +520,29 @@ function reviewReport(id, decision) {
     </form>
   `);
 
-  $('#reportReviewForm').addEventListener('submit', (e) => {
+  $('#reportReviewForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const reason = new FormData(e.target).get('reason') || '';
-    applyReportDecision(id, decision, reason);
-    closeModal(); toast(`Report ${decision}`); render();
+    try {
+      await applyReportDecision(id, decision, reason);
+      closeModal(); 
+      toast(`Report ${decision}`); 
+      render();
+    } catch (error) {
+      toast('Failed to update report: ' + error.message);
+    }
   });
 }
-function applyReportDecision(id, decision, note) {
+async function applyReportDecision(id, decision, note) {
   const r = state.data.reports.find(x => x.id === id); if (!r) return;
-  r.status = 'closed'; r.decision = decision; r.note = note;
-  log('review_report', id, JSON.stringify({ decision, note }));
+  try {
+    await api.updateReport(id, { status: 'closed', decision, note });
+    r.status = 'closed'; r.decision = decision; r.note = note;
+    log('review_report', id, JSON.stringify({ decision, note }));
+  } catch (error) {
+    console.error('Failed to update report:', error);
+    throw error;
+  }
 }
 
 function openUser(id) {
@@ -770,6 +761,10 @@ async function initializeData() {
     // Load all artworks (including pending for admin)
     const allArtworks = await api.getArtworks({ status: 'all' });
     state.data.artworks = allArtworks;
+    
+    // Load reports
+    const reports = await api.getReports('all');
+    state.data.reports = reports;
     
     toast('Data loaded from server');
     

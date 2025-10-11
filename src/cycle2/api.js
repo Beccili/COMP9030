@@ -474,6 +474,58 @@ export async function updateArtworkStatus(id, status) {
   return fromServerArtwork(data.data);
 }
 
+// ===== REPORTS API =====
+
+/**
+ * Get all reports (admin only)
+ */
+export async function getReports(status = 'all') {
+  const sessionId = getSessionId();
+  if (!sessionId) throw new Error('Authentication required');
+  
+  const params = new URLSearchParams({ session_id: sessionId });
+  if (status) params.append('status', status);
+  
+  const response = await fetch(`${API_BASE}/reports.php?${params.toString()}`);
+  const data = await handleResponse(response);
+  
+  return data.data;
+}
+
+/**
+ * Submit a report (public)
+ */
+export async function submitReport(reportData) {
+  const response = await fetch(`${API_BASE}/reports.php`, {
+    method: 'POST',
+    headers: jsonHeaders,
+    body: JSON.stringify(reportData)
+  });
+  
+  const data = await handleResponse(response);
+  return data.data;
+}
+
+/**
+ * Update report (admin only - for reviewing)
+ */
+export async function updateReport(reportId, updates) {
+  const sessionId = getSessionId();
+  if (!sessionId) throw new Error('Authentication required');
+  
+  const response = await fetch(
+    `${API_BASE}/reports.php?id=${encodeURIComponent(reportId)}&session_id=${sessionId}`,
+    {
+      method: 'PUT',
+      headers: jsonHeaders,
+      body: JSON.stringify(updates)
+    }
+  );
+  
+  const data = await handleResponse(response);
+  return data.data;
+}
+
 // Export all functions as default object for easier importing
 export default {
   // Auth
@@ -499,6 +551,11 @@ export default {
   adminRejectArtwork,
   adminUpdateUser,
   adminSetUserStatus,
+  
+  // Reports
+  getReports,
+  submitReport,
+  updateReport,
   
   // Helpers
   fromServerArtwork,

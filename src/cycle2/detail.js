@@ -202,20 +202,25 @@ function closeReportForm() {
   }
 }
 
-function submitReport(event) {
+async function submitReport(event) {
   event.preventDefault();
+  
   const reportData = {
-    artworkId: currentArtwork ? currentArtwork.id : 'unknown',
-    artworkTitle: currentArtwork ? currentArtwork.title : 'unknown',
+    artwork_id: currentArtwork ? currentArtwork.id : 'unknown',
+    artwork_title: currentArtwork ? currentArtwork.title : 'unknown',
     reason: document.getElementById('report-reason').value,
     details: document.getElementById('report-details').value,
-    email: document.getElementById('report-email').value || 'anonymous',
-    timestamp: new Date().toISOString(),
-    userAgent: navigator.userAgent,
+    email: document.getElementById('report-email').value || ''
   };
-  console.log('Report submitted:', reportData);
-  alert('Thank you for your report. We will review this artwork and take appropriate action if necessary.');
-  closeReportForm();
+  
+  try {
+    await api.submitReport(reportData);
+    alert('Thank you for your report. We will review this artwork and take appropriate action if necessary.');
+    closeReportForm();
+  } catch (error) {
+    console.error('Failed to submit report:', error);
+    alert('Failed to submit report: ' + (error.message || 'Please try again.'));
+  }
 }
 
 // Close modal when clicking on overlay
