@@ -1,53 +1,41 @@
-/* Account Page — View and manage user account */
+/* Account Page — View and manage user account with backend integration */
 
-const STORE_KEY = "IAA_accounts_v1"; // accounts (user or artist)
+import api from './api.js';
 
-// Get the current logged-in user's account
-function getCurrentAccount() {
+const STORE_KEY = "IAA_accounts_v1"; // accounts (legacy)
+
+// Get the current user from backend session
+async function getCurrentAccount() {
   try {
-    // First check if user is logged in
-    const isLoggedIn = localStorage.getItem("atlas_logged_in") === "true";
-    const userData = localStorage.getItem("atlas_user");
-    
-    if (!isLoggedIn || !userData) {
+    const sessionId = localStorage.getItem('atlas_session_id');
+    if (!sessionId) {
       return null;
     }
     
-    const loggedInUser = JSON.parse(userData);
+    const sessionData = await api.apiVerifySession();
+    const user = sessionData.user;
     
-    // Try to find the account by email
-    const accounts = JSON.parse(localStorage.getItem(STORE_KEY)) || [];
-    const userAccount = accounts.find(acc => acc.email === loggedInUser.email);
-    
-    if (userAccount) {
-      return userAccount;
-    }
-    
-    // If no account exists but user is logged in (mocked login),
-    // create a mock account from the logged-in user data
     return {
-      id: 'mock_' + Date.now(),
-      name: loggedInUser.displayName || loggedInUser.username || 'Test User',
-      email: loggedInUser.email || 'test@example.com',
-      role: 'artist',
-      status: 'approved',
-      region: 'NSW',
-      nation: 'Kaurna',
-      imageUrl: loggedInUser.avatar || '',
-      bio: 'Contemporary Indigenous artist from Kaurna country, exploring traditional themes through modern mediums. My work focuses on the connection between ancestral knowledge and contemporary expression.',
-      artworks: ['detail.html?id=vincent-namatjira-portrait', 'detail.html?id=kaylene-whiskey-tv']
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      status: user.status,
+      region: user.region || '',
+      nation: user.nation || '',
+      imageUrl: user.imageUrl || '',
+      bio: user.bio || '',
+      username: user.username
     };
-  } catch {
+  } catch (error) {
+    console.error('Failed to get current account:', error);
     return null;
   }
 }
 
-// Load artwork entries from common data
-const artEntries = (window.AppData && window.AppData.artEntries) || [];
-
 // Populate account information
-function populateAccountInfo() {
-  const account = getCurrentAccount();
+async function populateAccountInfo() {
+  const account = await getCurrentAccount();
   
   if (!account) {
     // No account found, redirect to login (but prevent infinite loop)
@@ -135,49 +123,42 @@ function populateAccountInfo() {
 }
 
 // Populate artworks for artist accounts
-function populateArtworks(account) {
+async function populateArtworks(account) {
   const artworksGrid = document.getElementById('artworks-grid');
   const emptyState = document.getElementById('artworks-empty');
   
-  // For demo purposes, we'll show some sample artworks for artists
-  // In a real app, this would be linked to actual submitted artworks
-  if (account.artworks && account.artworks.length > 0) {
-    // Show actual artworks if they exist
-    artworksGrid.innerHTML = '';
-    emptyState.style.display = 'none';
+  try {
+    // Load artworks submitted by this user from backend
+    const allArtworks = await api.getArtworks({ status: 'all' });
+    const userArtworks = allArtworks.filter(a => a.submitter === account.id || a.artistId === account.id);
     
-    // This would normally fetch the actual artwork data
-    // For now, we'll just show the links
-    account.artworks.forEach(artworkUrl => {
-      const card = createArtworkCard({
-        title: 'Submitted Artwork',
-        artist: account.name,
-        url: artworkUrl
+    if (userArtworks.length > 0) {
+      artworksGrid.innerHTML = '';
+      emptyState.style.display = 'none';
+      
+      userArtworks.forEach(artwork => {
+        const card = createArtworkCard({
+          id: artwork.id,
+          title: artwork.title,
+          artist: artwork.artist,
+          description: artwork.intro,
+          artType: artwork.type,
+          period: artwork.period,
+          region: artwork.region,
+          status: artwork.status,
+          images: artwork.artworkImages && artwork.artworkImages.length > 0
+            ? artwork.artworkImages.map(img => img.name || img)
+            : ['assets/img/art01.png']
+        });
+        artworksGrid.appendChild(card);
       });
-      artworksGrid.appendChild(card);
-    });
-  } else if (account.role === 'artist' && account.status === 'approved') {
-    // Show sample artworks for approved artists (demo)
+    } else {
+      // Show empty state
     artworksGrid.innerHTML = '';
-    emptyState.style.display = 'none';
-    
-    // Get first 3 artworks from common data as samples
-    const sampleArtworks = artEntries.slice(0, 3);
-    sampleArtworks.forEach(artwork => {
-      const card = createArtworkCard({
-        id: artwork.id,
-        title: artwork.title,
-        artist: account.name, // Use the account holder's name
-        description: artwork.description,
-        artType: artwork.artType,
-        period: artwork.period,
-        region: artwork.region,
-        images: artwork.images
-      });
-      artworksGrid.appendChild(card);
-    });
-  } else {
-    // Show empty state
+      emptyState.style.display = 'block';
+    }
+  } catch (error) {
+    console.error('Failed to load artworks:', error);
     artworksGrid.innerHTML = '';
     emptyState.style.display = 'block';
   }
@@ -225,7 +206,7 @@ function createArtworkCard(artwork) {
 }
 
 // Initialize page
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   // Handle edit account button
   const editBtn = document.getElementById('edit-account-btn');
   if (editBtn) {
@@ -236,8 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
   
-  populateAccountInfo();
-  console.log('Account page initialized');
+  await populateAccountInfo();
 });
 
 /*
