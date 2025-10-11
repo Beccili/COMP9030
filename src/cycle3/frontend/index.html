@@ -2,11 +2,26 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Indigenous Art Admin Console</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Indigenous Art Atlas – Admin</title>
+  <!-- Inter font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <aside>
+    <div class="logo" aria-label="App logo">
+      <div class="dot" aria-hidden="true"></div>
+      <div>
+        <div style="font-weight:800">IAA Admin</div>
+        <div style="color:#94a3b8;font-size:12px">Indigenous Art Atlas</div>
+      </div>
+    </div>
+    <nav id="nav"></nav>
+  </aside>
+
   <header>
     <div class="brand">Admin Console</div>
     <span class="badge" title="Environment">DEV</span>
@@ -14,88 +29,32 @@
     <input id="globalSearch" type="search" placeholder="Search users, artworks, reports…" aria-label="Global search" />
     <div class="user" aria-label="Current admin user">
       <span class="badge">Admin</span>
-      <span id="currentUser">not logged in</span>
+      <span>moderator@example.org</span>
     </div>
   </header>
 
-  <main class="container">
-    <!-- Login -->
-    <section class="card">
-      <h2>Login</h2>
-      <div class="row">
-        <label>Username</label>
-        <input id="loginUsername" placeholder="admin" value="admin" />
-      </div>
-      <div class="row">
-        <label>Password</label>
-        <input id="loginPassword" type="password" placeholder="admin123" value="admin123" />
-      </div>
-      <div class="row">
-        <button id="loginBtn" type="button">Login</button>
-        <button id="logoutBtn" type="button" class="ghost">Logout</button>
-        <span id="loginState" class="muted"></span>
-      </div>
-    </section>
+  <main id="app" tabindex="-1"></main>
 
-    <!-- Dashboard -->
-    <section class="grid grid-3">
-      <div class="stat card">
-        <div class="stat-title">Total Users</div>
-        <div id="totalUsers" class="stat-value">–</div>
+  <!-- Reusable modal -->
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="box">
+      <h3 id="modalTitle" class="title-lg">Modal</h3>
+      <div id="modalContent"></div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+        <button class="btn" data-close>Close</button>
       </div>
-      <div class="stat card">
-        <div class="stat-title">Pending Artworks</div>
-        <div id="pendingArtworks" class="stat-value">–</div>
-      </div>
-      <div class="stat card">
-        <div class="stat-title">Approved Artworks</div>
-        <div id="approvedArtworks" class="stat-value">–</div>
-      </div>
-    </section>
+    </div>
+  </div>
 
-    <!-- Users -->
-    <section class="card">
-      <div class="section-header">
-        <h2>Users</h2>
-        <button id="refreshUsers" class="ghost">Refresh</button>
-      </div>
-      <div class="table-wrap">
-        <table id="userTable">
-          <thead>
-            <tr>
-              <th>Username</th><th>Email</th><th>Role</th><th>Status</th><th>Created</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- Pending Artworks -->
-    <section class="card">
-      <div class="section-header">
-        <h2>Pending Artworks</h2>
-        <div class="actions">
-          <button id="refreshPending" class="ghost">Refresh</button>
-        </div>
-      </div>
-      <div class="table-wrap">
-        <table id="artworkTable">
-          <thead>
-            <tr>
-              <th>ID</th><th>Title</th><th>Artist</th><th>Status</th><th>Actions</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    <small>© Indigenous Art Atlas – Admin</small>
-  </footer>
+  <div class="toast" id="toast" aria-live="polite" aria-atomic="true"></div>
 
   <script src="main.js"></script>
 </body>
 </html>
+<!--
+#-# START COMMENT BLOCK #-#
+AI Tool used: ChatGPT GPT-5 (OpenAI) via Cursor
+AI-Acknowledgement.md line: 23
+AI helped me complete the vast majority of lengthy, repetitive code. It significantly saved me time, allowing me to focus on bug fixes and multi-file code integration.
+#-# END COMMENT BLOCK #-#
+-->
