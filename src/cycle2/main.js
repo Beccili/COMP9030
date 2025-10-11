@@ -70,7 +70,7 @@ function Dashboard() {
       <div class="grid cols-3">
         ${Card('All Artworks', totalArtworks, 'info')}
         ${Card('All Users', totalUsers, 'info')}
-        ${Card('Open Reports', openReports, 'danger')}
+        ${Card('Open Reports', openReports, openReports > 0 ? 'danger' : 'ok')}
       </div>
     </section>
   `;
@@ -765,6 +765,12 @@ async function initializeData() {
     // Load reports
     const reports = await api.getReports('all');
     state.data.reports = reports;
+    
+    // Update header with admin info
+    const adminNameEl = document.getElementById('admin-user-name');
+    if (adminNameEl) {
+      adminNameEl.textContent = user.name || user.email || user.username;
+    }
     
     toast('Data loaded from server');
     
