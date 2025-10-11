@@ -80,7 +80,7 @@ async function authenticateUser(username, password) {
       user: {
         username: result.user.username,
         displayName: result.user.name,
-        avatar: result.user.imageUrl || null,
+        avatar: result.user.imageUrl || 'assets/img/user-avatar.png',
         email: result.user.email,
         role: result.user.role
       }

@@ -115,6 +115,7 @@ async function authenticateAdmin(username, password) {
       admin: {
         username: result.user.username,
         displayName: result.user.name,
+        avatar: result.user.imageUrl || 'assets/img/user-avatar.png',
         role: result.user.role,
         permissions: ["manage_artworks", "manage_users", "view_analytics"]
       }
@@ -133,6 +134,7 @@ function saveAdminSession(admin) {
   const adminData = {
     username: admin.username,
     displayName: admin.displayName,
+    avatar: admin.avatar,
     role: admin.role,
     permissions: admin.permissions,
     loginTime: new Date().toISOString(),
