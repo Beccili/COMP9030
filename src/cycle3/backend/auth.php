@@ -92,7 +92,7 @@ function handleLogin($input) {
         'username' => $user['username'],
         'role' => $user['role'],
         'created_at' => date('Y-m-d H:i:s'),
-        'expires_at' => date('Y-m-d H:i:s', time() + 3600) // 1 hour
+        'expires_at' => date('Y-m-d H:i:s', time() + 3600 * 24) // 24 hour
     ];
     
     saveJsonFile(SESSIONS_FILE, $sessions);
