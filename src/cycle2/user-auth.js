@@ -179,9 +179,7 @@ class UserAuth {
     accountLi.className = 'account-nav-item';
     
     const accountLink = document.createElement('a');
-    accountLink.href = window.location.pathname.includes("homePage") 
-      ? "../account.html" 
-      : "account.html";
+    accountLink.href = "account.html";
     accountLink.className = 'nav-link';
     accountLink.textContent = 'Account';
     
@@ -230,7 +228,7 @@ class UserAuth {
         }
         
         // Navigate to account page
-        window.location.href = window.location.pathname.includes("homePage") 
+        window.location.href = false 
           ? "../account.html" 
           : "account.html";
       });

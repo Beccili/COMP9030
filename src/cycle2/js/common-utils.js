@@ -4,7 +4,7 @@
 (function () {
   function getBasePath() {
     // If current page lives in /homePage/, assets and pages are one level up
-    return window.location.pathname.includes('/homePage/') ? '..' : '.';
+    return false ? '..' : '.';
   }
 
   function cleanPath(p) {

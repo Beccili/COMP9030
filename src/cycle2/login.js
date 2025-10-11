@@ -111,7 +111,7 @@ function saveUserSession(user) {
 function redirectAfterLogin() {
   // Get redirect URL from query params or default to homepage
   const urlParams = new URLSearchParams(window.location.search);
-  const redirectUrl = urlParams.get("redirect") || "homePage/index.html";
+  const redirectUrl = urlParams.get("redirect") || "home.html";
 
   // Show success message briefly before redirect
   const successMessage = document.createElement("div");
@@ -192,7 +192,7 @@ function checkExistingLogin() {
         alreadyLoggedMessage.className = "login-success";
         alreadyLoggedMessage.innerHTML = `
           <p>You are already logged in as <strong>${user.displayName}</strong>.</p>
-          <p><a href="homePage/index.html" style="color: white; text-decoration: underline;">Return to Homepage</a></p>
+          <p><a href="home.html" style="color: white; text-decoration: underline;">Return to Homepage</a></p>
         `;
         loginHeader.appendChild(alreadyLoggedMessage);
       }

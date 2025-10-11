@@ -1,5 +1,5 @@
 // ===== Import API =====
-import api from '../api.js';
+import api from './api.js';
 
 // ===== SHARED DATA =====
 let artEntries = (window.AppData && window.AppData.artEntries) || [];
