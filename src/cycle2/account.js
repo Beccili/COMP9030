@@ -104,7 +104,7 @@ async function populateAccountInfo() {
   const submitArtworkBtn = document.getElementById('submit-artwork-btn');
   const artworksSection = document.getElementById('artworks-section');
   
-  if (account.role === 'artist') {
+  if (account.role === 'artist' || account.role === 'admin') {
     // Show artwork submission button (only if approved)
     if (submitArtworkBtn && account.status === 'approved') {
       submitArtworkBtn.style.display = 'inline-block';
