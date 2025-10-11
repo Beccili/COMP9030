@@ -11,7 +11,7 @@ const nationInput = document.getElementById("nation");
 const regionSelect = document.getElementById("region");
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
-const imageInput = document.getElementById("imageUrl");
+const profileImageInput = document.getElementById("profileImage");
 const bioInput = document.getElementById("bio");
 const roleSelect = document.getElementById("role");
 
@@ -73,18 +73,12 @@ function applyPasswordValidity(){
   else if (v.length < 6) passwordInput.setCustomValidity("Password must be at least 6 characters.");
   else passwordInput.setCustomValidity("");
 }
-function applyUrlValidity(){
-  const i = imageInput.value.trim();
-  if (i && !isValidUrl(i)) imageInput.setCustomValidity("Inappropriate URL format!"); else imageInput.setCustomValidity("");
-}
 nameInput.addEventListener("input", applyNameValidity);
 nameInput.addEventListener("blur", ()=>{applyNameValidity(); if(!nameInput.checkValidity()) nameInput.reportValidity();});
 emailInput.addEventListener("input", applyEmailValidity);
 emailInput.addEventListener("blur", ()=>{applyEmailValidity(); if(!emailInput.checkValidity()) emailInput.reportValidity();});
 passwordInput.addEventListener("input", applyPasswordValidity);
 passwordInput.addEventListener("blur", ()=>{applyPasswordValidity(); if(!passwordInput.checkValidity()) passwordInput.reportValidity();});
-imageInput.addEventListener("input", applyUrlValidity);
-imageInput.addEventListener("blur", ()=>{applyUrlValidity(); if(!imageInput.checkValidity()) imageInput.reportValidity();});
 
 // Removed renderList function as accounts are now shown on the account page
 
@@ -102,26 +96,50 @@ function escapeHtml(str) {
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
-  applyNameValidity(); applyEmailValidity(); applyPasswordValidity(); applyUrlValidity();
+  applyNameValidity(); applyEmailValidity(); applyPasswordValidity();
   if (!form.checkValidity()) { form.reportValidity(); return; }
-
-  const userData = {
-    name: nameInput.value.trim(),
-    email: emailInput.value.trim(),
-    password: passwordInput.value,
-    role: roleSelect.value,
-    region: regionSelect.value,
-    nation: nationInput.value.trim(),
-    imageUrl: imageInput.value.trim(),
-    bio: bioInput.value.trim()
-  };
 
   // Disable form while submitting
   const submitBtn = document.getElementById("saveBtn");
   submitBtn.disabled = true;
-  submitBtn.textContent = "Submitting...";
+  submitBtn.textContent = "Uploading...";
 
   try {
+    // Upload profile picture if provided
+    let imageUrl = 'assets/img/user-avatar.png'; // Default
+    
+    if (profileImageInput.files && profileImageInput.files.length > 0) {
+      submitBtn.textContent = "Uploading profile picture...";
+      
+      const formData = new FormData();
+      formData.append('profile_image', profileImageInput.files[0]);
+      
+      const uploadResponse = await fetch('/cycle3/backend/upload-profile.php', {
+        method: 'POST',
+        body: formData
+      });
+      
+      const uploadResult = await uploadResponse.json();
+      if (!uploadResult.success) {
+        throw new Error(uploadResult.message || 'Profile picture upload failed');
+      }
+      
+      imageUrl = uploadResult.data.path;
+    }
+    
+    submitBtn.textContent = "Submitting...";
+
+    const userData = {
+      name: nameInput.value.trim(),
+      email: emailInput.value.trim(),
+      password: passwordInput.value,
+      role: roleSelect.value,
+      region: regionSelect.value,
+      nation: nationInput.value.trim(),
+      imageUrl: imageUrl,
+      bio: bioInput.value.trim()
+    };
+
     // Register via backend API
     const user = await apiRegister(userData);
     

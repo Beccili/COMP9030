@@ -757,8 +757,8 @@ async function initializeData() {
     const user = sessionData.user;
     
     if (user.role !== 'admin') {
-      alert('Admin access required');
-      window.location.href = 'login.html';
+      alert('Admin access required. Please use admin login.');
+      window.location.href = 'admin-login.html';
       return;
     }
 

@@ -74,8 +74,8 @@ async function populateAccountInfo() {
   
   // Set avatar
   const avatar = document.getElementById('account-avatar');
-  if (avatar && account.imageUrl) {
-    avatar.src = account.imageUrl;
+  if (avatar) {
+    avatar.src = account.imageUrl || 'assets/img/user-avatar.png';
   }
   
   // Show optional fields if they have values

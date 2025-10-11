@@ -128,7 +128,8 @@ async function authenticateAdmin(username, password) {
 }
 
 function saveAdminSession(admin) {
-  // Save admin data to localStorage
+  // The session is already saved by apiLogin() in api.js
+  // Just keep the legacy admin flags for compatibility
   const adminData = {
     username: admin.username,
     displayName: admin.displayName,
@@ -139,6 +140,7 @@ function saveAdminSession(admin) {
 
   localStorage.setItem("atlas_admin", JSON.stringify(adminData));
   localStorage.setItem("atlas_admin_logged_in", "true");
+  // Note: atlas_session_id and atlas_user are already set by apiLogin()
 }
 
 function redirectToAdminDashboard() {
