@@ -1,6 +1,57 @@
+// ===== Import API =====
+import api from '../api.js';
+
 // ===== SHARED DATA =====
-const artEntries = (window.AppData && window.AppData.artEntries) || [];
+let artEntries = (window.AppData && window.AppData.artEntries) || [];
 const regionCentroids = (window.AppData && window.AppData.regionCentroids) || {};
+
+// Load artworks from backend on initialization
+async function loadArtworksFromBackend() {
+  try {
+    console.log('Loading artworks from backend...');
+    const artworks = await api.getArtworks({ status: 'approved' });
+    
+    // Convert backend artworks to frontend format for the map
+    artEntries = artworks.map(artwork => ({
+      id: artwork.id,
+      title: artwork.title,
+      artist: artwork.artist || 'Unknown Artist',
+      description: artwork.intro || '',
+      period: artwork.period || 'modern',
+      region: artwork.region || '',
+      sensitive: artwork.sensitive || false,
+      coords: artwork.coords || inferCoordsFromRegion(artwork.region),
+      location_sensitivity: artwork.sensitive ? 'general' : 'exact',
+      tags: artwork.tags || [],
+      artType: artwork.type || 'Artwork',
+      images: artwork.artworkImages && artwork.artworkImages.length > 0
+        ? artwork.artworkImages.map(img => img.name || img)
+        : ['assets/img/art01.png'] // Fallback image
+    }));
+    
+    console.log(`Loaded ${artEntries.length} artworks from backend`);
+    
+    // Update showcase entries
+    showcaseEntries = artEntries.slice(0, 5);
+    
+    // Reinitialize map and gallery if they exist
+    if (map) {
+      addMarkersToMap(artEntries);
+      fitMapToMarkers();
+    }
+    if (artworkStrip) {
+      renderArtworkStrip(showcaseEntries);
+    }
+  } catch (error) {
+    console.error('Failed to load artworks from backend:', error);
+    console.warn('Using default data from window.AppData');
+  }
+}
+
+// Helper function to infer coordinates from region
+function inferCoordsFromRegion(region) {
+  return regionCentroids[region] || { lat: -25.2744, lng: 133.7751 }; // Default to Australia center
+}
 
 // ===== GLOBAL VARIABLES =====
 let map;
@@ -183,7 +234,10 @@ function renderArtworkStrip(entries) {
 // ===== INITIALIZATION =====
 
 // Initialize the application when DOM is loaded
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
+  // Load data from backend first
+  await loadArtworksFromBackend();
+  
   // Initialize map
   initializeMap();
 

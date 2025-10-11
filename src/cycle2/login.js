@@ -1,16 +1,7 @@
 // ===== LOGIN FUNCTIONALITY =====
 
-// Test user data
-const TEST_USERS = {
-  testuser: {
-    username: "testuser",
-    password: "password123",
-    displayName: "Test User",
-    avatar: null, // Will use initials
-    email: "test@example.com",
-    role: "contributor",
-  },
-};
+// Import API functions
+import { apiLogin } from './api.js';
 
 // DOM Elements
 let loginForm;
@@ -81,18 +72,25 @@ function validateForm() {
   return isValid;
 }
 
-function authenticateUser(username, password) {
-  // Simulate network delay
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const user = TEST_USERS[username.toLowerCase()];
-      if (user && user.password === password) {
-        resolve({ success: true, user: user });
-      } else {
-        resolve({ success: false, message: "Invalid username or password" });
+async function authenticateUser(username, password) {
+  try {
+    const result = await apiLogin(username, password);
+    return { 
+      success: true, 
+      user: {
+        username: result.user.username,
+        displayName: result.user.name,
+        avatar: result.user.imageUrl || null,
+        email: result.user.email,
+        role: result.user.role
       }
-    }, 1000);
-  });
+    };
+  } catch (error) {
+    return { 
+      success: false, 
+      message: error.message || "Invalid username or password" 
+    };
+  }
 }
 
 function saveUserSession(user) {

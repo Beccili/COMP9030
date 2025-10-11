@@ -57,6 +57,16 @@ function initializeDataFiles() {
                 'role' => 'admin',
                 'status' => 'approved',
                 'created_at' => date('Y-m-d H:i:s')
+            ],
+            [
+                'id' => 'u_testartist',
+                'username' => 'testartist',
+                'password' => password_hash('password123', PASSWORD_DEFAULT),
+                'email' => 'testartist@example.com',
+                'name' => 'Test Artist',
+                'role' => 'artist',
+                'status' => 'approved',
+                'created_at' => date('Y-m-d H:i:s')
             ]
         ];
         file_put_contents(USERS_FILE, json_encode($defaultUsers, JSON_PRETTY_PRINT));
