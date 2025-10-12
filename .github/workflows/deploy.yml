@@ -70,6 +70,7 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 4132 }}
           script_stop: true
           script: |
             set -euo pipefail
@@ -79,11 +80,11 @@ jobs:
             fi
 
             # Go to your app directory that contains docker-compose.yml
-            cd /srv/app
+            cd /home/zhouplus/projects/js/artwork
 
             # Pull and run the latest image (compose file should reference :latest or a tag you set)
             docker compose pull
-            docker compose up -d --remove-orphans
+            docker compose down && docker compose up -d --remove-orphans
 
             # Optional cleanup
-            docker image prune -f
+            # docker image prune -f
