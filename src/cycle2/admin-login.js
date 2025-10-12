@@ -1,7 +1,7 @@
 // ===== ADMIN LOGIN FUNCTIONALITY =====
 
-// Import API module
-import { apiLogin } from './api.js';
+// Import admin-specific API module
+import adminAPI from './admin-api.js';
 
 // Test admin data (legacy)
 const TEST_ADMINS = {
@@ -102,20 +102,14 @@ function validateAdminForm() {
 
 async function authenticateAdmin(username, password) {
   try {
-    const result = await apiLogin(username, password);
-    // Check if user is actually an admin
-    if (result.user.role !== 'admin') {
-      return {
-        success: false,
-        message: "Admin access required. Please use regular login."
-      };
-    }
+    const result = await adminAPI.adminLogin(username, password);
     return {
       success: true,
       admin: {
         username: result.user.username,
         displayName: result.user.name,
         avatar: result.user.imageUrl || 'assets/img/user-avatar.png',
+        email: result.user.email,
         role: result.user.role,
         permissions: ["manage_artworks", "manage_users", "view_analytics"]
       }
@@ -129,20 +123,10 @@ async function authenticateAdmin(username, password) {
 }
 
 function saveAdminSession(admin) {
-  // The session is already saved by apiLogin() in api.js
-  // Just keep the legacy admin flags for compatibility
-  const adminData = {
-    username: admin.username,
-    displayName: admin.displayName,
-    avatar: admin.avatar,
-    role: admin.role,
-    permissions: admin.permissions,
-    loginTime: new Date().toISOString(),
-  };
-
-  localStorage.setItem("atlas_admin", JSON.stringify(adminData));
-  localStorage.setItem("atlas_admin_logged_in", "true");
-  // Note: atlas_session_id and atlas_user are already set by apiLogin()
+  // Session is already saved by adminAPI.adminLogin() to:
+  // - atlas_admin_session_id
+  // - atlas_admin
+  // This is separate from the public site session (atlas_session_id, atlas_user)
 }
 
 function redirectToAdminDashboard() {
@@ -212,11 +196,11 @@ function fillAdminTestCredentials() {
 }
 
 function checkExistingAdminLogin() {
-  // Check if admin is already logged in
-  const isLoggedIn = localStorage.getItem("atlas_admin_logged_in") === "true";
+  // Check if admin is already logged in via admin session
+  const adminSessionId = localStorage.getItem("atlas_admin_session_id");
   const adminData = localStorage.getItem("atlas_admin");
 
-  if (isLoggedIn && adminData) {
+  if (adminSessionId && adminData) {
     try {
       const admin = JSON.parse(adminData);
       // Show message that admin is already logged in
@@ -234,7 +218,7 @@ function checkExistingAdminLogin() {
       console.error("Error parsing admin data:", error);
       // Clear invalid data
       localStorage.removeItem("atlas_admin");
-      localStorage.removeItem("atlas_admin_logged_in");
+      localStorage.removeItem("atlas_admin_session_id");
     }
   }
 }

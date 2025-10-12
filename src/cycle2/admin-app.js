@@ -1,5 +1,5 @@
-// ===== Import API =====
-import api from './api.js';
+// ===== Import Admin API =====
+import adminAPI from './admin-api.js';
 
 // ===== Constants =====
 const TYPE_OPTIONS = ['Portrait', 'Painting', 'Installation', 'Sound Installation', 'Glass Installation', 'Cave Art', 'Mural', 'Gallery Piece', 'Rock Painting', 'Sculpture'];
@@ -387,7 +387,7 @@ async function approve(id) {
   const a = state.data.artworks.find(x => x.id === id); 
   if (!a) return; 
   try {
-    await api.adminApproveArtwork(id);
+    await adminAPI.adminApproveArtwork(id);
     a.status = 'approved'; 
     log('approve_artwork', id, a.title); 
     toast('Approved: ' + a.title); 
@@ -402,7 +402,7 @@ async function reject(id) {
   const a = state.data.artworks.find(x => x.id === id); 
   if (!a) return; 
   try {
-    await api.adminRejectArtwork(id, 'Rejected by admin');
+    await adminAPI.adminRejectArtwork(id, 'Rejected by admin');
     a.status = 'rejected'; 
     log('reject_artwork', id, a.title); 
     toast('Rejected: ' + a.title); 
@@ -417,7 +417,7 @@ async function flag(id) {
   const a = state.data.artworks.find(x => x.id === id); 
   if (!a) return; 
   try {
-    await api.updateArtworkStatus(id, 'flagged');
+    await adminAPI.adminUpdateArtworkStatus(id, 'flagged');
     a.status = 'flagged'; 
     log('flag_artwork', id, a.title); 
     toast('Flagged: ' + a.title); 
@@ -463,7 +463,7 @@ async function updateArtworkField(id, field, value) {
   
   try {
     const artistName = userName(a.artistId);
-    await api.updateArtwork(id, a, artistName);
+    await adminAPI.adminUpdateArtwork(id, a, artistName);
     log('update_artwork_' + field, id, String(value));
     toast('Saved'); 
     render();
@@ -493,7 +493,7 @@ async function saveArtworkEdit() {
   
   try {
     const artistName = userName(d.artistId);
-    await api.updateArtwork(id, d, artistName);
+    await adminAPI.adminUpdateArtwork(id, d, artistName);
     ['region', 'sensitive', 'address', 'artistId', 'type', 'period', 'date', 'intro'].forEach(k => a[k] = d[k]);
     log('save_artwork_edit', id, JSON.stringify({ region: a.region, sensitive: a.sensitive }));
     state.editing.artworkId = null; state.editing.draft = null;
@@ -536,7 +536,7 @@ function reviewReport(id, decision) {
 async function applyReportDecision(id, decision, note) {
   const r = state.data.reports.find(x => x.id === id); if (!r) return;
   try {
-    await api.updateReport(id, { status: 'closed', decision, note });
+    await adminAPI.adminUpdateReport(id, { status: 'closed', decision, note });
     r.status = 'closed'; r.decision = decision; r.note = note;
     log('review_report', id, JSON.stringify({ decision, note }));
   } catch (error) {
@@ -671,7 +671,7 @@ async function toggleUser(id) {
   if (!u) return; 
   const newStatus = u.status === 'active' ? 'inactive' : 'active';
   try {
-    await api.adminSetUserStatus(id, newStatus);
+    await adminAPI.adminSetUserStatus(id, newStatus);
     u.status = newStatus; 
     log('toggle_user', id, u.status); 
     toast('User ' + (u.status === 'active' ? 'activated' : 'deactivated')); 
@@ -697,7 +697,7 @@ async function changeRole(id, newRole) {
   if (!u) return; 
   const prev = u.role; 
   try {
-    await api.adminUpdateUser(id, { role: newRole });
+    await adminAPI.adminUpdateUser(id, { role: newRole });
     u.role = newRole; 
     log('change_user_role', id, `${prev} -> ${newRole}`); 
     toast('Role updated'); 
@@ -713,7 +713,7 @@ async function changeUserStatus(id, newStatus) {
   if (!u) return; 
   const prev = u.status; 
   try {
-    await api.adminSetUserStatus(id, newStatus);
+    await adminAPI.adminSetUserStatus(id, newStatus);
     u.status = newStatus; 
     log('change_user_status', id, `${prev} -> ${newStatus}`); 
     openModal('Status updated', `<div>User <strong>${u.name}</strong> is now <span class=\"pill ${newStatus === 'active' ? 'ok' : 'warn'}\">${newStatus}</span>.</div>`); 
@@ -736,15 +736,15 @@ function changeArtworkPeriod(artId, period) {
 // ===== Data Initialization =====
 async function initializeData() {
   try {
-    // Check if user is logged in and is admin
-    const sessionId = api.getSessionId();
+    // Check if admin is logged in
+    const sessionId = adminAPI.getAdminSessionId();
     if (!sessionId) {
-      console.warn('No session found, using test data');
+      console.warn('No admin session found, using test data');
       return;
     }
 
-    // Verify session and get user
-    const sessionData = await api.apiVerifySession();
+    // Verify admin session and get user
+    const sessionData = await adminAPI.verifyAdminSession();
     const user = sessionData.user;
     
     if (user.role !== 'admin') {
@@ -753,17 +753,17 @@ async function initializeData() {
       return;
     }
 
-    // Load data from backend
+    // Load data from backend using admin session
     // Load users
-    const users = await api.adminGetUsers();
+    const users = await adminAPI.adminGetUsers();
     state.data.users = users;
     
     // Load all artworks (including pending for admin)
-    const allArtworks = await api.getArtworks({ status: 'all' });
+    const allArtworks = await adminAPI.adminGetArtworks({ status: 'all' });
     state.data.artworks = allArtworks;
     
     // Load reports
-    const reports = await api.getReports('all');
+    const reports = await adminAPI.adminGetReports('all');
     state.data.reports = reports;
     
     // Update header with admin info
