@@ -91,8 +91,8 @@
     <main id="main-content" role="main">
       <section class="search-header">
         <div class="container">
-          <h1 class="page-title">Artwork Information Submission</h1>
-          <p class="page-description">Only <strong>approved artists</strong> can submit artworks. Submissions are reviewed by admins before publication.</p>
+          <h1 class="page-title" id="page-title">Artwork Information Submission</h1>
+          <p class="page-description" id="page-description">Only <strong>approved artists</strong> can submit artworks. Submissions are reviewed by admins before publication.</p>
         </div>
       </section>
 
@@ -180,8 +180,8 @@
               </div>
 
               <div class="form-actions">
-                <button class="btn btn-primary" type="submit">Submit</button>
-                <a class="btn btn-secondary" href="register.html">Back to Register</a>
+                <button class="btn btn-primary" type="submit" id="submit-btn">Submit</button>
+                <a class="btn btn-secondary" href="account.html" id="back-btn">Back to Account</a>
               </div>
             </form>
             <p id="submit-note" class="page-description" style="margin-top:var(--space-md);display:none;"></p>
@@ -212,6 +212,12 @@
       const lngInput = document.getElementById('longitude');
       const coordsNote = document.getElementById('coords-note');
       const artworkImagesInput = document.getElementById('artworkImages');
+      
+      // Check if in edit mode
+      const urlParams = new URLSearchParams(window.location.search);
+      const isEditMode = urlParams.get('edit') === 'true';
+      const artworkId = urlParams.get('id');
+      let currentArtwork = null;
 
       function updateAddressState() {
         const isSensitive = sensitiveSel.value === 'true';
@@ -227,7 +233,51 @@
         }
       }
       sensitiveSel.addEventListener('change', updateAddressState);
-      document.addEventListener('DOMContentLoaded', updateAddressState);
+      
+      // Load artwork data if in edit mode
+      async function loadArtworkForEdit() {
+        if (!isEditMode || !artworkId) return;
+        
+        try {
+          const api = await import('./api.js').then(m => m.default);
+          currentArtwork = await api.getArtwork(artworkId);
+          
+          // Update page title
+          document.getElementById('page-title').textContent = 'Edit Artwork';
+          document.getElementById('page-description').textContent = 'Edit your pending artwork submission. Changes will be reviewed again by admins.';
+          document.getElementById('submit-btn').textContent = 'Update Artwork';
+          
+          // Pre-populate form fields
+          document.getElementById('title').value = currentArtwork.title || '';
+          document.getElementById('artType').value = currentArtwork.type || 'Portrait';
+          document.getElementById('period').value = currentArtwork.period || 'Contemporary';
+          document.getElementById('region').value = currentArtwork.region || 'NSW';
+          sensitiveSel.value = currentArtwork.sensitive ? 'true' : 'false';
+          addressInput.value = currentArtwork.address || '';
+          
+          // Handle coordinates
+          if (currentArtwork.coords) {
+            latInput.value = currentArtwork.coords.lat || '';
+            lngInput.value = currentArtwork.coords.lng || '';
+          }
+          
+          document.getElementById('desc').value = currentArtwork.intro || '';
+          
+          // Make images optional in edit mode
+          artworkImagesInput.required = false;
+          
+          updateAddressState();
+        } catch (error) {
+          console.error('Failed to load artwork:', error);
+          alert('Failed to load artwork data. Redirecting back...');
+          window.location.href = 'account.html';
+        }
+      }
+      
+      document.addEventListener('DOMContentLoaded', () => {
+        updateAddressState();
+        loadArtworkForEdit();
+      });
 
       // Popup notification function
       function showNotification(type, title, message, autoClose = true) {
@@ -383,31 +433,49 @@
             artworkImages: uploadedImages
           };
 
-          // Submit artwork to backend
-          await api.createArtwork(artworkData, artist);
-          
-          // Also save to localStorage for backwards compatibility
-          const localData = {
-            id: 'w_' + Math.random().toString(36).slice(2) + Date.now().toString(36),
-            ...artworkData,
-            status: 'pending',
-            submittedAt: new Date().toISOString()
-          };
-          const key = 'IAA_artwork_submissions_v1';
-          const arr = JSON.parse(localStorage.getItem(key) || '[]');
-          arr.push(localData);
-          localStorage.setItem(key, JSON.stringify(arr));
+          if (isEditMode && artworkId) {
+            // Update existing artwork
+            await api.updateArtwork(artworkId, artworkData, artist);
+            
+            // Show success popup
+            showNotification(
+              'success',
+              'Artwork Updated!',
+              'Your artwork has been updated successfully and will be reviewed again.',
+              true
+            );
+            
+            // Redirect to account page after a delay
+            setTimeout(() => {
+              window.location.href = 'account.html';
+            }, 2000);
+          } else {
+            // Submit new artwork to backend
+            await api.createArtwork(artworkData, artist);
+            
+            // Also save to localStorage for backwards compatibility
+            const localData = {
+              id: 'w_' + Math.random().toString(36).slice(2) + Date.now().toString(36),
+              ...artworkData,
+              status: 'pending',
+              submittedAt: new Date().toISOString()
+            };
+            const key = 'IAA_artwork_submissions_v1';
+            const arr = JSON.parse(localStorage.getItem(key) || '[]');
+            arr.push(localData);
+            localStorage.setItem(key, JSON.stringify(arr));
 
-          // Show success popup
-          showNotification(
-            'success',
-            'Artwork Submitted!',
-            'Your artwork has been submitted successfully and is pending admin review.',
-            true
-          );
-          
-          form.reset();
-          updateAddressState();
+            // Show success popup
+            showNotification(
+              'success',
+              'Artwork Submitted!',
+              'Your artwork has been submitted successfully and is pending admin review.',
+              true
+            );
+            
+            form.reset();
+            updateAddressState();
+          }
         } catch (error) {
           console.error('Submission error:', error);
           

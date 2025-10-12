@@ -259,6 +259,11 @@ function updateArtwork($id, $input) {
         sendError('Permission denied');
     }
     
+    // Only allow owners to edit pending artworks
+    if ($isOwner && !$isAdmin && $artwork['status'] !== 'pending') {
+        sendError('Only pending artworks can be edited');
+    }
+    
     // Update artwork
     if (isset($input['status']) && $isAdmin) {
         $artwork['status'] = $input['status'];
@@ -299,7 +304,7 @@ function updateArtwork($id, $input) {
 }
 
 function deleteArtwork($id) {
-    // Validate session (admin only)
+    // Validate session
     $sessionId = $_GET['session_id'] ?? '';
     if (empty($sessionId)) {
         sendError('Authentication required');
@@ -319,11 +324,31 @@ function deleteArtwork($id) {
         }
     }
     
-    if (!$user || $user['role'] !== 'admin') {
-        sendError('Admin access required');
+    $artworks = loadJsonFile(ARTWORKS_FILE);
+    $artworkToDelete = null;
+    foreach ($artworks as $artwork) {
+        if ($artwork['id'] === $id) {
+            $artworkToDelete = $artwork;
+            break;
+        }
     }
     
-    $artworks = loadJsonFile(ARTWORKS_FILE);
+    if (!$artworkToDelete) {
+        sendError('Artwork not found', 404);
+    }
+    
+    $isAdmin = $user && $user['role'] === 'admin';
+    $isOwner = $user && $artworkToDelete['submitted_by'] === $user['id'];
+    
+    // Admin can delete anything, owner can only delete pending artworks
+    if (!$isAdmin && !$isOwner) {
+        sendError('Permission denied');
+    }
+    
+    if ($isOwner && !$isAdmin && $artworkToDelete['status'] !== 'pending') {
+        sendError('Only pending artworks can be deleted');
+    }
+    
     $artworks = array_filter($artworks, function($artwork) use ($id) {
         return $artwork['id'] !== $id;
     });

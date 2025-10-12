@@ -174,11 +174,29 @@ function createArtworkCard(artwork) {
     ? (window.Utils && window.Utils.asset ? window.Utils.asset(artwork.images[0]) : artwork.images[0])
     : 'assets/img/art01.png';
   
+  // Determine status badge
+  let statusBadge = '';
+  if (artwork.status === 'pending') {
+    statusBadge = '<span class="status-badge status-pending">Pending Review</span>';
+  } else if (artwork.status === 'approved') {
+    statusBadge = '<span class="status-badge status-approved">Approved</span>';
+  } else if (artwork.status === 'rejected') {
+    statusBadge = '<span class="status-badge" style="color:#e06c75;border-color:#e06c7533;">Rejected</span>';
+  }
+  
+  // Action buttons for pending artworks
+  const actionButtons = artwork.status === 'pending' ? `
+    <div class="artwork-actions" style="display:flex;gap:var(--space-sm);margin-top:var(--space-sm)">
+      <button class="btn btn-secondary" style="font-size:var(--font-size-sm);padding:var(--space-xs) var(--space-sm)" onclick="editArtwork('${artwork.id}', event)">Edit</button>
+      <button class="btn btn-secondary" style="font-size:var(--font-size-sm);padding:var(--space-xs) var(--space-sm);color:#e06c75;border-color:#e06c75" onclick="deleteArtwork('${artwork.id}', event)">Delete</button>
+    </div>
+  ` : '';
+  
   card.innerHTML = `
     <img src="${imageSrc}" alt="${artwork.title}" class="artwork-image" 
          onerror="this.src='assets/img/art01.png'">
     <div class="artwork-content">
-      <h3 class="artwork-title">${artwork.title}</h3>
+      <h3 class="artwork-title">${artwork.title} ${statusBadge}</h3>
       <p class="artwork-artist">by ${artwork.artist}</p>
       ${artwork.description ? `<p style="color:var(--muted);font-size:var(--font-size-sm);margin-top:var(--space-xs)">${artwork.description.substring(0, 100)}...</p>` : ''}
       <div class="artwork-tags">
@@ -186,23 +204,106 @@ function createArtworkCard(artwork) {
         ${artwork.period ? `<span class="artwork-tag">${artwork.period}</span>` : ''}
         ${artwork.region ? `<span class="artwork-tag">${artwork.region}</span>` : ''}
       </div>
+      ${actionButtons}
     </div>
   `;
   
-  // Add click handler to view artwork details
+  // Add click handler to view artwork details (only on the image, not buttons)
+  const img = card.querySelector('.artwork-image');
+  const title = card.querySelector('.artwork-title');
+  
   if (artwork.id) {
-    card.style.cursor = 'pointer';
-    card.onclick = () => {
+    img.style.cursor = 'pointer';
+    title.style.cursor = 'pointer';
+    
+    const viewHandler = () => {
       window.location.href = `detail.html?id=${artwork.id}`;
     };
-  } else if (artwork.url) {
-    card.style.cursor = 'pointer';
-    card.onclick = () => {
-      window.open(artwork.url, '_blank');
-    };
+    
+    img.onclick = viewHandler;
+    title.onclick = viewHandler;
   }
   
   return card;
+}
+
+// Edit artwork - redirect to artwork-submit page in edit mode
+window.editArtwork = function(artworkId, event) {
+  event.stopPropagation(); // Prevent card click
+  window.location.href = `artwork-submit.html?edit=true&id=${artworkId}`;
+};
+
+// Delete artwork
+window.deleteArtwork = async function(artworkId, event) {
+  event.stopPropagation(); // Prevent card click
+  
+  if (!confirm('Are you sure you want to delete this artwork? This action cannot be undone.')) {
+    return;
+  }
+  
+  try {
+    await api.deleteArtwork(artworkId);
+    
+    // Show success notification
+    showNotification('success', 'Artwork Deleted', 'Your artwork has been deleted successfully.');
+    
+    // Reload the page after a short delay
+    setTimeout(() => {
+      window.location.reload();
+    }, 1500);
+  } catch (error) {
+    console.error('Delete failed:', error);
+    showNotification('error', 'Delete Failed', error.message || 'Failed to delete artwork. Please try again.');
+  }
+};
+
+// Notification function
+function showNotification(type, title, message) {
+  const overlay = document.createElement('div');
+  overlay.className = 'notification-overlay';
+  overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:9999;animation:fadeIn 0.2s ease';
+  
+  const popup = document.createElement('div');
+  popup.className = `notification-popup notification-${type}`;
+  popup.style.cssText = 'background:var(--elev-1);padding:var(--space-xl);border-radius:var(--border-radius-lg);max-width:500px;width:90%;box-shadow:var(--shadow-xl);animation:slideUp 0.3s ease;text-align:center';
+  
+  const icon = type === 'success' ? '✅' : '❌';
+  const titleColor = type === 'success' ? '#8dc891' : '#e06c75';
+  
+  popup.innerHTML = `
+    <div style="font-size:48px;margin-bottom:var(--space-md)">${icon}</div>
+    <h3 style="font-size:var(--font-size-xl);font-weight:600;margin-bottom:var(--space-sm);color:${titleColor}">${title}</h3>
+    <p style="color:var(--muted);margin-bottom:var(--space-lg)">${message}</p>
+    <button class="btn btn-primary" onclick="this.closest('.notification-overlay').remove()">OK</button>
+  `;
+  
+  overlay.appendChild(popup);
+  document.body.appendChild(overlay);
+  
+  // Auto close after 3 seconds
+  setTimeout(() => {
+    if (overlay.parentNode) {
+      overlay.remove();
+    }
+  }, 3000);
+  
+  // Close on overlay click
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) {
+      overlay.remove();
+    }
+  });
+  
+  // Add animations
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  `;
+  if (!document.querySelector('style[data-notification-styles]')) {
+    style.setAttribute('data-notification-styles', 'true');
+    document.head.appendChild(style);
+  }
 }
 
 // Initialize page
