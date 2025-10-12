@@ -149,7 +149,7 @@ async function populateArtworks(account) {
           images: artwork.artworkImages && artwork.artworkImages.length > 0
             ? artwork.artworkImages.map(img => img.name || img)
             : ['assets/img/art01.png']
-        });
+        }, true); // true = show edit/delete actions
         artworksGrid.appendChild(card);
       });
     } else {
@@ -165,7 +165,7 @@ async function populateArtworks(account) {
 }
 
 // Create an artwork card element
-function createArtworkCard(artwork) {
+function createArtworkCard(artwork, showActions = false) {
   const card = document.createElement('div');
   card.className = 'artwork-card';
   
@@ -184,13 +184,13 @@ function createArtworkCard(artwork) {
     statusBadge = '<span class="status-badge" style="color:#e06c75;border-color:#e06c7533;">Rejected</span>';
   }
   
-  // Action buttons for all user's artworks
-  const actionButtons = `
+  // Action buttons only for submitted artworks (not liked)
+  const actionButtons = showActions ? `
     <div class="artwork-actions" style="display:flex;gap:var(--space-sm);margin-top:var(--space-sm)">
       <button class="btn btn-secondary" style="font-size:var(--font-size-sm);padding:var(--space-xs) var(--space-sm)" onclick="editArtwork('${artwork.id}', '${artwork.status}', event)">Edit</button>
       <button class="btn btn-secondary" style="font-size:var(--font-size-sm);padding:var(--space-xs) var(--space-sm);color:#e06c75;border-color:#e06c75" onclick="deleteArtwork('${artwork.id}', '${artwork.status}', event)">Delete</button>
     </div>
-  `;
+  ` : '';
   
   card.innerHTML = `
     <img src="${imageSrc}" alt="${artwork.title}" class="artwork-image" 
@@ -426,7 +426,7 @@ async function populateLikedArtworks() {
           images: artwork.artworkImages && artwork.artworkImages.length > 0
             ? artwork.artworkImages.map(img => img.name || img)
             : ['assets/img/art01.png']
-        });
+        }, false); // false = don't show edit/delete actions for liked artworks
         likedGrid.appendChild(card);
       });
     } else {
