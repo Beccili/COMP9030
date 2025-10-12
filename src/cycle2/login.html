@@ -10,7 +10,7 @@
     />
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="homePage/styles.css" />
+    <link rel="stylesheet" href="home-styles.css" />
     <link rel="stylesheet" href="login.css" />
   </head>
 
@@ -23,14 +23,14 @@
       <div class="container">
         <div class="header-content">
           <div class="logo">
-            <a href="homePage/index.html" class="logo-link">
+            <a href="home.html" class="logo-link">
               <h1 class="logo-text">Indigenous Art Atlas</h1>
             </a>
           </div>
           <nav class="nav" role="navigation" aria-label="Main navigation">
             <ul class="nav-list">
               <li>
-                <a href="homePage/index.html#map-section" class="nav-link"
+                <a href="home.html#map-section" class="nav-link"
                   >Map</a
                 >
               </li>
@@ -80,13 +80,13 @@
             <div class="login-form-container">
               <form id="loginForm" class="login-form" novalidate>
                 <div class="form-group">
-                  <label for="username" class="form-label">Username</label>
+                  <label for="username" class="form-label">Username or Email</label>
                   <input
                     type="text"
                     id="username"
                     name="username"
                     class="form-input"
-                    placeholder="Enter your username"
+                    placeholder="Enter your username or email"
                     required
                     autocomplete="username"
                   />
@@ -140,7 +140,7 @@
                 <div class="test-credentials">
                   <div class="credential-item">
                     <span class="credential-label">Username:</span>
-                    <code class="credential-value">testuser</code>
+                    <code class="credential-value">testartist</code>
                   </div>
                   <div class="credential-item">
                     <span class="credential-label">Password:</span>
@@ -251,7 +251,7 @@
 
     <!-- Custom JavaScript -->
     <script src="js/common-utils.js"></script>
-    <script src="login.js"></script>
+    <script type="module" src="login.js"></script>
   </body>
 </html>
 <!--

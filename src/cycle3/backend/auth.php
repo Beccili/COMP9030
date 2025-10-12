@@ -23,6 +23,9 @@ switch ($method) {
                 case 'register':
                     handleRegister($input);
                     break;
+                case 'update_profile':
+                    handleUpdateProfile($input);
+                    break;
                 default:
                     sendError('Invalid action');
             }
@@ -46,30 +49,30 @@ switch ($method) {
 function handleLogin($input) {
     // Validate input
     if (!isset($input['username']) || !isset($input['password'])) {
-        sendError('Username and password required');
+        sendError('Username/email and password required');
     }
     
-    $username = trim($input['username']);
+    $usernameOrEmail = trim($input['username']);
     $password = $input['password'];
     
-    if (empty($username) || empty($password)) {
-        sendError('Username and password cannot be empty');
+    if (empty($usernameOrEmail) || empty($password)) {
+        sendError('Username/email and password cannot be empty');
     }
     
     // Load users
     $users = loadJsonFile(USERS_FILE);
     
-    // Find user
+    // Find user by username OR email
     $user = null;
     foreach ($users as $u) {
-        if ($u['username'] === $username) {
+        if ($u['username'] === $usernameOrEmail || $u['email'] === $usernameOrEmail) {
             $user = $u;
             break;
         }
     }
     
     if (!$user || !password_verify($password, $user['password'])) {
-        sendError('Invalid username or password');
+        sendError('Invalid username/email or password');
     }
     
     if ($user['status'] !== 'approved') {
@@ -92,7 +95,7 @@ function handleLogin($input) {
         'username' => $user['username'],
         'role' => $user['role'],
         'created_at' => date('Y-m-d H:i:s'),
-        'expires_at' => date('Y-m-d H:i:s', time() + 3600) // 1 hour
+        'expires_at' => date('Y-m-d H:i:s', time() + 3600 * 24) // 24 hour
     ];
     
     saveJsonFile(SESSIONS_FILE, $sessions);
@@ -235,5 +238,65 @@ function verifySession() {
     }
     
     sendError('Invalid session');
+}
+
+function handleUpdateProfile($input) {
+    $sessionId = $_GET['session_id'] ?? '';
+    
+    if (empty($sessionId)) {
+        sendError('Session ID required');
+    }
+    
+    // Validate session
+    $sessions = loadJsonFile(SESSIONS_FILE);
+    $userId = null;
+    
+    foreach ($sessions as $session) {
+        if ($session['id'] === $sessionId) {
+            if (strtotime($session['expires_at']) < time()) {
+                sendError('Session expired');
+            }
+            $userId = $session['user_id'];
+            break;
+        }
+    }
+    
+    if (!$userId) {
+        sendError('Invalid session');
+    }
+    
+    // Load users
+    $users = loadJsonFile(USERS_FILE);
+    
+    // Find and update user
+    for ($i = 0; $i < count($users); $i++) {
+        if ($users[$i]['id'] === $userId) {
+            // Update allowed fields (users can't change their own status or role)
+            $allowedFields = ['name', 'email', 'region', 'nation', 'bio', 'imageUrl'];
+            
+            foreach ($allowedFields as $field) {
+                if (isset($input[$field])) {
+                    $users[$i][$field] = $input[$field];
+                }
+            }
+            
+            // Update password if provided
+            if (isset($input['password']) && !empty($input['password'])) {
+                $users[$i]['password'] = password_hash($input['password'], PASSWORD_DEFAULT);
+            }
+            
+            $users[$i]['updated_at'] = date('Y-m-d H:i:s');
+            saveJsonFile(USERS_FILE, $users);
+            
+            // Return updated user (without password)
+            unset($users[$i]['password']);
+            
+            sendResponse(true, 'Profile updated successfully', [
+                'user' => $users[$i]
+            ]);
+        }
+    }
+    
+    sendError('User not found', 404);
 }
 ?>

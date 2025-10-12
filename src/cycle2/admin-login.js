@@ -1,6 +1,9 @@
 // ===== ADMIN LOGIN FUNCTIONALITY =====
 
-// Test admin data
+// Import admin-specific API module
+import adminAPI from './admin-api.js';
+
+// Test admin data (legacy)
 const TEST_ADMINS = {
   admin: {
     username: "admin",
@@ -97,35 +100,33 @@ function validateAdminForm() {
   return isValid;
 }
 
-function authenticateAdmin(username, password) {
-  // Simulate network delay
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const admin = TEST_ADMINS[username.toLowerCase()];
-      if (admin && admin.password === password) {
-        resolve({ success: true, admin: admin });
-      } else {
-        resolve({
-          success: false,
-          message: "Invalid administrator credentials",
-        });
+async function authenticateAdmin(username, password) {
+  try {
+    const result = await adminAPI.adminLogin(username, password);
+    return {
+      success: true,
+      admin: {
+        username: result.user.username,
+        displayName: result.user.name,
+        avatar: result.user.imageUrl || 'assets/img/user-avatar.png',
+        email: result.user.email,
+        role: result.user.role,
+        permissions: ["manage_artworks", "manage_users", "view_analytics"]
       }
-    }, 1200);
-  });
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.message || "Invalid administrator credentials"
+    };
+  }
 }
 
 function saveAdminSession(admin) {
-  // Save admin data to localStorage
-  const adminData = {
-    username: admin.username,
-    displayName: admin.displayName,
-    role: admin.role,
-    permissions: admin.permissions,
-    loginTime: new Date().toISOString(),
-  };
-
-  localStorage.setItem("atlas_admin", JSON.stringify(adminData));
-  localStorage.setItem("atlas_admin_logged_in", "true");
+  // Session is already saved by adminAPI.adminLogin() to:
+  // - atlas_admin_session_id
+  // - atlas_admin
+  // This is separate from the public site session (atlas_session_id, atlas_user)
 }
 
 function redirectToAdminDashboard() {
@@ -140,7 +141,7 @@ function redirectToAdminDashboard() {
     formContainer.insertBefore(successMessage, formContainer.firstChild);
   }
 
-  // Redirect after a short delay
+  // Redirect after a short delay to the actual admin dashboard
   setTimeout(() => {
     window.location.href = "admin-dashboard.html";
   }, 1500);
@@ -195,11 +196,11 @@ function fillAdminTestCredentials() {
 }
 
 function checkExistingAdminLogin() {
-  // Check if admin is already logged in
-  const isLoggedIn = localStorage.getItem("atlas_admin_logged_in") === "true";
+  // Check if admin is already logged in via admin session
+  const adminSessionId = localStorage.getItem("atlas_admin_session_id");
   const adminData = localStorage.getItem("atlas_admin");
 
-  if (isLoggedIn && adminData) {
+  if (adminSessionId && adminData) {
     try {
       const admin = JSON.parse(adminData);
       // Show message that admin is already logged in
@@ -217,7 +218,7 @@ function checkExistingAdminLogin() {
       console.error("Error parsing admin data:", error);
       // Clear invalid data
       localStorage.removeItem("atlas_admin");
-      localStorage.removeItem("atlas_admin_logged_in");
+      localStorage.removeItem("atlas_admin_session_id");
     }
   }
 }
@@ -277,8 +278,6 @@ document.addEventListener("DOMContentLoaded", function () {
   if (adminUsernameInput && !localStorage.getItem("atlas_admin_logged_in")) {
     adminUsernameInput.focus();
   }
-
-  console.log("Admin login page initialized successfully");
 });
 
 /*

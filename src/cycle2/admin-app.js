@@ -1,3 +1,6 @@
+// ===== Import Admin API =====
+import adminAPI from './admin-api.js';
+
 // ===== Constants =====
 const TYPE_OPTIONS = ['Portrait', 'Painting', 'Installation', 'Sound Installation', 'Glass Installation', 'Cave Art', 'Mural', 'Gallery Piece', 'Rock Painting', 'Sculpture'];
 const REGION_OPTIONS = ['All regions', 'NSW', 'VIC', 'QLD', 'SA', 'WA', 'NT', 'TAS', 'ACT'];
@@ -14,30 +17,9 @@ const state = {
     users: { text: '', role: '' }
   },
   data: {
-    users: [
-      { id: 'u_vincent', name: 'Vincent Namatjira', email: 'vincent@iap.demo', role: 'artist', region: 'SA', status: 'active', created: '2025-09-05', gender: 'male', phone: '', dob: '1983-01-01', nation: 'Western Arrernte', bio: 'Contemporary Indigenous artist known for political portraits and Archibald Prize winner.' },
-      { id: 'u_kaylene', name: 'Kaylene Whiskey', email: 'kaylene@iap.demo', role: 'artist', region: 'SA', status: 'active', created: '2025-09-05', gender: 'female', phone: '', dob: '1976-01-01', nation: 'Yankunytjatjara', bio: 'Pop-inflected painter blending Anangu culture with global icons.' },
-      { id: 'u_tony', name: 'Tony Albert', email: 'tony@iap.demo', role: 'artist', region: 'QLD', status: 'active', created: '2025-09-05', gender: 'male', phone: '', dob: '1981-01-01', nation: 'Yidinji', bio: 'Installation artist interrogating Aboriginalia and national narratives.' },
-      { id: 'u_megan', name: 'Megan Cope', email: 'megan@iap.demo', role: 'artist', region: 'QLD', status: 'active', created: '2025-09-05', gender: 'female', phone: '', dob: '1982-01-01' },
-      { id: 'u_yhonnie', name: 'Yhonnie Scarce', email: 'yhonnie@iap.demo', role: 'artist', region: 'SA', status: 'active', created: '2025-09-05', gender: 'female', phone: '', dob: '1973-01-01' },
-      { id: 'u_user1', name: 'Alex Guest', email: 'alex@iap.demo', role: 'user', region: 'VIC', status: 'active', created: '2025-09-06', gender: '', phone: '', dob: '' },
-      { id: 'u_admin1', name: 'Site Admin', email: 'admin@iap.demo', role: 'admin', region: 'SA', status: 'active', created: '2025-09-01', gender: '', phone: '', dob: '' },
-    ],
-    artworks: [
-      { id: 'a_2001', title: 'Karlu Karlu petroglyph', theme: 'Ancestral stories', date: '2025-08-31', nature: 'rock art', type: 'Rock Painting', country: 'AU', location: 'Tennant Creek, NT', submitter: 'u_vincent', artistId: 'u_vincent', status: 'pending', tags: ['rock', 'ancestral'], booth: 'B12', submitted: '2025-08-31', region: 'NT', sensitive: true, address: '', period: 'ancient', intro: 'Petroglyph site associated with ancestral stories.' },
-      { id: 'a_2002', title: 'Ngarrindjeri weaving – basket', theme: 'Weaving tradition', date: '2025-08-20', nature: 'weaving', type: 'Sculpture', country: 'AU', location: 'Adelaide SA museum', submitter: 'u_kaylene', artistId: 'u_kaylene', status: 'approved', tags: ['weaving', 'museum'], booth: 'A03', submitted: '2025-08-20', region: 'SA', sensitive: false, address: 'North Terrace, Adelaide SA', period: 'modern', intro: 'Basket weaving representing living cultural practice.' },
-      { id: 'a_2003', title: 'Street mural – Kaurna welcome', theme: 'Welcome to Country', date: '2025-08-22', nature: 'mural', type: 'Mural', country: 'AU', location: 'Rundle St, Adelaide', submitter: 'u_tony', artistId: 'u_tony', status: 'flagged', tags: ['public', 'contemporary'], booth: 'Outdoor-07', submitted: '2025-08-22', region: 'SA', sensitive: false, address: 'Rundle St, Adelaide SA', period: 'modern', intro: 'Public mural acknowledging Kaurna Country.' },
-      { id: 'a_vincent_2020', title: 'Stand Strong for Who You Are', theme: 'Identity & history', date: '2020-01-01', nature: 'painting', type: 'Portrait', country: 'AU', location: 'Indulkana, APY Lands SA', submitter: 'u_vincent', artistId: 'u_vincent', status: 'approved', tags: ['portrait', 'contemporary'], booth: 'V01', submitted: '2025-09-05', region: 'SA', sensitive: false, address: 'Indulkana, APY Lands', period: 'modern', intro: 'Bold contemporary portrait engaging with identity and history.', artworkImages: [{ name: 'portrait_main.jpg', size: 2048000, type: 'image/jpeg' }, { name: 'portrait_detail.jpg', size: 1536000, type: 'image/jpeg' }] },
-      { id: 'a_kaylene_2017', title: 'Kaylene TV', theme: 'Pop & Anangu culture', date: '2017-01-01', nature: 'painting', type: 'Painting', country: 'AU', location: 'Indulkana, APY Lands SA', submitter: 'u_kaylene', artistId: 'u_kaylene', status: 'approved', tags: ['pop', 'female-icons'], booth: 'K01', submitted: '2025-09-05', region: 'SA', sensitive: false, address: 'Indulkana, APY Lands', period: 'modern', intro: 'Pop-inflected painting blending Anangu culture with global icons.' },
-      { id: 'a_tony_2008', title: 'Sorry', theme: 'Aboriginalia & apology', date: '2008-02-13', nature: 'installation', type: 'Installation', country: 'AU', location: 'Brisbane QLD / Sydney NSW', submitter: 'u_tony', artistId: 'u_tony', status: 'approved', tags: ['installation', 'text'], booth: 'T01', submitted: '2025-09-05', region: 'QLD', sensitive: false, address: 'GOMA Brisbane', period: 'modern', intro: 'Installation interrogating Aboriginalia and national apology.', artworkImages: [{ name: 'installation_view1.jpg', size: 3072000, type: 'image/jpeg' }, { name: 'installation_view2.jpg', size: 2560000, type: 'image/jpeg' }, { name: 'installation_detail.jpg', size: 1792000, type: 'image/jpeg' }] },
-      { id: 'a_megan_2020', title: 'Untitled Death Song', theme: 'Ecology & mining legacy', date: '2020-01-01', nature: 'sound sculpture', type: 'Sound Installation', country: 'AU', location: 'Minjerribah QLD / Melbourne VIC', submitter: 'u_megan', artistId: 'u_megan', status: 'approved', tags: ['sound', 'sculpture'], booth: 'M01', submitted: '2025-09-05', region: 'QLD', sensitive: false, address: 'Minjerribah QLD', period: 'modern', intro: 'Site-responsive sound work on ecologies and mining.' },
-      { id: 'a_yhonnie_2015', title: 'Thunder Raining Poison', theme: 'Memory & nuclear tests', date: '2015-01-01', nature: 'glass installation', type: 'Glass Installation', country: 'AU', location: 'SA / VIC', submitter: 'u_yhonnie', artistId: 'u_yhonnie', status: 'approved', tags: ['glass', 'installation'], booth: 'Y01', submitted: '2025-09-05', region: 'SA', sensitive: false, address: 'Melbourne VIC', period: 'modern', intro: 'Hand-blown glass installation reflecting on nuclear tests.' },
-    ],
-    reports: [
-      { id: 'r_3001', artwork: 'a_2003', reason: 'Cultural sensitivity concerns', detail: 'Caption uses non-approved terminology and may be culturally insensitive', email: 'reporter1@example.com', created: '2025-09-02', status: 'open' },
-      { id: 'r_3002', artwork: 'a_2002', reason: 'Copyright violation', detail: 'Missing consent verification documentation from community', email: '', created: '2025-08-24', status: 'open' },
-      { id: 'r_3003', artwork: 'a_vincent_2020', reason: 'Inaccurate information', detail: 'Location information appears to be incorrect based on local knowledge', email: 'community@example.org', created: '2025-09-01', status: 'closed', decision: 'approved' },
-    ],
+    users: [],
+    artworks: [],
+    reports: [],
     reservations: [],
     audit: []
   }
@@ -69,12 +51,25 @@ const closeModal = () => $('#modal').classList.remove('show');
 function focusMain() { setTimeout(() => $('#app').focus(), 0); }
 function deepClone(o) { return JSON.parse(JSON.stringify(o)); }
 
-function userName(id) { const u = state.data.users.find(u => u.id === id); return u ? u.name : id; }
-function artTitle(id) { const a = state.data.artworks.find(a => a.id === id); return a ? `${a.title} (${a.location})` : id; }
+function userName(id) { const u = state.data.users.find(u => u.id === id); return u ? u.name : (id || 'Unknown'); }
+function artTitle(id) { const a = state.data.artworks.find(a => a.id === id); return a ? (a.location ? `${a.title} (${a.location})` : a.title) : id; }
 function short(s, n = 90) { if (!s) return ''; return s.length > n ? s.slice(0, n - 1) + '…' : s; }
 
 // ===== Filter setters =====
-function setArtFilter(key, val) { state.filters.artworks[key] = val; render(); }
+let artFilterTimeout = null;
+function setArtFilter(key, val) { 
+  state.filters.artworks[key] = val;
+  
+  // Debounce text input to avoid losing focus
+  if (key === 'text') {
+    clearTimeout(artFilterTimeout);
+    artFilterTimeout = setTimeout(() => {
+      render();
+    }, 300);
+  } else {
+    render();
+  }
+}
 function setUserFilter(key, val) { state.filters.users[key] = val; render(); }
 
 // ===== Views =====
@@ -88,7 +83,7 @@ function Dashboard() {
       <div class="grid cols-3">
         ${Card('All Artworks', totalArtworks, 'info')}
         ${Card('All Users', totalUsers, 'info')}
-        ${Card('Open Reports', openReports, 'danger')}
+        ${Card('Open Reports', openReports, openReports > 0 ? 'danger' : 'ok')}
       </div>
     </section>
   `;
@@ -118,14 +113,13 @@ function Artworks() {
       : (row.artworkImage ? '1 image' : '-');
     return `<tr>
       <td><a href="#" onclick="previewArtwork('${row.id}');return false;">${row.title}</a></td>
-      <td>${userName(row.artistId)}</td>
+      <td>${row.artist || userName(row.artistId)}</td>
       <td>${row.type}</td>
       <td>${periodLabel}</td>
       <td>${row.region}</td>
       <td>${sensitiveCell}</td>
       <td>${addressCell}</td>
       <td>${artworkImagesCell}</td>
-      <td>${safe(row.intro)}</td>
       <td>${RowActions(row)}</td>
     </tr>`;
   }).join('');
@@ -158,8 +152,8 @@ function Artworks() {
                     <span class="th-label">Period</span>
                     <select class="form-control th-control" onchange="setArtFilter('period', this.value)">
                       <option value="">All</option>
-                      <option value="ancient" ${f.period === 'ancient' ? 'selected' : ''}>Ancient</option>
-                      <option value="modern" ${f.period === 'modern' ? 'selected' : ''}>Modern</option>
+                      <option value="Ancient" ${f.period === 'Ancient' ? 'selected' : ''}>Ancient</option>
+                      <option value="Contemporary" ${f.period === 'Contemporary' ? 'selected' : ''}>Contemporary</option>
                     </select>
                   </div>
                 </th>
@@ -183,12 +177,11 @@ function Artworks() {
                 </th>
                 <th><span class="th-label">Address</span></th>
                 <th><span class="th-label">Images</span></th>
-                <th><span class="th-label">Description</span></th>
                 <th style="text-align:right"><button class="btn" onclick="newArtwork()">+ New</button></th>
               </tr>
             </thead>
             <tbody>
-              ${rowsHtml || `<tr><td colspan="10"><div class="empty">No data</div></td></tr>`}
+              ${rowsHtml || `<tr><td colspan="9"><div class="empty">No data</div></td></tr>`}
             </tbody>
           </table>
         </div>
@@ -228,7 +221,7 @@ function Users() {
       { key: 'status', label: 'Status', render: (_, row) => statusSelect(row) },
       {
         key: 'actions', label: '', render: (_, row) => `<div class=actions>
-              <button class="btn" onclick="toggleUser('${row.id}')">${row.status === 'active' ? 'Deactivate' : 'Activate'}</button>
+              <button class="btn" onclick="toggleUser('${row.id}')">${row.status === 'active' ? 'Deactivate' : 'Approve'}</button>
               <button class="btn danger" onclick="removeUser('${row.id}')">Remove</button>
             </div>` }
     ],
@@ -287,12 +280,24 @@ function Table({ columns, rows }) {
   </table>`
 }
 function RowActions(row) {
-  return `<div class="actions">
-    <button class="btn" onclick="previewArtwork('${row.id}')">Preview</button>
-    <button class="btn ok" onclick="approve('${row.id}')">Approve</button>
-    <button class="btn warn" onclick="flag('${row.id}')">Flag</button>
-    <button class="btn danger" onclick="reject('${row.id}')">Reject</button>
-  </div>`
+  const actions = [`<button class="btn" onclick="window.previewArtwork('${row.id}')">Preview</button>`];
+  
+  // Show Approve button only for pending/flagged artworks
+  if (row.status === 'pending' || row.status === 'flagged') {
+    actions.push(`<button class="btn ok" onclick="window.approve('${row.id}')">Approve</button>`);
+  }
+  
+  // Show Flag button only for approved/pending artworks
+  if (row.status === 'approved' || row.status === 'pending') {
+    actions.push(`<button class="btn warn" onclick="window.flag('${row.id}')">Flag</button>`);
+  }
+  
+  // Show Reject button only for pending/flagged artworks
+  if (row.status === 'pending' || row.status === 'flagged') {
+    actions.push(`<button class="btn danger" onclick="window.reject('${row.id}')">Reject</button>`);
+  }
+  
+  return `<div class="actions">${actions.join('')}</div>`;
 }
 function roleSelect(row) {
   return `<select class="form-control" onchange="changeRole('${row.id}', this.value)">
@@ -301,8 +306,11 @@ function roleSelect(row) {
 }
 
 function statusSelect(row) {
+  // Frontend uses 'active' which maps to backend 'approved'
+  const statuses = ['active', 'pending', 'inactive'];
+  const statusLabels = { 'active': 'approved', 'pending': 'pending', 'inactive': 'inactive' };
   return `<select class="form-control" onchange="changeUserStatus('${row.id}', this.value)">
-    ${['active', 'inactive'].map(s => `<option value="${s}" ${row.status === s ? 'selected' : ''}>${s}</option>`).join('')}
+    ${statuses.map(s => `<option value="${s}" ${row.status === s ? 'selected' : ''}>${statusLabels[s]}</option>`).join('')}
   </select>`
 }
 
@@ -388,9 +396,51 @@ function ArtworkDetail(a) {
 
 // --- Actions ---
 function log(action, target, meta = '') { state.data.audit.push({ ts: Date.now(), actor: 'u_admin1', action, target, meta }); }
-function approve(id) { const a = state.data.artworks.find(x => x.id === id); if (!a) return; a.status = 'approved'; log('approve_artwork', id, a.title); toast('Approved: ' + a.title); render(); }
-function reject(id) { const a = state.data.artworks.find(x => x.id === id); if (!a) return; a.status = 'rejected'; log('reject_artwork', id, a.title); toast('Rejected: ' + a.title); render(); }
-function flag(id) { const a = state.data.artworks.find(x => x.id === id); if (!a) return; a.status = 'flagged'; log('flag_artwork', id, a.title); toast('Flagged: ' + a.title); render(); }
+
+async function approve(id) { 
+  const a = state.data.artworks.find(x => x.id === id); 
+  if (!a) return; 
+  try {
+    await adminAPI.adminApproveArtwork(id);
+    a.status = 'approved'; 
+    log('approve_artwork', id, a.title); 
+    toast('Approved: ' + a.title); 
+    render();
+  } catch (error) {
+    console.error('Approve error:', error);
+    toast('Error approving artwork: ' + error.message);
+  }
+}
+
+async function reject(id) { 
+  const a = state.data.artworks.find(x => x.id === id); 
+  if (!a) return; 
+  try {
+    await adminAPI.adminRejectArtwork(id, 'Rejected by admin');
+    a.status = 'rejected'; 
+    log('reject_artwork', id, a.title); 
+    toast('Rejected: ' + a.title); 
+    render();
+  } catch (error) {
+    console.error('Reject error:', error);
+    toast('Error rejecting artwork: ' + error.message);
+  }
+}
+
+async function flag(id) { 
+  const a = state.data.artworks.find(x => x.id === id); 
+  if (!a) return; 
+  try {
+    await adminAPI.adminUpdateArtworkStatus(id, 'flagged');
+    a.status = 'flagged'; 
+    log('flag_artwork', id, a.title); 
+    toast('Flagged: ' + a.title); 
+    render();
+  } catch (error) {
+    console.error('Flag error:', error);
+    toast('Error flagging artwork: ' + error.message);
+  }
+}
 
 function selectArtwork(id) {
   // update selection and re-render UI
@@ -420,12 +470,21 @@ function previewArtwork(id) {
 }
 
 // Immediate update for single field (used by Description in view mode)
-function updateArtworkField(id, field, value) {
+async function updateArtworkField(id, field, value) {
   const a = state.data.artworks.find(x => x.id === id); if (!a) return;
   if (field === 'sensitive') { a.sensitive = (value === 'true' || value === true); if (a.sensitive) { a.address = ''; } }
   else { a[field] = value; }
-  log('update_artwork_' + field, id, String(value));
-  toast('Saved'); render();
+  
+  try {
+    const artistName = userName(a.artistId);
+    await adminAPI.adminUpdateArtwork(id, a, artistName);
+    log('update_artwork_' + field, id, String(value));
+    toast('Saved'); 
+    render();
+  } catch (error) {
+    console.error('Update error:', error);
+    toast('Error saving: ' + error.message);
+  }
 }
 
 // Edit mode helpers
@@ -441,14 +500,23 @@ function updateDraft(field, value) {
   else { d[field] = value; }
   if (field === 'sensitive') render();
 }
-function saveArtworkEdit() {
+async function saveArtworkEdit() {
   const id = state.editing.artworkId; const d = state.editing.draft;
   if (!id || !d) return;
   const a = state.data.artworks.find(x => x.id === id); if (!a) return;
-  ['region', 'sensitive', 'address', 'artistId', 'type', 'period', 'date', 'intro'].forEach(k => a[k] = d[k]);
-  log('save_artwork_edit', id, JSON.stringify({ region: a.region, sensitive: a.sensitive }));
-  state.editing.artworkId = null; state.editing.draft = null;
-  toast('Changes saved'); render();
+  
+  try {
+    const artistName = userName(d.artistId);
+    await adminAPI.adminUpdateArtwork(id, d, artistName);
+    ['region', 'sensitive', 'address', 'artistId', 'type', 'period', 'date', 'intro'].forEach(k => a[k] = d[k]);
+    log('save_artwork_edit', id, JSON.stringify({ region: a.region, sensitive: a.sensitive }));
+    state.editing.artworkId = null; state.editing.draft = null;
+    toast('Changes saved'); 
+    render();
+  } catch (error) {
+    console.error('Save error:', error);
+    toast('Error saving changes: ' + error.message);
+  }
 }
 function cancelArtworkEdit() { state.editing.artworkId = null; state.editing.draft = null; toast('Changes discarded'); render(); }
 
@@ -466,17 +534,29 @@ function reviewReport(id, decision) {
     </form>
   `);
 
-  $('#reportReviewForm').addEventListener('submit', (e) => {
+  $('#reportReviewForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const reason = new FormData(e.target).get('reason') || '';
-    applyReportDecision(id, decision, reason);
-    closeModal(); toast(`Report ${decision}`); render();
+    try {
+      await applyReportDecision(id, decision, reason);
+      closeModal(); 
+      toast(`Report ${decision}`); 
+      render();
+    } catch (error) {
+      toast('Failed to update report: ' + error.message);
+    }
   });
 }
-function applyReportDecision(id, decision, note) {
+async function applyReportDecision(id, decision, note) {
   const r = state.data.reports.find(x => x.id === id); if (!r) return;
-  r.status = 'closed'; r.decision = decision; r.note = note;
-  log('review_report', id, JSON.stringify({ decision, note }));
+  try {
+    await adminAPI.adminUpdateReport(id, { status: 'closed', decision, note });
+    r.status = 'closed'; r.decision = decision; r.note = note;
+    log('review_report', id, JSON.stringify({ decision, note }));
+  } catch (error) {
+    console.error('Failed to update report:', error);
+    throw error;
+  }
 }
 
 function openUser(id) {
@@ -600,11 +680,124 @@ function newUser() {
   });
 }
 
-function toggleUser(id) { const u = state.data.users.find(u => u.id === id); if (!u) return; u.status = u.status === 'active' ? 'inactive' : 'active'; log('toggle_user', id, u.status); toast('User ' + (u.status === 'active' ? 'activated' : 'deactivated')); render(); }
-function removeUser(id) { const idx = state.data.users.findIndex(u => u.id === id); if (idx < 0) return; const name = state.data.users[idx].name; state.data.users.splice(idx, 1); log('remove_user', id, name); toast('Removed ' + name); render(); }
-function changeRole(id, newRole) { const u = state.data.users.find(x => x.id === id); if (!u) return; const prev = u.role; u.role = newRole; log('change_user_role', id, `${prev} -> ${newRole}`); toast('Role updated'); render(); }
-function changeUserStatus(id, newStatus) { const u = state.data.users.find(x => x.id === id); if (!u) return; const prev = u.status; u.status = newStatus; log('change_user_status', id, `${prev} -> ${newStatus}`); openModal('Status updated', `<div>User <strong>${u.name}</strong> is now <span class=\"pill ${newStatus === 'active' ? 'ok' : 'warn'}\">${newStatus}</span>.</div>`); render(); }
-function changeArtworkPeriod(artId, period) { const a = state.data.artworks.find(x => x.id === artId); if (!a) return; a.period = period; log('update_artwork_period', artId, period); toast('Period updated'); render(); }
+async function toggleUser(id) { 
+  const u = state.data.users.find(u => u.id === id); 
+  if (!u) return; 
+  const newStatus = u.status === 'active' ? 'inactive' : 'active';
+  try {
+    await adminAPI.adminSetUserStatus(id, newStatus);
+    u.status = newStatus; 
+    log('toggle_user', id, u.status); 
+    toast('User ' + (u.status === 'active' ? 'approved' : 'deactivated')); 
+    render();
+  } catch (error) {
+    console.error('Toggle user error:', error);
+    toast('Error updating user status: ' + error.message);
+  }
+}
+
+function removeUser(id) { 
+  const idx = state.data.users.findIndex(u => u.id === id); 
+  if (idx < 0) return; 
+  const name = state.data.users[idx].name; 
+  state.data.users.splice(idx, 1); 
+  log('remove_user', id, name); 
+  toast('Removed ' + name); 
+  render(); 
+}
+
+async function changeRole(id, newRole) { 
+  const u = state.data.users.find(x => x.id === id); 
+  if (!u) return; 
+  const prev = u.role; 
+  try {
+    await adminAPI.adminUpdateUser(id, { role: newRole });
+    u.role = newRole; 
+    log('change_user_role', id, `${prev} -> ${newRole}`); 
+    toast('Role updated'); 
+    render();
+  } catch (error) {
+    console.error('Change role error:', error);
+    toast('Error updating role: ' + error.message);
+  }
+}
+
+async function changeUserStatus(id, newStatus) { 
+  const u = state.data.users.find(x => x.id === id); 
+  if (!u) return; 
+  const prev = u.status; 
+  try {
+    await adminAPI.adminSetUserStatus(id, newStatus);
+    u.status = newStatus; 
+    log('change_user_status', id, `${prev} -> ${newStatus}`); 
+    const statusPillClass = newStatus === 'active' ? 'ok' : (newStatus === 'pending' ? 'warn' : 'danger');
+    const displayStatus = newStatus === 'active' ? 'approved' : newStatus;
+    openModal('Status updated', `<div>User <strong>${u.name}</strong> is now <span class=\"pill ${statusPillClass}\">${displayStatus}</span>.</div>`); 
+    render();
+  } catch (error) {
+    console.error('Change status error:', error);
+    toast('Error updating status: ' + error.message);
+  }
+}
+
+function changeArtworkPeriod(artId, period) { 
+  const a = state.data.artworks.find(x => x.id === artId); 
+  if (!a) return; 
+  a.period = period; 
+  log('update_artwork_period', artId, period); 
+  toast('Period updated'); 
+  render(); 
+}
+
+// ===== Data Initialization =====
+async function initializeData() {
+  try {
+    // Check if admin is logged in
+    const sessionId = adminAPI.getAdminSessionId();
+    if (!sessionId) {
+      console.warn('No admin session found, using test data');
+      return;
+    }
+
+    // Verify admin session and get user
+    const sessionData = await adminAPI.verifyAdminSession();
+    const user = sessionData.user;
+    
+    if (user.role !== 'admin') {
+      alert('Admin access required. Please use admin login.');
+      window.location.href = 'admin-login.html';
+      return;
+    }
+
+    // Load data from backend using admin session
+    // Load users
+    const users = await adminAPI.adminGetUsers();
+    state.data.users = users;
+    
+    // Load all artworks (including pending for admin)
+    const allArtworks = await adminAPI.adminGetArtworks({ status: 'all' });
+    state.data.artworks = allArtworks;
+    
+    // Load reports
+    const reports = await adminAPI.adminGetReports('all');
+    state.data.reports = reports;
+    
+    // Update header with admin info
+    const adminNameEl = document.getElementById('admin-user-name');
+    if (adminNameEl) {
+      adminNameEl.textContent = user.name || user.email || user.username;
+    }
+    
+    toast('Data loaded from server');
+    
+    render();
+  } catch (error) {
+    console.error('Data initialization error:', error);
+    console.warn('Using test data as fallback');
+    toast('Using test data (backend not available)');
+    render();
+  }
+}
 
 // ===== Render & Events =====
 function render() {
@@ -617,7 +810,31 @@ function render() {
 $('#globalSearch').addEventListener('input', (e) => { state.filters.search = e.target.value.toLowerCase(); render(); });
 document.addEventListener('click', (e) => { if (e.target.matches('[data-close]')) closeModal(); if (e.target.id === 'modal') closeModal(); });
 
-render();
+// Initialize app with backend data
+initializeData();
+
+// ===== Export functions to global scope for onclick handlers =====
+window.approve = approve;
+window.reject = reject;
+window.flag = flag;
+window.previewArtwork = previewArtwork;
+window.selectArtwork = selectArtwork;
+window.startEditArtwork = startEditArtwork;
+window.updateDraft = updateDraft;
+window.saveArtworkEdit = saveArtworkEdit;
+window.cancelArtworkEdit = cancelArtworkEdit;
+window.updateArtworkField = updateArtworkField;
+window.reviewReport = reviewReport;
+window.openUser = openUser;
+window.newUser = newUser;
+window.toggleUser = toggleUser;
+window.removeUser = removeUser;
+window.changeRole = changeRole;
+window.changeUserStatus = changeUserStatus;
+window.changeArtworkPeriod = changeArtworkPeriod;
+window.setArtFilter = setArtFilter;
+window.setUserFilter = setUserFilter;
+window.closeModal = closeModal;
 
 /*
 #-# START COMMENT BLOCK #-#

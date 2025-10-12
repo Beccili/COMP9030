@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Register — Indigenous Art Atlas</title>
     <meta name="description" content="Register a user or artist account. Admin approves accounts and artworks before public display."/>
-    <link rel="stylesheet" href="homePage/styles.css" />
+    <link rel="stylesheet" href="home-styles.css" />
     <style>
       .form-section{padding:var(--space-3xl) 0;background:var(--elev-1);border-bottom:1px solid var(--elev-2)}
       .form-card{max-width:900px;margin:0 auto;background:var(--elev-1);border:1px solid var(--elev-2);
@@ -47,11 +47,11 @@
       <div class="container">
         <div class="header-content">
           <div class="logo">
-            <a href="homePage/index.html" class="logo-link"><h1 class="logo-text">Indigenous Art Atlas</h1></a>
+            <a href="home.html" class="logo-link"><h1 class="logo-text">Indigenous Art Atlas</h1></a>
           </div>
           <nav class="nav" role="navigation" aria-label="Main navigation">
             <ul class="nav-list">
-              <li><a href="homePage/index.html#map-section" class="nav-link">Map</a></li>
+              <li><a href="home.html#map-section" class="nav-link">Map</a></li>
               <li><a href="search.html" class="nav-link">Search</a></li>
               <li><a href="about.html" class="nav-link">About Us</a></li>
               <li><a href="register.html" class="nav-link nav-active">Register</a></li>
@@ -97,8 +97,8 @@
     <main id="main-content" role="main">
       <section class="search-header">
         <div class="container">
-          <h1 class="page-title">Register</h1>
-          <p class="page-description">Register as a <strong>user</strong> or an <strong>artist</strong>. Your account must be approved by an admin before you can submit artworks. Approved artworks will be displayed on the site.</p>
+          <h1 class="page-title" id="page-title">Register</h1>
+          <p class="page-description" id="page-description">Register as a <strong>user</strong> or an <strong>artist</strong>. Your account must be approved by an admin before you can submit artworks. Approved artworks will be displayed on the site.</p>
           <!-- Hidden for now: Artist page link -->
           <!--
           <p class="page-description" style="margin-top: var(--space-md)">
@@ -111,7 +111,7 @@
 
       <section class="form-section" aria-labelledby="form-heading">
         <div class="container">
-          <h2 id="form-heading" class="section-title">Create or Edit Account</h2>
+          <h2 id="form-heading" class="section-title">Create Account</h2>
           <div class="form-card">
             <form id="artist-form" novalidate>
               <input type="hidden" id="artist-id" />
@@ -125,7 +125,7 @@
                   <input id="email" class="input" type="email" required placeholder="name@example.com" />
                 </div>
                 <div class="form-row">
-                  <label class="label" for="password">Password *</label>
+                  <label class="label" for="password">Password <span id="password-optional">(leave blank to keep current)</span></label>
                   <input id="password" class="input" type="password" required placeholder="Enter your password" />
                 </div>
                 <div class="form-row">
@@ -136,9 +136,9 @@
                   </select>
                 </div>
                 <div class="form-row">
-                  <label class="label" for="region">Region / State</label>
-                  <select id="region" class="select">
-                    <option value="">Select region</option>
+                  <label class="label" for="region">Region / State *</label>
+                  <select id="region" class="select" required>
+                    <option value="" disabled selected>Select region</option>
                     <option value="NSW">NSW</option><option value="VIC">VIC</option>
                     <option value="QLD">QLD</option><option value="SA">SA</option>
                     <option value="WA">WA</option><option value="NT">NT</option>
@@ -150,8 +150,9 @@
                   <input id="nation" class="input" type="text" placeholder="e.g., Kaurna, Yolŋu, ..." />
                 </div>
                 <div class="form-row full">
-                  <label class="label" for="imageUrl">Profile Image URL</label>
-                  <input id="imageUrl" class="input" type="url" placeholder="https://.../photo.jpg (optional)" />
+                  <label class="label" for="profileImage">Profile Picture (optional)</label>
+                  <input id="profileImage" class="input" type="file" accept="image/*" />
+                <p class="hint" style="font-size:var(--font-size-sm);color:var(--muted);margin-top:4px">Upload your profile picture. Supported: JPG, PNG, GIF, WebP</p>
                 </div>
                 <div class="form-row full">
                   <label class="label" for="bio">Bio (optional)</label>
@@ -178,8 +179,8 @@
       </div>
     </footer>
 
-    <script src="homePage/user-auth.js" defer></script>
-    <script src="register.js" defer></script>
+    <script src="user-auth.js" defer></script>
+    <script type="module" src="register.js"></script>
   </body>
 </html>
 <!--

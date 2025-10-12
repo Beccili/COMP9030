@@ -54,6 +54,12 @@ switch ($method) {
                 case 'reject_artwork':
                     rejectArtwork($input);
                     break;
+                case 'update_user':
+                    updateUser($input);
+                    break;
+                case 'set_user_status':
+                    setUserStatus($input);
+                    break;
                 default:
                     sendError('Invalid action');
             }
@@ -168,6 +174,65 @@ function rejectArtwork($input) {
     }
     
     sendError('Artwork not found', 404);
+}
+
+function updateUser($input) {
+    if (!isset($input['user_id'])) {
+        sendError('User ID required');
+    }
+    
+    $users = loadJsonFile(USERS_FILE);
+    
+    for ($i = 0; $i < count($users); $i++) {
+        if ($users[$i]['id'] === $input['user_id']) {
+            // Update allowed fields
+            $allowedFields = ['name', 'email', 'role', 'region', 'nation', 'bio', 'imageUrl', 'phone', 'dob', 'gender'];
+            
+            foreach ($allowedFields as $field) {
+                if (isset($input[$field])) {
+                    $users[$i][$field] = $input[$field];
+                }
+            }
+            
+            $users[$i]['updated_at'] = date('Y-m-d H:i:s');
+            saveJsonFile(USERS_FILE, $users);
+            
+            unset($users[$i]['password']);
+            sendResponse(true, 'User updated successfully', $users[$i]);
+        }
+    }
+    
+    sendError('User not found', 404);
+}
+
+function setUserStatus($input) {
+    if (!isset($input['user_id'])) {
+        sendError('User ID required');
+    }
+    
+    if (!isset($input['status'])) {
+        sendError('Status required');
+    }
+    
+    $validStatuses = ['approved', 'pending', 'inactive'];
+    if (!in_array($input['status'], $validStatuses)) {
+        sendError('Invalid status. Must be one of: approved, pending, inactive');
+    }
+    
+    $users = loadJsonFile(USERS_FILE);
+    
+    for ($i = 0; $i < count($users); $i++) {
+        if ($users[$i]['id'] === $input['user_id']) {
+            $users[$i]['status'] = $input['status'];
+            $users[$i]['status_updated_at'] = date('Y-m-d H:i:s');
+            saveJsonFile(USERS_FILE, $users);
+            
+            unset($users[$i]['password']);
+            sendResponse(true, 'User status updated successfully', $users[$i]);
+        }
+    }
+    
+    sendError('User not found', 404);
 }
 
 function validateAdminSession($sessionId) {

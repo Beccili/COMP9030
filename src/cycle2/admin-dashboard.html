@@ -28,8 +28,8 @@
     <div class="spacer"></div>
     <input id="globalSearch" type="search" placeholder="Search users, artworks, reports…" aria-label="Global search" />
     <div class="user" aria-label="Current admin user">
-      <span class="badge">Admin</span>
-      <span>moderator@example.org</span>
+      <span class="badge" id="admin-role-badge">Admin</span>
+      <span id="admin-user-name">Loading...</span>
     </div>
   </header>
 
@@ -48,7 +48,7 @@
 
   <div class="toast" id="toast" aria-live="polite" aria-atomic="true"></div>
 
-  <script src="main.js"></script>
+  <script type="module" src="admin-app.js"></script>
 </body>
 </html>
 <!--

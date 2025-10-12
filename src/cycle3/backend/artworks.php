@@ -51,7 +51,8 @@ function getArtworks() {
     $artType = $_GET['artType'] ?? '';
     $region = $_GET['region'] ?? '';
     $period = $_GET['period'] ?? '';
-    $status = $_GET['status'] ?? 'approved'; // Default to approved only
+    // Only filter by status if not explicitly requesting all (empty string means all)
+    $status = isset($_GET['status']) ? $_GET['status'] : 'approved'; // Default to approved only
     
     // Apply filters
     if (!empty($search)) {
@@ -81,7 +82,8 @@ function getArtworks() {
         });
     }
     
-    if (!empty($status)) {
+    // Filter by status unless 'all' is requested
+    if (!empty($status) && $status !== 'all') {
         $artworks = array_filter($artworks, function($artwork) use ($status) {
             return $artwork['status'] === $status;
         });
@@ -92,14 +94,36 @@ function getArtworks() {
 
 function getArtwork($id) {
     $artworks = loadJsonFile(ARTWORKS_FILE);
+    $users = loadJsonFile(USERS_FILE);
     
     foreach ($artworks as $artwork) {
         if ($artwork['id'] === $id) {
+            // Enrich with artist information
+            $artwork = enrichArtworkWithArtistInfo($artwork, $users);
             sendResponse(true, 'Artwork found', $artwork);
         }
     }
     
     sendError('Artwork not found', 404);
+}
+
+function enrichArtworkWithArtistInfo($artwork, $users) {
+    // Find the artist/submitter user
+    $submitterId = $artwork['submitted_by'] ?? '';
+    $artistInfo = '';
+    
+    if ($submitterId) {
+        foreach ($users as $user) {
+            if ($user['id'] === $submitterId) {
+                $artistInfo = $user['bio'] ?? '';
+                break;
+            }
+        }
+    }
+    
+    // Add artistInfo to artwork
+    $artwork['artistInfo'] = $artistInfo;
+    return $artwork;
 }
 
 function createArtwork($input) {
@@ -146,6 +170,20 @@ function createArtwork($input) {
         sendError('Address cannot be provided when artwork is marked as sensitive');
     }
     
+    // Validate and extract coordinates
+    $coords = null;
+    if (!$sensitive && isset($input['coords']) && is_array($input['coords'])) {
+        $lat = floatval($input['coords']['lat'] ?? null);
+        $lng = floatval($input['coords']['lng'] ?? null);
+        if ($lat >= -90 && $lat <= 90 && $lng >= -180 && $lng <= 180 && $lat != 0 && $lng != 0) {
+            $coords = ['lat' => $lat, 'lng' => $lng];
+        }
+    }
+    
+    if ($sensitive && isset($input['coords']) && !empty($input['coords'])) {
+        sendError('Coordinates cannot be provided when artwork is marked as sensitive');
+    }
+    
     // Create new artwork
     $artwork = [
         'id' => generateId('art'),
@@ -156,6 +194,7 @@ function createArtwork($input) {
         'region' => $input['region'],
         'sensitive' => $sensitive,
         'address' => $sensitive ? null : (trim($input['address'] ?? '') ?: null),
+        'coords' => $coords,
         'description' => trim($input['description'] ?? ''),
         'status' => 'pending', // Requires admin approval
         'submitted_by' => $user['id'],
@@ -220,7 +259,16 @@ function updateArtwork($id, $input) {
         sendError('Permission denied');
     }
     
-    // Update artwork
+    // When owner edits (not admin), reset status to pending for re-review
+    if ($isOwner && !$isAdmin) {
+        $artwork['status'] = 'pending';
+        $artwork['updated_at'] = date('Y-m-d H:i:s');
+        // Clear review metadata since it needs re-review
+        unset($artwork['reviewed_at']);
+        unset($artwork['reviewed_by']);
+    }
+    
+    // Update artwork status (admin only)
     if (isset($input['status']) && $isAdmin) {
         $artwork['status'] = $input['status'];
         $artwork['reviewed_at'] = date('Y-m-d H:i:s');
@@ -235,6 +283,24 @@ function updateArtwork($id, $input) {
         }
     }
     
+    // Handle coordinates update
+    if (isset($input['coords'])) {
+        if ($artwork['sensitive']) {
+            $artwork['coords'] = null;
+        } elseif (is_array($input['coords'])) {
+            $lat = floatval($input['coords']['lat'] ?? null);
+            $lng = floatval($input['coords']['lng'] ?? null);
+            if ($lat >= -90 && $lat <= 90 && $lng >= -180 && $lng <= 180 && $lat != 0 && $lng != 0) {
+                $artwork['coords'] = ['lat' => $lat, 'lng' => $lng];
+            }
+        }
+    }
+    
+    // Clear coords if artwork becomes sensitive
+    if (isset($input['sensitive']) && $input['sensitive']) {
+        $artwork['coords'] = null;
+    }
+    
     $artworks[$artworkIndex] = $artwork;
     saveJsonFile(ARTWORKS_FILE, $artworks);
     
@@ -242,7 +308,7 @@ function updateArtwork($id, $input) {
 }
 
 function deleteArtwork($id) {
-    // Validate session (admin only)
+    // Validate session
     $sessionId = $_GET['session_id'] ?? '';
     if (empty($sessionId)) {
         sendError('Authentication required');
@@ -262,11 +328,27 @@ function deleteArtwork($id) {
         }
     }
     
-    if (!$user || $user['role'] !== 'admin') {
-        sendError('Admin access required');
+    $artworks = loadJsonFile(ARTWORKS_FILE);
+    $artworkToDelete = null;
+    foreach ($artworks as $artwork) {
+        if ($artwork['id'] === $id) {
+            $artworkToDelete = $artwork;
+            break;
+        }
     }
     
-    $artworks = loadJsonFile(ARTWORKS_FILE);
+    if (!$artworkToDelete) {
+        sendError('Artwork not found', 404);
+    }
+    
+    $isAdmin = $user && $user['role'] === 'admin';
+    $isOwner = $user && $artworkToDelete['submitted_by'] === $user['id'];
+    
+    // Admin can delete anything, owners can delete their own artworks
+    if (!$isAdmin && !$isOwner) {
+        sendError('Permission denied');
+    }
+    
     $artworks = array_filter($artworks, function($artwork) use ($id) {
         return $artwork['id'] !== $id;
     });

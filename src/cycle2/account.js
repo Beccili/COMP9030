@@ -1,53 +1,41 @@
-/* Account Page — View and manage user account */
+/* Account Page — View and manage user account with backend integration */
 
-const STORE_KEY = "IAA_accounts_v1"; // accounts (user or artist)
+import api from './api.js';
 
-// Get the current logged-in user's account
-function getCurrentAccount() {
+const STORE_KEY = "IAA_accounts_v1"; // accounts (legacy)
+
+// Get the current user from backend session
+async function getCurrentAccount() {
   try {
-    // First check if user is logged in
-    const isLoggedIn = localStorage.getItem("atlas_logged_in") === "true";
-    const userData = localStorage.getItem("atlas_user");
-    
-    if (!isLoggedIn || !userData) {
+    const sessionId = localStorage.getItem('atlas_session_id');
+    if (!sessionId) {
       return null;
     }
     
-    const loggedInUser = JSON.parse(userData);
+    const sessionData = await api.apiVerifySession();
+    const user = sessionData.user;
     
-    // Try to find the account by email
-    const accounts = JSON.parse(localStorage.getItem(STORE_KEY)) || [];
-    const userAccount = accounts.find(acc => acc.email === loggedInUser.email);
-    
-    if (userAccount) {
-      return userAccount;
-    }
-    
-    // If no account exists but user is logged in (mocked login),
-    // create a mock account from the logged-in user data
     return {
-      id: 'mock_' + Date.now(),
-      name: loggedInUser.displayName || loggedInUser.username || 'Test User',
-      email: loggedInUser.email || 'test@example.com',
-      role: 'artist',
-      status: 'approved',
-      region: 'NSW',
-      nation: 'Kaurna',
-      imageUrl: loggedInUser.avatar || '',
-      bio: 'Contemporary Indigenous artist from Kaurna country, exploring traditional themes through modern mediums. My work focuses on the connection between ancestral knowledge and contemporary expression.',
-      artworks: ['detail.html?id=vincent-namatjira-portrait', 'detail.html?id=kaylene-whiskey-tv']
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      status: user.status,
+      region: user.region || '',
+      nation: user.nation || '',
+      imageUrl: user.imageUrl || '',
+      bio: user.bio || '',
+      username: user.username
     };
-  } catch {
+  } catch (error) {
+    console.error('Failed to get current account:', error);
     return null;
   }
 }
 
-// Load artwork entries from common data
-const artEntries = (window.AppData && window.AppData.artEntries) || [];
-
 // Populate account information
-function populateAccountInfo() {
-  const account = getCurrentAccount();
+async function populateAccountInfo() {
+  const account = await getCurrentAccount();
   
   if (!account) {
     // No account found, redirect to login (but prevent infinite loop)
@@ -86,8 +74,8 @@ function populateAccountInfo() {
   
   // Set avatar
   const avatar = document.getElementById('account-avatar');
-  if (avatar && account.imageUrl) {
-    avatar.src = account.imageUrl;
+  if (avatar) {
+    avatar.src = account.imageUrl || 'assets/img/user-avatar.png';
   }
   
   // Show optional fields if they have values
@@ -116,7 +104,7 @@ function populateAccountInfo() {
   const submitArtworkBtn = document.getElementById('submit-artwork-btn');
   const artworksSection = document.getElementById('artworks-section');
   
-  if (account.role === 'artist') {
+  if (account.role === 'artist' || account.role === 'admin') {
     // Show artwork submission button (only if approved)
     if (submitArtworkBtn && account.status === 'approved') {
       submitArtworkBtn.style.display = 'inline-block';
@@ -135,56 +123,49 @@ function populateAccountInfo() {
 }
 
 // Populate artworks for artist accounts
-function populateArtworks(account) {
+async function populateArtworks(account) {
   const artworksGrid = document.getElementById('artworks-grid');
   const emptyState = document.getElementById('artworks-empty');
   
-  // For demo purposes, we'll show some sample artworks for artists
-  // In a real app, this would be linked to actual submitted artworks
-  if (account.artworks && account.artworks.length > 0) {
-    // Show actual artworks if they exist
-    artworksGrid.innerHTML = '';
-    emptyState.style.display = 'none';
+  try {
+    // Load artworks submitted by this user from backend
+    const allArtworks = await api.getArtworks({ status: 'all' });
+    const userArtworks = allArtworks.filter(a => a.submitter === account.id || a.artistId === account.id);
     
-    // This would normally fetch the actual artwork data
-    // For now, we'll just show the links
-    account.artworks.forEach(artworkUrl => {
-      const card = createArtworkCard({
-        title: 'Submitted Artwork',
-        artist: account.name,
-        url: artworkUrl
+    if (userArtworks.length > 0) {
+      artworksGrid.innerHTML = '';
+      emptyState.style.display = 'none';
+      
+      userArtworks.forEach(artwork => {
+        const card = createArtworkCard({
+          id: artwork.id,
+          title: artwork.title,
+          artist: artwork.artist,
+          description: artwork.intro,
+          artType: artwork.type,
+          period: artwork.period,
+          region: artwork.region,
+          status: artwork.status,
+          images: artwork.artworkImages && artwork.artworkImages.length > 0
+            ? artwork.artworkImages.map(img => img.name || img)
+            : ['assets/img/art01.png']
+        }, true); // true = show edit/delete actions
+        artworksGrid.appendChild(card);
       });
-      artworksGrid.appendChild(card);
-    });
-  } else if (account.role === 'artist' && account.status === 'approved') {
-    // Show sample artworks for approved artists (demo)
+    } else {
+      // Show empty state
     artworksGrid.innerHTML = '';
-    emptyState.style.display = 'none';
-    
-    // Get first 3 artworks from common data as samples
-    const sampleArtworks = artEntries.slice(0, 3);
-    sampleArtworks.forEach(artwork => {
-      const card = createArtworkCard({
-        id: artwork.id,
-        title: artwork.title,
-        artist: account.name, // Use the account holder's name
-        description: artwork.description,
-        artType: artwork.artType,
-        period: artwork.period,
-        region: artwork.region,
-        images: artwork.images
-      });
-      artworksGrid.appendChild(card);
-    });
-  } else {
-    // Show empty state
+      emptyState.style.display = 'block';
+    }
+  } catch (error) {
+    console.error('Failed to load artworks:', error);
     artworksGrid.innerHTML = '';
     emptyState.style.display = 'block';
   }
 }
 
 // Create an artwork card element
-function createArtworkCard(artwork) {
+function createArtworkCard(artwork, showActions = false) {
   const card = document.createElement('div');
   card.className = 'artwork-card';
   
@@ -193,11 +174,29 @@ function createArtworkCard(artwork) {
     ? (window.Utils && window.Utils.asset ? window.Utils.asset(artwork.images[0]) : artwork.images[0])
     : 'assets/img/art01.png';
   
+  // Determine status badge
+  let statusBadge = '';
+  if (artwork.status === 'pending') {
+    statusBadge = '<span class="status-badge status-pending">Pending Review</span>';
+  } else if (artwork.status === 'approved') {
+    statusBadge = '<span class="status-badge status-approved">Approved</span>';
+  } else if (artwork.status === 'rejected') {
+    statusBadge = '<span class="status-badge" style="color:#e06c75;border-color:#e06c7533;">Rejected</span>';
+  }
+  
+  // Action buttons only for submitted artworks (not liked)
+  const actionButtons = showActions ? `
+    <div class="artwork-actions" style="display:flex;gap:var(--space-sm);margin-top:var(--space-sm)">
+      <button class="btn btn-secondary" style="font-size:var(--font-size-sm);padding:var(--space-xs) var(--space-sm)" onclick="editArtwork('${artwork.id}', '${artwork.status}', event)">Edit</button>
+      <button class="btn btn-secondary" style="font-size:var(--font-size-sm);padding:var(--space-xs) var(--space-sm);color:#e06c75;border-color:#e06c75" onclick="deleteArtwork('${artwork.id}', '${artwork.status}', event)">Delete</button>
+    </div>
+  ` : '';
+  
   card.innerHTML = `
     <img src="${imageSrc}" alt="${artwork.title}" class="artwork-image" 
          onerror="this.src='assets/img/art01.png'">
     <div class="artwork-content">
-      <h3 class="artwork-title">${artwork.title}</h3>
+      <h3 class="artwork-title">${artwork.title} ${statusBadge}</h3>
       <p class="artwork-artist">by ${artwork.artist}</p>
       ${artwork.description ? `<p style="color:var(--muted);font-size:var(--font-size-sm);margin-top:var(--space-xs)">${artwork.description.substring(0, 100)}...</p>` : ''}
       <div class="artwork-tags">
@@ -205,40 +204,243 @@ function createArtworkCard(artwork) {
         ${artwork.period ? `<span class="artwork-tag">${artwork.period}</span>` : ''}
         ${artwork.region ? `<span class="artwork-tag">${artwork.region}</span>` : ''}
       </div>
+      ${actionButtons}
     </div>
   `;
   
-  // Add click handler to view artwork details
+  // Add click handler to view artwork details (only on the image, not buttons)
+  const img = card.querySelector('.artwork-image');
+  const title = card.querySelector('.artwork-title');
+  
   if (artwork.id) {
-    card.style.cursor = 'pointer';
-    card.onclick = () => {
+    img.style.cursor = 'pointer';
+    title.style.cursor = 'pointer';
+    
+    const viewHandler = () => {
       window.location.href = `detail.html?id=${artwork.id}`;
     };
-  } else if (artwork.url) {
-    card.style.cursor = 'pointer';
-    card.onclick = () => {
-      window.open(artwork.url, '_blank');
-    };
+    
+    img.onclick = viewHandler;
+    title.onclick = viewHandler;
   }
   
   return card;
 }
 
+// Edit artwork - redirect to artwork-submit page in edit mode
+window.editArtwork = async function(artworkId, status, event) {
+  event.stopPropagation(); // Prevent card click
+  
+  // Warn if editing approved artwork
+  if (status === 'approved') {
+    const confirmed = await showConfirmation(
+      'Edit Approved Artwork?',
+      'Editing this approved artwork will change its status back to "pending" and require admin re-approval. Continue?'
+    );
+    
+    if (!confirmed) return;
+  }
+  
+  window.location.href = `artwork-submit.html?edit=true&id=${artworkId}`;
+};
+
+// Delete artwork
+window.deleteArtwork = async function(artworkId, status, event) {
+  event.stopPropagation(); // Prevent card click
+  
+  const statusWarning = status === 'approved' 
+    ? 'This artwork is currently approved and visible to the public. ' 
+    : '';
+  
+  const confirmed = await showConfirmation(
+    'Delete Artwork?',
+    `${statusWarning}Are you sure you want to delete this artwork? This action cannot be undone.`
+  );
+  
+  if (!confirmed) return;
+  
+  try {
+    await api.deleteArtwork(artworkId);
+    
+    // Show success notification
+    showNotification('success', 'Artwork Deleted', 'Your artwork has been deleted successfully.');
+    
+    // Reload the page after a short delay
+    setTimeout(() => {
+      window.location.reload();
+    }, 1500);
+  } catch (error) {
+    console.error('Delete failed:', error);
+    showNotification('error', 'Delete Failed', error.message || 'Failed to delete artwork. Please try again.');
+  }
+};
+
+// Notification function
+function showNotification(type, title, message) {
+  const overlay = document.createElement('div');
+  overlay.className = 'notification-overlay';
+  overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:9999;animation:fadeIn 0.2s ease';
+  
+  const popup = document.createElement('div');
+  popup.className = `notification-popup notification-${type}`;
+  popup.style.cssText = 'background:var(--elev-1);padding:var(--space-xl);border-radius:var(--border-radius-lg);max-width:500px;width:90%;box-shadow:var(--shadow-xl);animation:slideUp 0.3s ease;text-align:center';
+  
+  const icon = type === 'success' ? '✅' : '❌';
+  const titleColor = type === 'success' ? '#8dc891' : '#e06c75';
+  
+  popup.innerHTML = `
+    <div style="font-size:48px;margin-bottom:var(--space-md)">${icon}</div>
+    <h3 style="font-size:var(--font-size-xl);font-weight:600;margin-bottom:var(--space-sm);color:${titleColor}">${title}</h3>
+    <p style="color:var(--muted);margin-bottom:var(--space-lg)">${message}</p>
+    <button class="btn btn-primary" onclick="this.closest('.notification-overlay').remove()">OK</button>
+  `;
+  
+  overlay.appendChild(popup);
+  document.body.appendChild(overlay);
+  
+  // Auto close after 3 seconds
+  setTimeout(() => {
+    if (overlay.parentNode) {
+      overlay.remove();
+    }
+  }, 3000);
+  
+  // Close on overlay click
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) {
+      overlay.remove();
+    }
+  });
+  
+  // Add animations
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  `;
+  if (!document.querySelector('style[data-notification-styles]')) {
+    style.setAttribute('data-notification-styles', 'true');
+    document.head.appendChild(style);
+  }
+}
+
+// Confirmation modal function
+function showConfirmation(title, message) {
+  return new Promise((resolve) => {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:9999;animation:fadeIn 0.2s ease';
+    
+    const popup = document.createElement('div');
+    popup.style.cssText = 'background:var(--elev-1);padding:var(--space-xl);border-radius:var(--border-radius-lg);max-width:500px;width:90%;box-shadow:var(--shadow-xl);animation:slideUp 0.3s ease;text-align:center';
+    
+    popup.innerHTML = `
+      <div style="font-size:48px;margin-bottom:var(--space-md)">⚠️</div>
+      <h3 style="font-size:var(--font-size-xl);font-weight:600;margin-bottom:var(--space-sm);color:#f59e0b">${title}</h3>
+      <p style="color:var(--muted);margin-bottom:var(--space-lg)">${message}</p>
+      <div style="display:flex;gap:var(--space-sm);justify-content:center">
+        <button class="btn btn-secondary" id="confirm-cancel">Cancel</button>
+        <button class="btn btn-primary" id="confirm-ok">Continue</button>
+      </div>
+    `;
+    
+    overlay.appendChild(popup);
+    document.body.appendChild(overlay);
+    
+    const cleanup = () => overlay.remove();
+    
+    popup.querySelector('#confirm-ok').onclick = () => {
+      cleanup();
+      resolve(true);
+    };
+    
+    popup.querySelector('#confirm-cancel').onclick = () => {
+      cleanup();
+      resolve(false);
+    };
+    
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) {
+        cleanup();
+        resolve(false);
+      }
+    });
+  });
+}
+
 // Initialize page
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   // Handle edit account button
   const editBtn = document.getElementById('edit-account-btn');
   if (editBtn) {
     editBtn.addEventListener('click', () => {
-      // Redirect to register page for editing
-      // In a real app, we might pass the account ID or pre-fill the form
-      window.location.href = 'register.html';
+      // Redirect to register page in edit mode
+      window.location.href = 'register.html?edit=true';
     });
   }
   
-  populateAccountInfo();
-  console.log('Account page initialized');
+  await populateAccountInfo();
+  await populateLikedArtworks();
 });
+
+// Populate liked artworks for all users
+async function populateLikedArtworks() {
+  const likedSection = document.getElementById('liked-section');
+  const likedGrid = document.getElementById('liked-grid');
+  const emptyState = document.getElementById('liked-empty');
+  
+  if (!likedSection || !likedGrid || !emptyState) return;
+  
+  try {
+    // Get user's likes
+    const likes = await api.getUserLikes();
+    
+    if (!likes || likes.length === 0) {
+      likedSection.style.display = 'block';
+      emptyState.style.display = 'block';
+      likedGrid.innerHTML = '';
+      return;
+    }
+    
+    // Get artwork IDs from likes
+    const artworkIds = likes.map(like => like.artwork_id);
+    
+    // Fetch all artworks and filter liked ones
+    const allArtworks = await api.getArtworks({ status: 'approved' });
+    const likedArtworks = allArtworks.filter(a => artworkIds.includes(a.id));
+    
+    if (likedArtworks.length > 0) {
+      likedSection.style.display = 'block';
+      likedGrid.innerHTML = '';
+      emptyState.style.display = 'none';
+      
+      likedArtworks.forEach(artwork => {
+        const card = createArtworkCard({
+          id: artwork.id,
+          title: artwork.title,
+          artist: artwork.artist,
+          description: artwork.intro,
+          artType: artwork.type,
+          period: artwork.period,
+          region: artwork.region,
+          status: artwork.status,
+          images: artwork.artworkImages && artwork.artworkImages.length > 0
+            ? artwork.artworkImages.map(img => img.name || img)
+            : ['assets/img/art01.png']
+        }, false); // false = don't show edit/delete actions for liked artworks
+        likedGrid.appendChild(card);
+      });
+    } else {
+      likedSection.style.display = 'block';
+      emptyState.style.display = 'block';
+      likedGrid.innerHTML = '';
+    }
+  } catch (error) {
+    console.error('Failed to load liked artworks:', error);
+    likedSection.style.display = 'block';
+    emptyState.style.display = 'block';
+    likedGrid.innerHTML = '';
+  }
+}
 
 /*
 #-# START COMMENT BLOCK #-#

@@ -1,16 +1,7 @@
 // ===== LOGIN FUNCTIONALITY =====
 
-// Test user data
-const TEST_USERS = {
-  testuser: {
-    username: "testuser",
-    password: "password123",
-    displayName: "Test User",
-    avatar: null, // Will use initials
-    email: "test@example.com",
-    role: "contributor",
-  },
-};
+// Import API functions
+import { apiLogin } from './api.js';
 
 // DOM Elements
 let loginForm;
@@ -58,13 +49,13 @@ function validateForm() {
   let isValid = true;
   clearAllErrors();
 
-  // Validate username
+  // Validate username or email
   const username = usernameInput?.value.trim();
   if (!username) {
-    showError("username-error", "Username is required");
+    showError("username-error", "Username or email is required");
     isValid = false;
   } else if (username.length < 3) {
-    showError("username-error", "Username must be at least 3 characters long");
+    showError("username-error", "Username or email must be at least 3 characters long");
     isValid = false;
   }
 
@@ -81,18 +72,25 @@ function validateForm() {
   return isValid;
 }
 
-function authenticateUser(username, password) {
-  // Simulate network delay
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const user = TEST_USERS[username.toLowerCase()];
-      if (user && user.password === password) {
-        resolve({ success: true, user: user });
-      } else {
-        resolve({ success: false, message: "Invalid username or password" });
+async function authenticateUser(username, password) {
+  try {
+    const result = await apiLogin(username, password);
+    return { 
+      success: true, 
+      user: {
+        username: result.user.username,
+        displayName: result.user.name,
+        avatar: result.user.imageUrl || 'assets/img/user-avatar.png',
+        email: result.user.email,
+        role: result.user.role
       }
-    }, 1000);
-  });
+    };
+  } catch (error) {
+    return { 
+      success: false, 
+      message: error.message || "Invalid username/email or password" 
+    };
+  }
 }
 
 function saveUserSession(user) {
@@ -113,7 +111,7 @@ function saveUserSession(user) {
 function redirectAfterLogin() {
   // Get redirect URL from query params or default to homepage
   const urlParams = new URLSearchParams(window.location.search);
-  const redirectUrl = urlParams.get("redirect") || "homePage/index.html";
+  const redirectUrl = urlParams.get("redirect") || "home.html";
 
   // Show success message briefly before redirect
   const successMessage = document.createElement("div");
@@ -166,7 +164,7 @@ async function handleLogin(event) {
 
 function fillTestCredentials() {
   if (usernameInput && passwordInput) {
-    usernameInput.value = "testuser";
+    usernameInput.value = "testartist";
     passwordInput.value = "password123";
 
     // Clear any existing errors
@@ -194,7 +192,7 @@ function checkExistingLogin() {
         alreadyLoggedMessage.className = "login-success";
         alreadyLoggedMessage.innerHTML = `
           <p>You are already logged in as <strong>${user.displayName}</strong>.</p>
-          <p><a href="homePage/index.html" style="color: white; text-decoration: underline;">Return to Homepage</a></p>
+          <p><a href="home.html" style="color: white; text-decoration: underline;">Return to Homepage</a></p>
         `;
         loginHeader.appendChild(alreadyLoggedMessage);
       }
@@ -259,7 +257,6 @@ document.addEventListener("DOMContentLoaded", function () {
     usernameInput.focus();
   }
 
-  console.log("Login page initialized successfully");
 });
 
 /*

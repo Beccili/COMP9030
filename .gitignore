@@ -1,2 +1,4 @@
 .DS_Store
 .playwright-mcp
+src/cycle3/backend/data
+src/cycle2/assets/img

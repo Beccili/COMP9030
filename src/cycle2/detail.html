@@ -10,7 +10,7 @@
     />
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="homePage/styles.css" />
+    <link rel="stylesheet" href="home-styles.css" />
   </head>
   <body>
     <!-- Skip Link -->
@@ -21,13 +21,13 @@
       <div class="container">
         <div class="header-content">
           <div class="logo">
-            <a href="homePage/index.html" class="logo-link">
+            <a href="home.html" class="logo-link">
               <h1 class="logo-text">Indigenous Art Atlas</h1>
             </a>
           </div>
           <nav class="nav" role="navigation" aria-label="Main navigation">
             <ul class="nav-list">
-              <li><a href="homePage/index.html#map-section" class="nav-link">Map</a></li>
+              <li><a href="home.html#map-section" class="nav-link">Map</a></li>
               <li><a href="search.html" class="nav-link">Search</a></li>
               <li><a href="about.html" class="nav-link">About Us</a></li>
               <li><a href="register.html" class="nav-link">Register</a></li>
@@ -78,7 +78,7 @@
           <nav class="breadcrumb" aria-label="Breadcrumb navigation">
             <ol class="breadcrumb-list">
               <li class="breadcrumb-item">
-                <a href="homePage/index.html" class="breadcrumb-link">Home</a>
+                <a href="home.html" class="breadcrumb-link">Home</a>
               </li>
               <li class="breadcrumb-item">
                 <a href="search.html" class="breadcrumb-link">Search</a>
@@ -128,19 +128,19 @@
                 <h3 class="key-info-title">Key Information</h3>
                 <div class="key-info-grid">
                   <div class="info-item">
-                    <span class="info-label">(1) Type of artwork</span>
+                    <span class="info-label">Type of artwork</span>
                     <span id="artwork-type" class="info-value">Contemporary Portrait</span>
                   </div>
                   <div class="info-item">
-                    <span class="info-label">(2) Estimated age and condition</span>
-                    <span id="artwork-age" class="info-value">Created 2020, Excellent condition</span>
+                    <span class="info-label">Estimated age</span>
+                    <span id="artwork-age" class="info-value">Created 2020</span>
                   </div>
-                  <div class="info-item">
-                    <span class="info-label">(3) Artist information</span>
+                  <div class="info-item" id="artist-info-item" style="display: none;">
+                    <span class="info-label">Artist information</span>
                     <span id="artist-info" class="info-value">Award-winning Indigenous artist</span>
                   </div>
                   <div class="info-item">
-                    <span class="info-label">(4) Artist name</span>
+                    <span class="info-label">Artist name</span>
                     <span id="artist-name" class="info-value">Vincent Namatjira</span>
                   </div>
                   <div class="info-item">
@@ -160,8 +160,8 @@
                   <button class="btn btn-secondary" onclick="window.history.back()">
                     ← Back to Search
                   </button>
-                  <button class="btn btn-primary" onclick="shareArtwork()">
-                    Share Artwork
+                  <button class="btn btn-primary" id="like-btn" onclick="toggleLike()">
+                    Like ❤
                   </button>
                 </div>
                 <button class="btn btn-report" onclick="showReportForm()">
@@ -303,8 +303,8 @@
     <!-- Custom JavaScript -->
     <script src="js/common-utils.js"></script>
     <script src="js/common-data.js"></script>
-    <script src="homePage/user-auth.js"></script>
-    <script src="detail.js"></script>
+    <script src="user-auth.js"></script>
+    <script type="module" src="detail.js"></script>
   </body>
 </html>
 <!--

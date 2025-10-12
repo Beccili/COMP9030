@@ -13,7 +13,7 @@
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="home-styles.css" />
 </head>
 
 <body>
@@ -25,29 +25,29 @@
     <div class="container">
       <div class="header-content">
         <div class="logo">
-          <a href="index.html" class="logo-link">
+          <a href="home.html" class="logo-link">
             <h1 class="logo-text">Indigenous Art Atlas</h1>
           </a>
         </div>
         <nav class="nav" role="navigation" aria-label="Main navigation">
           <ul class="nav-list">
             <li><a href="#map-section" class="nav-link">Map</a></li>
-            <li><a href="../search.html" class="nav-link">Search</a></li>
-            <li><a href="../about.html" class="nav-link">About Us</a></li>
-            <li><a href="../register.html" class="nav-link">Register</a></li>
+            <li><a href="search.html" class="nav-link">Search</a></li>
+            <li><a href="about.html" class="nav-link">About Us</a></li>
+            <li><a href="register.html" class="nav-link">Register</a></li>
           </ul>
           <!-- User Authentication Section -->
           <div class="auth-section">
             <!-- Login Button (shown when not logged in) -->
             <div id="login-section" class="login-section-nav">
-              <a href="../login.html" class="btn btn-primary login-nav-btn">Login</a>
+            <a href="login.html" class="btn btn-primary login-nav-btn">Login</a>
             </div>
 
             <!-- User Avatar (shown when logged in) -->
             <div id="user-section" class="user-avatar" style="display: none">
               <div class="avatar-container">
-                <img id="user-avatar-image" src="../assets/img/user-avatar.png" alt="User avatar" class="avatar-image"
-                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                <img id="user-avatar-image" src="assets/img/user-avatar.png" alt="User avatar" class="avatar-image"
+                  onerror="console.error('Avatar image failed to load:', this.src); this.style.display='none'; this.nextElementSibling.style.display='flex';" />
                 <div class="avatar-fallback">
                   <span id="user-avatar-initials" class="avatar-initials">TU</span>
                 </div>
@@ -69,7 +69,7 @@
     <!-- Hero Section -->
     <section class="hero" aria-labelledby="hero-heading">
       <div class="hero-image">
-        <img src="../assets/img/art01.png" alt="Featured Indigenous artwork" class="hero-bg-image" />
+        <img src="assets/img/art01.png" alt="Featured Indigenous artwork" class="hero-bg-image" />
         <div class="hero-overlay">
           <div class="container">
             <div class="hero-content">
@@ -214,10 +214,10 @@
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
   <!-- Custom JavaScript -->
-  <script src="../js/common-utils.js"></script>
-  <script src="../js/common-data.js"></script>
+  <script src="js/common-utils.js"></script>
+  <script src="js/common-data.js"></script>
   <script src="user-auth.js"></script>
-  <script src="main.js"></script>
+  <script type="module" src="home.js"></script>
 </body>
 
 </html>

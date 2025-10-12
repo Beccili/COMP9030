@@ -119,6 +119,7 @@ class UserAuth {
 
       // Handle avatar image
       if (userAvatarImage) {
+        console.log('Setting avatar to:', this.user.avatar);
         if (this.user.avatar) {
           userAvatarImage.src = this.user.avatar;
           userAvatarImage.style.display = "block";
@@ -126,6 +127,7 @@ class UserAuth {
             userAvatarInitials.parentElement.style.display = "none";
           }
         } else {
+          console.log('No avatar found, showing initials');
           userAvatarImage.style.display = "none";
           if (userAvatarInitials && userAvatarInitials.parentElement) {
             userAvatarInitials.parentElement.style.display = "flex";
@@ -179,9 +181,7 @@ class UserAuth {
     accountLi.className = 'account-nav-item';
     
     const accountLink = document.createElement('a');
-    accountLink.href = window.location.pathname.includes("homePage") 
-      ? "../account.html" 
-      : "account.html";
+    accountLink.href = "account.html";
     accountLink.className = 'nav-link';
     accountLink.textContent = 'Account';
     
@@ -230,7 +230,7 @@ class UserAuth {
         }
         
         // Navigate to account page
-        window.location.href = window.location.pathname.includes("homePage") 
+        window.location.href = false 
           ? "../account.html" 
           : "account.html";
       });

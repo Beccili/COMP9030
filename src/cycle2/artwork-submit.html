@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Artwork Information Submission</title>
-    <link rel="stylesheet" href="homePage/styles.css" />
+    <link rel="stylesheet" href="home-styles.css" />
     <style>
       .form-section{padding:var(--space-3xl) 0;background:var(--elev-1);border-bottom:1px solid var(--elev-2)}
       .form-card{max-width:960px;margin:0 auto;background:var(--elev-1);border:1px solid var(--elev-2);
@@ -20,6 +20,19 @@
       .form-actions{display:flex;gap:var(--space-md);margin-top:var(--space-lg)}
       .hint{color:var(--muted);font-size:var(--font-size-sm)}
       .disabled-note{color:var(--muted);font-size:var(--font-size-sm);margin-top:4px}
+      
+      /* Popup notification styles */
+      .notification-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);
+        display:flex;align-items:center;justify-content:center;z-index:9999;animation:fadeIn 0.2s ease}
+      .notification-popup{background:var(--elev-1);padding:var(--space-xl);border-radius:var(--border-radius-lg);
+        max-width:500px;width:90%;box-shadow:var(--shadow-xl);animation:slideUp 0.3s ease;text-align:center}
+      .notification-icon{font-size:48px;margin-bottom:var(--space-md)}
+      .notification-title{font-size:var(--font-size-xl);font-weight:600;margin-bottom:var(--space-sm)}
+      .notification-message{color:var(--muted);margin-bottom:var(--space-lg)}
+      .notification-success .notification-title{color:#8dc891}
+      .notification-error .notification-title{color:#e06c75}
+      @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+      @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
     </style>
   </head>
   <body>
@@ -28,11 +41,11 @@
       <div class="container">
         <div class="header-content">
           <div class="logo">
-            <a href="homePage/index.html" class="logo-link"><h1 class="logo-text">Indigenous Art Atlas</h1></a>
+            <a href="home.html" class="logo-link"><h1 class="logo-text">Indigenous Art Atlas</h1></a>
           </div>
           <nav class="nav" role="navigation" aria-label="Main navigation">
             <ul class="nav-list">
-              <li><a href="homePage/index.html#map-section" class="nav-link">Map</a></li>
+              <li><a href="home.html#map-section" class="nav-link">Map</a></li>
               <li><a href="search.html" class="nav-link">Search</a></li>
               <li><a href="about.html" class="nav-link">About Us</a></li>
               <li><a href="register.html" class="nav-link">Register</a></li>
@@ -78,8 +91,8 @@
     <main id="main-content" role="main">
       <section class="search-header">
         <div class="container">
-          <h1 class="page-title">Artwork Information Submission</h1>
-          <p class="page-description">Only <strong>approved artists</strong> can submit artworks. Submissions are reviewed by admins before publication.</p>
+          <h1 class="page-title" id="page-title">Artwork Information Submission</h1>
+          <p class="page-description" id="page-description">Only <strong>approved artists</strong> can submit artworks. Submissions are reviewed by admins before publication.</p>
         </div>
       </section>
 
@@ -91,10 +104,6 @@
                 <div class="form-row">
                   <label class="label" for="title">Title *</label>
                   <input id="title" class="input" type="text" required placeholder="e.g., Caring for Country" />
-                </div>
-                <div class="form-row">
-                  <label class="label" for="artist">Artist *</label>
-                  <input id="artist" class="input" type="text" required placeholder="e.g., Vincent Namatjira" />
                 </div>
 
                 <div class="form-row">
@@ -146,6 +155,18 @@
                   <p class="disabled-note" id="address-note" style="display:none;">Address disabled because the artwork is marked as sensitive.</p>
                 </div>
 
+                <div class="form-row">
+                  <label class="label" for="latitude">Latitude (optional)</label>
+                  <input id="latitude" class="input" type="number" step="0.000001" min="-90" max="90" placeholder="e.g., -34.9285"/>
+                  <p class="hint">Decimal degrees. Leave empty to use region center.</p>
+                </div>
+
+                <div class="form-row">
+                  <label class="label" for="longitude">Longitude (optional)</label>
+                  <input id="longitude" class="input" type="number" step="0.000001" min="-180" max="180" placeholder="e.g., 138.6007"/>
+                  <p class="disabled-note" id="coords-note" style="display:none;">Coordinates disabled because the artwork is marked as sensitive.</p>
+                </div>
+
                 <div class="form-row full">
                   <label class="label" for="artworkImages">Artwork Images *</label>
                   <input id="artworkImages" class="input" type="file" accept="image/*" multiple required />
@@ -159,8 +180,8 @@
               </div>
 
               <div class="form-actions">
-                <button class="btn btn-primary" type="submit">Submit</button>
-                <a class="btn btn-secondary" href="register.html">Back to Register</a>
+                <button class="btn btn-primary" type="submit" id="submit-btn">Submit</button>
+                <a class="btn btn-secondary" href="account.html" id="back-btn">Back to Account</a>
               </div>
             </form>
             <p id="submit-note" class="page-description" style="margin-top:var(--space-md);display:none;"></p>
@@ -177,23 +198,127 @@
       </div>
     </footer>
 
-    <script src="homePage/user-auth.js"></script>
+    <script src="user-auth.js"></script>
+    <script type="module">
+      import api from './api.js';
+    </script>
     <script>
       const form = document.getElementById('artwork-form');
       const note = document.getElementById('submit-note');
       const sensitiveSel = document.getElementById('sensitive');
       const addressInput = document.getElementById('address');
       const addressNote = document.getElementById('address-note');
+      const latInput = document.getElementById('latitude');
+      const lngInput = document.getElementById('longitude');
+      const coordsNote = document.getElementById('coords-note');
       const artworkImagesInput = document.getElementById('artworkImages');
+      
+      // Check if in edit mode
+      const urlParams = new URLSearchParams(window.location.search);
+      const isEditMode = urlParams.get('edit') === 'true';
+      const artworkId = urlParams.get('id');
+      let currentArtwork = null;
+      let currentUserData = null;
 
       function updateAddressState() {
         const isSensitive = sensitiveSel.value === 'true';
         addressInput.disabled = isSensitive;
         addressNote.style.display = isSensitive ? 'block' : 'none';
-        if (isSensitive) addressInput.value = '';
+        latInput.disabled = isSensitive;
+        lngInput.disabled = isSensitive;
+        coordsNote.style.display = isSensitive ? 'block' : 'none';
+        if (isSensitive) {
+          addressInput.value = '';
+          latInput.value = '';
+          lngInput.value = '';
+        }
       }
       sensitiveSel.addEventListener('change', updateAddressState);
-      document.addEventListener('DOMContentLoaded', updateAddressState);
+      
+      // Load artwork data if in edit mode
+      async function loadArtworkForEdit() {
+        if (!isEditMode || !artworkId) return;
+        
+        try {
+          const api = await import('./api.js').then(m => m.default);
+          
+          // Verify session and get current user
+          const sessionData = await api.apiVerifySession();
+          currentUserData = sessionData.user;
+          
+          currentArtwork = await api.getArtwork(artworkId);
+          
+          // Update page title
+          document.getElementById('page-title').textContent = 'Edit Artwork';
+          document.getElementById('page-description').textContent = 'Edit your artwork submission. Changes will be reviewed again by admins.';
+          document.getElementById('submit-btn').textContent = 'Update Artwork';
+          
+          // Pre-populate form fields
+          document.getElementById('title').value = currentArtwork.title || '';
+          document.getElementById('artType').value = currentArtwork.type || 'Portrait';
+          document.getElementById('period').value = currentArtwork.period || 'Contemporary';
+          document.getElementById('region').value = currentArtwork.region || 'NSW';
+          sensitiveSel.value = currentArtwork.sensitive ? 'true' : 'false';
+          addressInput.value = currentArtwork.address || '';
+          
+          // Handle coordinates
+          if (currentArtwork.coords) {
+            latInput.value = currentArtwork.coords.lat || '';
+            lngInput.value = currentArtwork.coords.lng || '';
+          }
+          
+          document.getElementById('desc').value = currentArtwork.intro || '';
+          
+          // Make images optional in edit mode
+          artworkImagesInput.required = false;
+          
+          updateAddressState();
+        } catch (error) {
+          console.error('Failed to load artwork:', error);
+          alert('Failed to load artwork data. Redirecting back...');
+          window.location.href = 'account.html';
+        }
+      }
+      
+      document.addEventListener('DOMContentLoaded', () => {
+        updateAddressState();
+        loadArtworkForEdit();
+      });
+
+      // Popup notification function
+      function showNotification(type, title, message, autoClose = true) {
+        const overlay = document.createElement('div');
+        overlay.className = 'notification-overlay';
+        
+        const popup = document.createElement('div');
+        popup.className = `notification-popup notification-${type}`;
+        
+        const icon = type === 'success' ? '✅' : '❌';
+        
+        popup.innerHTML = `
+          <div class="notification-icon">${icon}</div>
+          <h3 class="notification-title">${title}</h3>
+          <p class="notification-message">${message}</p>
+          <button class="btn btn-primary" onclick="this.closest('.notification-overlay').remove()">OK</button>
+        `;
+        
+        overlay.appendChild(popup);
+        document.body.appendChild(overlay);
+        
+        // Auto close after 3 seconds if enabled
+        if (autoClose) {
+          setTimeout(() => {
+            overlay.remove();
+          }, 3000);
+        }
+        
+        // Close on overlay click
+        overlay.addEventListener('click', (e) => {
+          if (e.target === overlay) {
+            overlay.remove();
+          }
+        });
+      }
 
       function isValidUrl(v){ try { new URL(v); return true; } catch { return false; } }
       function setValidity(el, ok, msg){
@@ -201,63 +326,176 @@
         if (!ok) el.reportValidity();
       }
 
-      form.addEventListener('submit', (e) => {
+      form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
+        // Get artist name from logged-in user (use currentUserData if in edit mode, otherwise from localStorage)
+        const userData = currentUserData || JSON.parse(localStorage.getItem('atlas_user') || '{}');
+        const artist = userData.name;
+        
+        // Validate that user is logged in and has a name
+        if (!artist) {
+          showNotification(
+            'error',
+            'Authentication Required',
+            'You must be logged in as an artist to submit artwork.',
+            false
+          );
+          return;
+        }
+
         const title = document.getElementById('title').value.trim();
-        const artist = document.getElementById('artist').value.trim();
         const artType = document.getElementById('artType').value;
         const period = document.getElementById('period').value;
         const region = document.getElementById('region').value;
         const sensitive = sensitiveSel.value === 'true';
         const address = addressInput.value.trim();
+        const lat = latInput.value.trim();
+        const lng = lngInput.value.trim();
         const desc = document.getElementById('desc').value.trim();
         const artworkImages = artworkImagesInput.files;
 
         if (!title){ setValidity(document.getElementById('title'), false, 'Please enter the title.'); return; }
-        if (!artist){ setValidity(document.getElementById('artist'), false, 'Please enter the artist.'); return; }
         if (!artworkImages || artworkImages.length === 0){ 
           setValidity(artworkImagesInput, false, 'Please select at least one artwork image.'); 
           return; 
         }
         setValidity(document.getElementById('title'), true, '');
-        setValidity(document.getElementById('artist'), true, '');
         setValidity(artworkImagesInput, true, '');
 
         if (sensitive && address){
           setValidity(addressInput, false, 'Address cannot be provided when sensitive is true.'); 
           return;
-        } else {
-          setValidity(addressInput, true, '');
         }
+        
+        if (sensitive && (lat || lng)){
+          setValidity(latInput, false, 'Coordinates cannot be provided when sensitive is true.'); 
+          return;
+        }
+        
+        // Validate coordinates - both or neither
+        if ((lat && !lng) || (!lat && lng)) {
+          setValidity(lat ? lngInput : latInput, false, 'Please provide both latitude and longitude, or leave both empty.');
+          return;
+        }
+        
+        setValidity(addressInput, true, '');
+        setValidity(latInput, true, '');
+        setValidity(lngInput, true, '');
 
-        // Convert files to base64 for storage (in real app, would upload to server)
-        const imageFiles = Array.from(artworkImages).map(file => ({
-          name: file.name,
-          size: file.size,
-          type: file.type,
-          // In real app, would be uploaded URL or file path
-          data: `[File: ${file.name} - ${Math.round(file.size/1024)}KB]`
-        }));
+        // Import API module dynamically
+        const api = await import('./api.js').then(m => m.default);
 
-        const data = {
-          id: 'w_' + Math.random().toString(36).slice(2) + Date.now().toString(36),
-          title, artist, artType, period, region,
-          sensitive, address: address || null,
-          artworkImages: imageFiles,
-          description: desc,
-          status: 'pending',
-          submittedAt: new Date().toISOString()
-        };
-        const key = 'IAA_artwork_submissions_v1';
-        const arr = JSON.parse(localStorage.getItem(key) || '[]');
-        arr.push(data);
-        localStorage.setItem(key, JSON.stringify(arr));
+        // Disable submit button
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Uploading images...';
 
-        note.style.display = 'block';
-        note.textContent = 'Submitted! Your artwork is pending admin review.';
-        form.reset();
-        updateAddressState();
+        try {
+          // First, upload images to server
+          let uploadedImages = [];
+          if (artworkImages.length > 0) {
+            const formData = new FormData();
+            Array.from(artworkImages).forEach((file, index) => {
+              formData.append('images[]', file);
+            });
+
+            const sessionId = localStorage.getItem('atlas_session_id');
+            const uploadResponse = await fetch(`/cycle3/backend/upload.php?session_id=${sessionId}`, {
+              method: 'POST',
+              body: formData
+            });
+
+            const uploadResult = await uploadResponse.json();
+            if (!uploadResult.success) {
+              throw new Error(uploadResult.message || 'Image upload failed');
+            }
+
+            uploadedImages = uploadResult.data.files.map(f => ({
+              name: f.name,
+              size: f.size,
+              type: f.type
+            }));
+          }
+
+          submitBtn.textContent = 'Submitting artwork...';
+
+          // Build coordinates object if both lat/lng provided
+          const coords = (lat && lng) ? {
+            lat: parseFloat(lat),
+            lng: parseFloat(lng)
+          } : null;
+
+          const artworkData = {
+            title, 
+            artist, 
+            type: artType,
+            period, 
+            region,
+            sensitive, 
+            address: address || null,
+            coords: coords,
+            intro: desc,
+            artworkImages: uploadedImages
+          };
+
+          if (isEditMode && artworkId) {
+            // Update existing artwork
+            await api.updateArtwork(artworkId, artworkData, artist);
+            
+            // Show success popup
+            showNotification(
+              'success',
+              'Artwork Updated!',
+              'Your artwork has been updated successfully and will be reviewed again.',
+              true
+            );
+            
+            // Redirect to account page after a delay
+            setTimeout(() => {
+              window.location.href = 'account.html';
+            }, 2000);
+          } else {
+            // Submit new artwork to backend
+            await api.createArtwork(artworkData, artist);
+            
+            // Also save to localStorage for backwards compatibility
+            const localData = {
+              id: 'w_' + Math.random().toString(36).slice(2) + Date.now().toString(36),
+              ...artworkData,
+              status: 'pending',
+              submittedAt: new Date().toISOString()
+            };
+            const key = 'IAA_artwork_submissions_v1';
+            const arr = JSON.parse(localStorage.getItem(key) || '[]');
+            arr.push(localData);
+            localStorage.setItem(key, JSON.stringify(arr));
+
+            // Show success popup
+            showNotification(
+              'success',
+              'Artwork Submitted!',
+              'Your artwork has been submitted successfully and is pending admin review.',
+              true
+            );
+            
+            form.reset();
+            updateAddressState();
+          }
+        } catch (error) {
+          console.error('Submission error:', error);
+          
+          // Show error popup
+          showNotification(
+            'error',
+            'Submission Failed',
+            error.message || 'An error occurred. Please try again.',
+            false
+          );
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Submit Artwork';
+        }
       });
     </script>
   </body>

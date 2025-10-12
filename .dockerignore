@@ -1,0 +1,9 @@
+.git
+.github
+.devcontainer
+.AI-Images
+c1-c4
+node_modules
+*.md
+!SETUP.md
+.gitignore
