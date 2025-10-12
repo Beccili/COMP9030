@@ -56,7 +56,20 @@ function artTitle(id) { const a = state.data.artworks.find(a => a.id === id); re
 function short(s, n = 90) { if (!s) return ''; return s.length > n ? s.slice(0, n - 1) + '…' : s; }
 
 // ===== Filter setters =====
-function setArtFilter(key, val) { state.filters.artworks[key] = val; render(); }
+let artFilterTimeout = null;
+function setArtFilter(key, val) { 
+  state.filters.artworks[key] = val;
+  
+  // Debounce text input to avoid losing focus
+  if (key === 'text') {
+    clearTimeout(artFilterTimeout);
+    artFilterTimeout = setTimeout(() => {
+      render();
+    }, 300);
+  } else {
+    render();
+  }
+}
 function setUserFilter(key, val) { state.filters.users[key] = val; render(); }
 
 // ===== Views =====
@@ -139,8 +152,8 @@ function Artworks() {
                     <span class="th-label">Period</span>
                     <select class="form-control th-control" onchange="setArtFilter('period', this.value)">
                       <option value="">All</option>
-                      <option value="ancient" ${f.period === 'ancient' ? 'selected' : ''}>Ancient</option>
-                      <option value="modern" ${f.period === 'modern' ? 'selected' : ''}>Modern</option>
+                      <option value="Ancient" ${f.period === 'Ancient' ? 'selected' : ''}>Ancient</option>
+                      <option value="Contemporary" ${f.period === 'Contemporary' ? 'selected' : ''}>Contemporary</option>
                     </select>
                   </div>
                 </th>
@@ -208,7 +221,7 @@ function Users() {
       { key: 'status', label: 'Status', render: (_, row) => statusSelect(row) },
       {
         key: 'actions', label: '', render: (_, row) => `<div class=actions>
-              <button class="btn" onclick="toggleUser('${row.id}')">${row.status === 'active' ? 'Deactivate' : 'Activate'}</button>
+              <button class="btn" onclick="toggleUser('${row.id}')">${row.status === 'active' ? 'Deactivate' : 'Approve'}</button>
               <button class="btn danger" onclick="removeUser('${row.id}')">Remove</button>
             </div>` }
     ],
@@ -293,8 +306,11 @@ function roleSelect(row) {
 }
 
 function statusSelect(row) {
+  // Frontend uses 'active' which maps to backend 'approved'
+  const statuses = ['active', 'pending', 'inactive'];
+  const statusLabels = { 'active': 'approved', 'pending': 'pending', 'inactive': 'inactive' };
   return `<select class="form-control" onchange="changeUserStatus('${row.id}', this.value)">
-    ${['active', 'inactive'].map(s => `<option value="${s}" ${row.status === s ? 'selected' : ''}>${s}</option>`).join('')}
+    ${statuses.map(s => `<option value="${s}" ${row.status === s ? 'selected' : ''}>${statusLabels[s]}</option>`).join('')}
   </select>`
 }
 
@@ -672,7 +688,7 @@ async function toggleUser(id) {
     await adminAPI.adminSetUserStatus(id, newStatus);
     u.status = newStatus; 
     log('toggle_user', id, u.status); 
-    toast('User ' + (u.status === 'active' ? 'activated' : 'deactivated')); 
+    toast('User ' + (u.status === 'active' ? 'approved' : 'deactivated')); 
     render();
   } catch (error) {
     console.error('Toggle user error:', error);
@@ -714,7 +730,9 @@ async function changeUserStatus(id, newStatus) {
     await adminAPI.adminSetUserStatus(id, newStatus);
     u.status = newStatus; 
     log('change_user_status', id, `${prev} -> ${newStatus}`); 
-    openModal('Status updated', `<div>User <strong>${u.name}</strong> is now <span class=\"pill ${newStatus === 'active' ? 'ok' : 'warn'}\">${newStatus}</span>.</div>`); 
+    const statusPillClass = newStatus === 'active' ? 'ok' : (newStatus === 'pending' ? 'warn' : 'danger');
+    const displayStatus = newStatus === 'active' ? 'approved' : newStatus;
+    openModal('Status updated', `<div>User <strong>${u.name}</strong> is now <span class=\"pill ${statusPillClass}\">${displayStatus}</span>.</div>`); 
     render();
   } catch (error) {
     console.error('Change status error:', error);
