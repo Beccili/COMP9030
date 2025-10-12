@@ -23,6 +23,9 @@ switch ($method) {
                 case 'register':
                     handleRegister($input);
                     break;
+                case 'update_profile':
+                    handleUpdateProfile($input);
+                    break;
                 default:
                     sendError('Invalid action');
             }
@@ -235,5 +238,65 @@ function verifySession() {
     }
     
     sendError('Invalid session');
+}
+
+function handleUpdateProfile($input) {
+    $sessionId = $_GET['session_id'] ?? '';
+    
+    if (empty($sessionId)) {
+        sendError('Session ID required');
+    }
+    
+    // Validate session
+    $sessions = loadJsonFile(SESSIONS_FILE);
+    $userId = null;
+    
+    foreach ($sessions as $session) {
+        if ($session['id'] === $sessionId) {
+            if (strtotime($session['expires_at']) < time()) {
+                sendError('Session expired');
+            }
+            $userId = $session['user_id'];
+            break;
+        }
+    }
+    
+    if (!$userId) {
+        sendError('Invalid session');
+    }
+    
+    // Load users
+    $users = loadJsonFile(USERS_FILE);
+    
+    // Find and update user
+    for ($i = 0; $i < count($users); $i++) {
+        if ($users[$i]['id'] === $userId) {
+            // Update allowed fields (users can't change their own status or role)
+            $allowedFields = ['name', 'email', 'region', 'nation', 'bio', 'imageUrl'];
+            
+            foreach ($allowedFields as $field) {
+                if (isset($input[$field])) {
+                    $users[$i][$field] = $input[$field];
+                }
+            }
+            
+            // Update password if provided
+            if (isset($input['password']) && !empty($input['password'])) {
+                $users[$i]['password'] = password_hash($input['password'], PASSWORD_DEFAULT);
+            }
+            
+            $users[$i]['updated_at'] = date('Y-m-d H:i:s');
+            saveJsonFile(USERS_FILE, $users);
+            
+            // Return updated user (without password)
+            unset($users[$i]['password']);
+            
+            sendResponse(true, 'Profile updated successfully', [
+                'user' => $users[$i]
+            ]);
+        }
+    }
+    
+    sendError('User not found', 404);
 }
 ?>

@@ -1,8 +1,13 @@
-/* Account Register — Vanilla JS with Backend Integration */
+/* Account Register/Edit — Vanilla JS with Backend Integration */
 
-import { apiRegister } from './api.js';
+import { apiRegister, apiUpdateProfile, apiVerifySession } from './api.js';
 
 const STORE_KEY = "IAA_accounts_v1"; // accounts (user or artist) - legacy fallback
+
+// Check if we're in edit mode
+const urlParams = new URLSearchParams(window.location.search);
+const isEditMode = urlParams.get('edit') === 'true';
+let currentUser = null;
 
 const form = document.getElementById("artist-form");
 const idInput = document.getElementById("artist-id");
@@ -73,12 +78,64 @@ function applyPasswordValidity(){
   else if (v.length < 6) passwordInput.setCustomValidity("Password must be at least 6 characters.");
   else passwordInput.setCustomValidity("");
 }
+function applyRegionValidity(){
+  const v = regionSelect.value;
+  if (!v) regionSelect.setCustomValidity("Please select a region/state.");
+  else regionSelect.setCustomValidity("");
+}
 nameInput.addEventListener("input", applyNameValidity);
 nameInput.addEventListener("blur", ()=>{applyNameValidity(); if(!nameInput.checkValidity()) nameInput.reportValidity();});
 emailInput.addEventListener("input", applyEmailValidity);
 emailInput.addEventListener("blur", ()=>{applyEmailValidity(); if(!emailInput.checkValidity()) emailInput.reportValidity();});
 passwordInput.addEventListener("input", applyPasswordValidity);
 passwordInput.addEventListener("blur", ()=>{applyPasswordValidity(); if(!passwordInput.checkValidity()) passwordInput.reportValidity();});
+regionSelect.addEventListener("change", applyRegionValidity);
+regionSelect.addEventListener("blur", ()=>{applyRegionValidity(); if(!regionSelect.checkValidity()) regionSelect.reportValidity();});
+
+// Load user data if in edit mode
+async function loadUserDataForEdit() {
+  if (!isEditMode) return;
+  
+  try {
+    const sessionData = await apiVerifySession();
+    currentUser = sessionData.user;
+    
+    // Update page title and description
+    document.getElementById('page-title').textContent = 'Edit Profile';
+    document.getElementById('page-description').textContent = 'Update your account information and profile settings.';
+    document.getElementById('form-heading').textContent = 'Edit Account';
+    
+    // Pre-populate form fields
+    nameInput.value = currentUser.name || '';
+    emailInput.value = currentUser.email || '';
+    
+    // Set region if exists, otherwise keep placeholder
+    if (currentUser.region) {
+      regionSelect.value = currentUser.region;
+    }
+    
+    nationInput.value = currentUser.nation || '';
+    bioInput.value = currentUser.bio || '';
+    roleSelect.value = currentUser.role || 'user';
+    
+    // Make password optional in edit mode
+    passwordInput.required = false;
+    document.getElementById('password-optional').style.display = 'inline';
+    passwordInput.placeholder = 'Leave blank to keep current password';
+    
+    // Disable role selection in edit mode (users can't change their own role)
+    roleSelect.disabled = true;
+    roleSelect.style.opacity = '0.6';
+    roleSelect.title = 'Role cannot be changed';
+    
+    // Update button text
+    document.getElementById('saveBtn').textContent = 'Update Profile';
+    
+  } catch (error) {
+    console.error('Failed to load user data:', error);
+    window.location.href = 'login.html';
+  }
+}
 
 // Removed renderList function as accounts are now shown on the account page
 
@@ -96,17 +153,25 @@ function escapeHtml(str) {
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
-  applyNameValidity(); applyEmailValidity(); applyPasswordValidity();
+  
+  // In edit mode, password is optional
+  if (!isEditMode) {
+    applyPasswordValidity();
+  }
+  applyNameValidity(); 
+  applyEmailValidity();
+  applyRegionValidity();
+  
   if (!form.checkValidity()) { form.reportValidity(); return; }
 
   // Disable form while submitting
   const submitBtn = document.getElementById("saveBtn");
   submitBtn.disabled = true;
-  submitBtn.textContent = "Uploading...";
+  submitBtn.textContent = isEditMode ? "Updating..." : "Uploading...";
 
   try {
     // Upload profile picture if provided
-    let imageUrl = 'assets/img/user-avatar.png'; // Default
+    let imageUrl = isEditMode ? (currentUser?.imageUrl || 'assets/img/user-avatar.png') : 'assets/img/user-avatar.png';
     
     if (profileImageInput.files && profileImageInput.files.length > 0) {
       submitBtn.textContent = "Uploading profile picture...";
@@ -127,12 +192,12 @@ form.addEventListener("submit", async (e) => {
       imageUrl = uploadResult.data.path;
     }
     
-    submitBtn.textContent = "Submitting...";
+    submitBtn.textContent = isEditMode ? "Updating..." : "Submitting...";
 
     const userData = {
       name: nameInput.value.trim(),
       email: emailInput.value.trim(),
-      password: passwordInput.value,
+      password: passwordInput.value.trim() || undefined,
       role: roleSelect.value,
       region: regionSelect.value,
       nation: nationInput.value.trim(),
@@ -140,52 +205,77 @@ form.addEventListener("submit", async (e) => {
       bio: bioInput.value.trim()
     };
 
-    // Register via backend API
-    const user = await apiRegister(userData);
-    
-    // Also save to localStorage for backwards compatibility
-    const acc = {
-      id: user.id,
-      ...userData,
-      status: "pending",
-      artworks: []
-    };
-    const list = loadAccounts();
-    list.push(acc);
-    saveAccounts(list);
+    if (isEditMode) {
+      // Update existing profile
+      const user = await apiUpdateProfile(userData);
+      
+      // Show success message above submit button
+      const successMessage = document.createElement("div");
+      successMessage.className = "login-success";
+      successMessage.innerHTML = `
+        <p>Profile updated successfully!</p>
+        <p>Redirecting back to your account...</p>
+      `;
+      successMessage.style.cssText = "background: #8dc891; color: white; padding: var(--space-md); border-radius: var(--border-radius); margin-top: var(--space-lg); margin-bottom: var(--space-md); text-align: center;";
+      
+      const formActions = document.querySelector(".form-actions");
+      if (formActions) {
+        formActions.parentNode.insertBefore(successMessage, formActions);
+      }
+      
+      // Redirect to account page
+      setTimeout(() => {
+        window.location.href = "account.html";
+      }, 1500);
+      
+    } else {
+      // Register via backend API
+      const user = await apiRegister(userData);
+      
+      // Also save to localStorage for backwards compatibility
+      const acc = {
+        id: user.id,
+        ...userData,
+        status: "pending",
+        artworks: []
+      };
+      const list = loadAccounts();
+      list.push(acc);
+      saveAccounts(list);
 
-    // Show success message
+    // Show success message above submit button
     const successMessage = document.createElement("div");
     successMessage.className = "login-success";
     successMessage.innerHTML = `
       <p>Registration successful! Your account is pending admin approval.</p>
       <p>Redirecting to login page...</p>
     `;
-    successMessage.style.cssText = "background: #8dc891; color: white; padding: var(--space-md); border-radius: var(--border-radius); margin-bottom: var(--space-md); text-align: center;";
+    successMessage.style.cssText = "background: #8dc891; color: white; padding: var(--space-md); border-radius: var(--border-radius); margin-top: var(--space-lg); margin-bottom: var(--space-md); text-align: center;";
     
-    const formCard = document.querySelector(".form-card");
-    if (formCard) {
-      formCard.insertBefore(successMessage, formCard.firstChild);
+    const formActions = document.querySelector(".form-actions");
+    if (formActions) {
+      formActions.parentNode.insertBefore(successMessage, formActions);
     }
     
     form.reset();
     idInput.value = "";
     
-    // Redirect to login page
-    setTimeout(() => {
-      window.location.href = "login.html";
-    }, 2000);
+      // Redirect to login page
+      setTimeout(() => {
+        window.location.href = "login.html";
+      }, 2000);
+    }
   } catch (error) {
     console.error("Registration error:", error);
     
     const errorMessage = document.createElement("div");
     errorMessage.className = "login-error";
     errorMessage.textContent = "Registration failed: " + (error.message || "Unknown error. Please try again.");
-    errorMessage.style.cssText = "background: #e06c75; color: white; padding: var(--space-md); border-radius: var(--border-radius); margin-bottom: var(--space-md); text-align: center;";
+    errorMessage.style.cssText = "background: #e06c75; color: white; padding: var(--space-md); border-radius: var(--border-radius); margin-top: var(--space-lg); margin-bottom: var(--space-md); text-align: center;";
     
-    const formCard = document.querySelector(".form-card");
-    if (formCard) {
-      formCard.insertBefore(errorMessage, formCard.firstChild);
+    const formActions = document.querySelector(".form-actions");
+    if (formActions) {
+      formActions.parentNode.insertBefore(errorMessage, formActions);
       
       setTimeout(() => {
         errorMessage.remove();
@@ -193,7 +283,7 @@ form.addEventListener("submit", async (e) => {
     }
   } finally {
     submitBtn.disabled = false;
-    submitBtn.textContent = "Submit";
+    submitBtn.textContent = isEditMode ? "Update Profile" : "Submit";
   }
 });
 
@@ -225,7 +315,16 @@ importFile && importFile.addEventListener("change", async (e) => {
   }
 });
 
-document.addEventListener("DOMContentLoaded", () => {});
+document.addEventListener("DOMContentLoaded", () => {
+  // Hide password optional hint by default
+  const passwordOptional = document.getElementById('password-optional');
+  if (passwordOptional) {
+    passwordOptional.style.display = 'none';
+  }
+  
+  // Load user data if in edit mode
+  loadUserDataForEdit();
+});
 
 /*
 #-# START COMMENT BLOCK #-#

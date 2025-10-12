@@ -211,9 +211,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const editBtn = document.getElementById('edit-account-btn');
   if (editBtn) {
     editBtn.addEventListener('click', () => {
-      // Redirect to register page for editing
-      // In a real app, we might pass the account ID or pre-fill the form
-      window.location.href = 'register.html';
+      // Redirect to register page in edit mode
+      window.location.href = 'register.html?edit=true';
     });
   }
   

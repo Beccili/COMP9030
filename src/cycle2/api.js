@@ -207,6 +207,37 @@ export async function apiVerifySession() {
   return data.data;
 }
 
+/**
+ * Update user profile
+ */
+export async function apiUpdateProfile(userData) {
+  const sessionId = getSessionId();
+  if (!sessionId) {
+    throw new Error('Authentication required');
+  }
+  
+  const response = await fetch(`${API_BASE}/auth.php?action=update_profile&session_id=${sessionId}`, {
+    method: 'POST',
+    headers: jsonHeaders,
+    body: JSON.stringify({
+      name: userData.name,
+      email: userData.email,
+      password: userData.password || undefined,
+      region: userData.region || '',
+      nation: userData.nation || '',
+      bio: userData.bio || '',
+      imageUrl: userData.imageUrl || ''
+    })
+  });
+  
+  const data = await handleResponse(response);
+  
+  // Update localStorage with new user data
+  localStorage.setItem('atlas_user', JSON.stringify(data.data.user));
+  
+  return data.data.user;
+}
+
 // ===== ARTWORKS API =====
 
 /**
