@@ -107,7 +107,6 @@ function Artworks() {
       <td>${sensitiveCell}</td>
       <td>${addressCell}</td>
       <td>${artworkImagesCell}</td>
-      <td>${safe(row.intro)}</td>
       <td>${RowActions(row)}</td>
     </tr>`;
   }).join('');
@@ -165,12 +164,11 @@ function Artworks() {
                 </th>
                 <th><span class="th-label">Address</span></th>
                 <th><span class="th-label">Images</span></th>
-                <th><span class="th-label">Description</span></th>
                 <th style="text-align:right"><button class="btn" onclick="newArtwork()">+ New</button></th>
               </tr>
             </thead>
             <tbody>
-              ${rowsHtml || `<tr><td colspan="10"><div class="empty">No data</div></td></tr>`}
+              ${rowsHtml || `<tr><td colspan="9"><div class="empty">No data</div></td></tr>`}
             </tbody>
           </table>
         </div>

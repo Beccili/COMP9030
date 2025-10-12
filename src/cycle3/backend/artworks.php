@@ -94,14 +94,36 @@ function getArtworks() {
 
 function getArtwork($id) {
     $artworks = loadJsonFile(ARTWORKS_FILE);
+    $users = loadJsonFile(USERS_FILE);
     
     foreach ($artworks as $artwork) {
         if ($artwork['id'] === $id) {
+            // Enrich with artist information
+            $artwork = enrichArtworkWithArtistInfo($artwork, $users);
             sendResponse(true, 'Artwork found', $artwork);
         }
     }
     
     sendError('Artwork not found', 404);
+}
+
+function enrichArtworkWithArtistInfo($artwork, $users) {
+    // Find the artist/submitter user
+    $submitterId = $artwork['submitted_by'] ?? '';
+    $artistInfo = '';
+    
+    if ($submitterId) {
+        foreach ($users as $user) {
+            if ($user['id'] === $submitterId) {
+                $artistInfo = $user['bio'] ?? '';
+                break;
+            }
+        }
+    }
+    
+    // Add artistInfo to artwork
+    $artwork['artistInfo'] = $artistInfo;
+    return $artwork;
 }
 
 function createArtwork($input) {

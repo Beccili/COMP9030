@@ -37,6 +37,7 @@ export function fromServerArtwork(serverArt) {
     title: serverArt.title,
     artist: serverArt.artist || 'Unknown Artist', // Artist name from backend
     artistId: serverArt.submitted_by || '',
+    artistInfo: serverArt.artistInfo || '', // Artist bio from backend
     type: serverArt.artType,
     period: serverArt.period,
     region: serverArt.region,

@@ -81,8 +81,17 @@ function populateArtworkDetails(artwork) {
   document.getElementById('artwork-artist').textContent = `by ${artwork.artist}`;
   document.getElementById('artwork-description').textContent = artwork.description;
   document.getElementById('artwork-type').textContent = artwork.artType;
-  document.getElementById('artwork-age').textContent = artwork.ageCondition || `Created ${new Date(artwork.dateAdded).getFullYear()}, Condition details not available`;
-  document.getElementById('artist-info').textContent = artwork.artistInfo || 'Artist information not available';
+  document.getElementById('artwork-age').textContent = artwork.ageCondition || `Created ${new Date(artwork.dateAdded).getFullYear()}`;
+  
+  // Show artist info only if available
+  const artistInfoItem = document.getElementById('artist-info-item');
+  if (artwork.artistInfo && artwork.artistInfo.trim()) {
+    document.getElementById('artist-info').textContent = artwork.artistInfo;
+    artistInfoItem.style.display = 'flex';
+  } else {
+    artistInfoItem.style.display = 'none';
+  }
+  
   document.getElementById('artist-name').textContent = artwork.artist;
 
   let locationText;
@@ -253,6 +262,7 @@ async function loadArtworkById(artworkId) {
       id: artwork.id,
       title: artwork.title,
       artist: artwork.artist || 'Unknown Artist',
+      artistInfo: artwork.artistInfo || '', // Empty string if not available
       description: artwork.intro || '',
       artType: artwork.type || 'Artwork',
       period: artwork.period || 'modern',

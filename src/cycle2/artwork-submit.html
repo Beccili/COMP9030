@@ -105,10 +105,6 @@
                   <label class="label" for="title">Title *</label>
                   <input id="title" class="input" type="text" required placeholder="e.g., Caring for Country" />
                 </div>
-                <div class="form-row">
-                  <label class="label" for="artist">Artist *</label>
-                  <input id="artist" class="input" type="text" required placeholder="e.g., Vincent Namatjira" />
-                </div>
 
                 <div class="form-row">
                   <label class="label" for="artType">Art Type *</label>
@@ -277,8 +273,22 @@
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
+        // Get artist name from logged-in user
+        const currentUser = JSON.parse(localStorage.getItem('atlas_user') || '{}');
+        const artist = currentUser.name;
+        
+        // Validate that user is logged in and has a name
+        if (!artist) {
+          showNotification(
+            'error',
+            'Authentication Required',
+            'You must be logged in as an artist to submit artwork.',
+            false
+          );
+          return;
+        }
+
         const title = document.getElementById('title').value.trim();
-        const artist = document.getElementById('artist').value.trim();
         const artType = document.getElementById('artType').value;
         const period = document.getElementById('period').value;
         const region = document.getElementById('region').value;
@@ -290,13 +300,11 @@
         const artworkImages = artworkImagesInput.files;
 
         if (!title){ setValidity(document.getElementById('title'), false, 'Please enter the title.'); return; }
-        if (!artist){ setValidity(document.getElementById('artist'), false, 'Please enter the artist.'); return; }
         if (!artworkImages || artworkImages.length === 0){ 
           setValidity(artworkImagesInput, false, 'Please select at least one artwork image.'); 
           return; 
         }
         setValidity(document.getElementById('title'), true, '');
-        setValidity(document.getElementById('artist'), true, '');
         setValidity(artworkImagesInput, true, '');
 
         if (sensitive && address){
