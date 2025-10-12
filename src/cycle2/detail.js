@@ -304,6 +304,61 @@ async function loadAllArtworks() {
   }
 }
 
+// ===== LIKE FUNCTIONALITY =====
+
+let isLiked = false;
+
+async function updateLikeButton() {
+  const likeBtn = document.getElementById('like-btn');
+  if (!likeBtn) return;
+  
+  try {
+    const result = await api.checkLike(currentArtwork.id);
+    isLiked = result.liked;
+    
+    if (isLiked) {
+      likeBtn.textContent = 'Unlike 💔';
+      likeBtn.classList.add('liked');
+    } else {
+      likeBtn.textContent = 'Like ❤';
+      likeBtn.classList.remove('liked');
+    }
+  } catch (error) {
+    console.error('Failed to check like status:', error);
+  }
+}
+
+window.toggleLike = async function() {
+  const sessionId = localStorage.getItem('atlas_session_id');
+  
+  if (!sessionId) {
+    alert('Please log in to like artworks');
+    return;
+  }
+  
+  const likeBtn = document.getElementById('like-btn');
+  likeBtn.disabled = true;
+  
+  try {
+    if (isLiked) {
+      await api.unlikeArtwork(currentArtwork.id);
+      isLiked = false;
+      likeBtn.textContent = 'Like ❤';
+      likeBtn.classList.remove('liked');
+    } else {
+      await api.likeArtwork(currentArtwork.id);
+      isLiked = true;
+      likeBtn.textContent = 'Unlike 💔';
+      likeBtn.classList.add('liked');
+    }
+  } catch (error) {
+    console.error('Failed to toggle like:', error);
+    alert('Failed to update like status: ' + (error.message || 'Unknown error'));
+  } finally {
+    likeBtn.disabled = false;
+  }
+};
+
 // ===== INITIALIZATION =====
 
 document.addEventListener('DOMContentLoaded', async function () {
@@ -319,6 +374,9 @@ document.addEventListener('DOMContentLoaded', async function () {
     
     // Populate the page
     populateArtworkDetails(currentArtwork);
+    
+    // Update like button status
+    await updateLikeButton();
     
     // Load all artworks for related items
     const allArtworks = await loadAllArtworks();

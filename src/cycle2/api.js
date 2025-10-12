@@ -558,6 +558,72 @@ export async function updateReport(reportId, updates) {
   return data.data;
 }
 
+// ===== LIKES API =====
+
+/**
+ * Check if user has liked an artwork
+ */
+export async function checkLike(artworkId) {
+  const sessionId = getSessionId();
+  if (!sessionId) {
+    return { liked: false };
+  }
+  
+  const response = await fetch(`${API_BASE}/likes.php?session_id=${sessionId}&artwork_id=${artworkId}`);
+  const data = await handleResponse(response);
+  return data.data;
+}
+
+/**
+ * Like an artwork
+ */
+export async function likeArtwork(artworkId) {
+  const sessionId = getSessionId();
+  if (!sessionId) {
+    throw new Error('Authentication required');
+  }
+  
+  const response = await fetch(`${API_BASE}/likes.php?session_id=${sessionId}`, {
+    method: 'POST',
+    headers: jsonHeaders,
+    body: JSON.stringify({ artwork_id: artworkId })
+  });
+  
+  const data = await handleResponse(response);
+  return data.data;
+}
+
+/**
+ * Unlike an artwork
+ */
+export async function unlikeArtwork(artworkId) {
+  const sessionId = getSessionId();
+  if (!sessionId) {
+    throw new Error('Authentication required');
+  }
+  
+  const response = await fetch(`${API_BASE}/likes.php?session_id=${sessionId}&artwork_id=${artworkId}`, {
+    method: 'DELETE'
+  });
+  
+  const data = await handleResponse(response);
+  return data.data;
+}
+
+/**
+ * Get all likes for current user
+ */
+export async function getUserLikes() {
+  const sessionId = getSessionId();
+  if (!sessionId) {
+    throw new Error('Authentication required');
+  }
+  
+  const response = await fetch(`${API_BASE}/likes.php?session_id=${sessionId}`);
+  const data = await handleResponse(response);
+  return data.data;
+}
+
 // Export all functions as default object for easier importing
 export default {
   // Auth
@@ -588,6 +654,12 @@ export default {
   getReports,
   submitReport,
   updateReport,
+  
+  // Likes
+  checkLike,
+  likeArtwork,
+  unlikeArtwork,
+  getUserLikes,
   
   // Helpers
   fromServerArtwork,

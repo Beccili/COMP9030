@@ -318,7 +318,68 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
   
   await populateAccountInfo();
+  await populateLikedArtworks();
 });
+
+// Populate liked artworks for all users
+async function populateLikedArtworks() {
+  const likedSection = document.getElementById('liked-section');
+  const likedGrid = document.getElementById('liked-grid');
+  const emptyState = document.getElementById('liked-empty');
+  
+  if (!likedSection || !likedGrid || !emptyState) return;
+  
+  try {
+    // Get user's likes
+    const likes = await api.getUserLikes();
+    
+    if (!likes || likes.length === 0) {
+      likedSection.style.display = 'block';
+      emptyState.style.display = 'block';
+      likedGrid.innerHTML = '';
+      return;
+    }
+    
+    // Get artwork IDs from likes
+    const artworkIds = likes.map(like => like.artwork_id);
+    
+    // Fetch all artworks and filter liked ones
+    const allArtworks = await api.getArtworks({ status: 'approved' });
+    const likedArtworks = allArtworks.filter(a => artworkIds.includes(a.id));
+    
+    if (likedArtworks.length > 0) {
+      likedSection.style.display = 'block';
+      likedGrid.innerHTML = '';
+      emptyState.style.display = 'none';
+      
+      likedArtworks.forEach(artwork => {
+        const card = createArtworkCard({
+          id: artwork.id,
+          title: artwork.title,
+          artist: artwork.artist,
+          description: artwork.intro,
+          artType: artwork.type,
+          period: artwork.period,
+          region: artwork.region,
+          status: artwork.status,
+          images: artwork.artworkImages && artwork.artworkImages.length > 0
+            ? artwork.artworkImages.map(img => img.name || img)
+            : ['assets/img/art01.png']
+        });
+        likedGrid.appendChild(card);
+      });
+    } else {
+      likedSection.style.display = 'block';
+      emptyState.style.display = 'block';
+      likedGrid.innerHTML = '';
+    }
+  } catch (error) {
+    console.error('Failed to load liked artworks:', error);
+    likedSection.style.display = 'block';
+    emptyState.style.display = 'block';
+    likedGrid.innerHTML = '';
+  }
+}
 
 /*
 #-# START COMMENT BLOCK #-#
