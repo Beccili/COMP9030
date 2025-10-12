@@ -224,11 +224,59 @@ async function submitReport(event) {
   
   try {
     await api.submitReport(reportData);
-    alert('Thank you for your report. We will review this artwork and take appropriate action if necessary.');
     closeReportForm();
+    showNotification(
+      'success',
+      'Report Submitted',
+      'Thank you for your report. We will review this artwork and take appropriate action if necessary.'
+    );
   } catch (error) {
     console.error('Failed to submit report:', error);
-    alert('Failed to submit report: ' + (error.message || 'Please try again.'));
+    showNotification(
+      'error',
+      'Submission Failed',
+      error.message || 'Failed to submit report. Please try again.'
+    );
+  }
+}
+
+// Notification popup function
+function showNotification(type, title, message) {
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:10000;animation:fadeIn 0.2s ease';
+  
+  const popup = document.createElement('div');
+  popup.style.cssText = 'background:var(--elev-1);padding:var(--space-xl);border-radius:var(--border-radius-lg);max-width:500px;width:90%;box-shadow:0 20px 50px rgba(0,0,0,0.5);animation:slideUp 0.3s ease;text-align:center';
+  
+  const icon = type === 'success' ? '✅' : '❌';
+  const titleColor = type === 'success' ? '#8dc891' : '#e06c75';
+  
+  popup.innerHTML = `
+    <div style="font-size:48px;margin-bottom:16px">${icon}</div>
+    <h3 style="font-size:24px;font-weight:600;margin-bottom:12px;color:${titleColor}">${title}</h3>
+    <p style="color:var(--muted);margin-bottom:20px">${message}</p>
+    <button class="btn btn-primary" onclick="this.closest('div[style*=fixed]').remove()">OK</button>
+  `;
+  
+  overlay.appendChild(popup);
+  document.body.appendChild(overlay);
+  
+  setTimeout(() => {
+    if (overlay.parentNode) overlay.remove();
+  }, 5000);
+  
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) overlay.remove();
+  });
+  
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  `;
+  if (!document.querySelector('style[data-notification-styles]')) {
+    style.setAttribute('data-notification-styles', 'true');
+    document.head.appendChild(style);
   }
 }
 
