@@ -164,7 +164,7 @@ async function handleLogin(event) {
 
 function fillTestCredentials() {
   if (usernameInput && passwordInput) {
-    usernameInput.value = "testuser";
+    usernameInput.value = "testartist";
     passwordInput.value = "password123";
 
     // Clear any existing errors
