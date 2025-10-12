@@ -1,0 +1,89 @@
+name: ci-cd
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: production
+  cancel-in-progress: false
+
+jobs:
+  build-and-push:
+    name: Build and push image
+    runs-on: ubuntu-latest
+    # Always build on PRs but only push when not from a fork
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+
+      - name: Build (PR) or Build and Push (main)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: ${{ github.event_name != 'pull_request' }}
+          # tags: |
+          #   ghcr.io/${{ github.repository }}:latest
+          #   ghcr.io/${{ github.repository }}:${{ github.sha }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    name: Deploy to VPS
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment:
+      name: production
+      # Optional: set a canonical URL to appear on the deployment
+      # url: https://example.com
+    steps:
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script_stop: true
+          script: |
+            set -euo pipefail
+            # Optional GHCR login for private images (or to avoid anonymous limits)
+            if [ -n "${{ secrets.GHCR_READ_TOKEN || '' }}" ]; then
+              echo "${{ secrets.GHCR_READ_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+            fi
+
+            # Go to your app directory that contains docker-compose.yml
+            cd /srv/app
+
+            # Pull and run the latest image (compose file should reference :latest or a tag you set)
+            docker compose pull
+            docker compose up -d --remove-orphans
+
+            # Optional cleanup
+            docker image prune -f
