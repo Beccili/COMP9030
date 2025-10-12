@@ -49,13 +49,13 @@ function validateForm() {
   let isValid = true;
   clearAllErrors();
 
-  // Validate username
+  // Validate username or email
   const username = usernameInput?.value.trim();
   if (!username) {
-    showError("username-error", "Username is required");
+    showError("username-error", "Username or email is required");
     isValid = false;
   } else if (username.length < 3) {
-    showError("username-error", "Username must be at least 3 characters long");
+    showError("username-error", "Username or email must be at least 3 characters long");
     isValid = false;
   }
 
@@ -88,7 +88,7 @@ async function authenticateUser(username, password) {
   } catch (error) {
     return { 
       success: false, 
-      message: error.message || "Invalid username or password" 
+      message: error.message || "Invalid username/email or password" 
     };
   }
 }

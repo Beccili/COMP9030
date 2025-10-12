@@ -155,18 +155,42 @@ form.addEventListener("submit", async (e) => {
     saveAccounts(list);
 
     // Show success message
-    alert("Registration successful! Your account is pending admin approval. You will be notified when approved.");
+    const successMessage = document.createElement("div");
+    successMessage.className = "login-success";
+    successMessage.innerHTML = `
+      <p>Registration successful! Your account is pending admin approval.</p>
+      <p>Redirecting to login page...</p>
+    `;
+    successMessage.style.cssText = "background: #8dc891; color: white; padding: var(--space-md); border-radius: var(--border-radius); margin-bottom: var(--space-md); text-align: center;";
+    
+    const formCard = document.querySelector(".form-card");
+    if (formCard) {
+      formCard.insertBefore(successMessage, formCard.firstChild);
+    }
+    
+    form.reset();
+    idInput.value = "";
     
     // Redirect to login page
     setTimeout(() => {
       window.location.href = "login.html";
-    }, 1500);
-    
-    form.reset();
-    idInput.value = "";
+    }, 2000);
   } catch (error) {
     console.error("Registration error:", error);
-    alert("Registration failed: " + (error.message || "Unknown error. Please try again."));
+    
+    const errorMessage = document.createElement("div");
+    errorMessage.className = "login-error";
+    errorMessage.textContent = "Registration failed: " + (error.message || "Unknown error. Please try again.");
+    errorMessage.style.cssText = "background: #e06c75; color: white; padding: var(--space-md); border-radius: var(--border-radius); margin-bottom: var(--space-md); text-align: center;";
+    
+    const formCard = document.querySelector(".form-card");
+    if (formCard) {
+      formCard.insertBefore(errorMessage, formCard.firstChild);
+      
+      setTimeout(() => {
+        errorMessage.remove();
+      }, 5000);
+    }
   } finally {
     submitBtn.disabled = false;
     submitBtn.textContent = "Submit";

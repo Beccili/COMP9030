@@ -46,30 +46,30 @@ switch ($method) {
 function handleLogin($input) {
     // Validate input
     if (!isset($input['username']) || !isset($input['password'])) {
-        sendError('Username and password required');
+        sendError('Username/email and password required');
     }
     
-    $username = trim($input['username']);
+    $usernameOrEmail = trim($input['username']);
     $password = $input['password'];
     
-    if (empty($username) || empty($password)) {
-        sendError('Username and password cannot be empty');
+    if (empty($usernameOrEmail) || empty($password)) {
+        sendError('Username/email and password cannot be empty');
     }
     
     // Load users
     $users = loadJsonFile(USERS_FILE);
     
-    // Find user
+    // Find user by username OR email
     $user = null;
     foreach ($users as $u) {
-        if ($u['username'] === $username) {
+        if ($u['username'] === $usernameOrEmail || $u['email'] === $usernameOrEmail) {
             $user = $u;
             break;
         }
     }
     
     if (!$user || !password_verify($password, $user['password'])) {
-        sendError('Invalid username or password');
+        sendError('Invalid username/email or password');
     }
     
     if ($user['status'] !== 'approved') {
