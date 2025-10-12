@@ -259,12 +259,16 @@ function updateArtwork($id, $input) {
         sendError('Permission denied');
     }
     
-    // Only allow owners to edit pending artworks
-    if ($isOwner && !$isAdmin && $artwork['status'] !== 'pending') {
-        sendError('Only pending artworks can be edited');
+    // When owner edits (not admin), reset status to pending for re-review
+    if ($isOwner && !$isAdmin) {
+        $artwork['status'] = 'pending';
+        $artwork['updated_at'] = date('Y-m-d H:i:s');
+        // Clear review metadata since it needs re-review
+        unset($artwork['reviewed_at']);
+        unset($artwork['reviewed_by']);
     }
     
-    // Update artwork
+    // Update artwork status (admin only)
     if (isset($input['status']) && $isAdmin) {
         $artwork['status'] = $input['status'];
         $artwork['reviewed_at'] = date('Y-m-d H:i:s');
@@ -340,13 +344,9 @@ function deleteArtwork($id) {
     $isAdmin = $user && $user['role'] === 'admin';
     $isOwner = $user && $artworkToDelete['submitted_by'] === $user['id'];
     
-    // Admin can delete anything, owner can only delete pending artworks
+    // Admin can delete anything, owners can delete their own artworks
     if (!$isAdmin && !$isOwner) {
         sendError('Permission denied');
-    }
-    
-    if ($isOwner && !$isAdmin && $artworkToDelete['status'] !== 'pending') {
-        sendError('Only pending artworks can be deleted');
     }
     
     $artworks = array_filter($artworks, function($artwork) use ($id) {

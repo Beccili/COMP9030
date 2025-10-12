@@ -218,6 +218,7 @@
       const isEditMode = urlParams.get('edit') === 'true';
       const artworkId = urlParams.get('id');
       let currentArtwork = null;
+      let currentUserData = null;
 
       function updateAddressState() {
         const isSensitive = sensitiveSel.value === 'true';
@@ -240,11 +241,16 @@
         
         try {
           const api = await import('./api.js').then(m => m.default);
+          
+          // Verify session and get current user
+          const sessionData = await api.apiVerifySession();
+          currentUserData = sessionData.user;
+          
           currentArtwork = await api.getArtwork(artworkId);
           
           // Update page title
           document.getElementById('page-title').textContent = 'Edit Artwork';
-          document.getElementById('page-description').textContent = 'Edit your pending artwork submission. Changes will be reviewed again by admins.';
+          document.getElementById('page-description').textContent = 'Edit your artwork submission. Changes will be reviewed again by admins.';
           document.getElementById('submit-btn').textContent = 'Update Artwork';
           
           // Pre-populate form fields
@@ -323,9 +329,9 @@
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        // Get artist name from logged-in user
-        const currentUser = JSON.parse(localStorage.getItem('atlas_user') || '{}');
-        const artist = currentUser.name;
+        // Get artist name from logged-in user (use currentUserData if in edit mode, otherwise from localStorage)
+        const userData = currentUserData || JSON.parse(localStorage.getItem('atlas_user') || '{}');
+        const artist = userData.name;
         
         // Validate that user is logged in and has a name
         if (!artist) {

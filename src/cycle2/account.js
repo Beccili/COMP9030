@@ -184,13 +184,13 @@ function createArtworkCard(artwork) {
     statusBadge = '<span class="status-badge" style="color:#e06c75;border-color:#e06c7533;">Rejected</span>';
   }
   
-  // Action buttons for pending artworks
-  const actionButtons = artwork.status === 'pending' ? `
+  // Action buttons for all user's artworks
+  const actionButtons = `
     <div class="artwork-actions" style="display:flex;gap:var(--space-sm);margin-top:var(--space-sm)">
-      <button class="btn btn-secondary" style="font-size:var(--font-size-sm);padding:var(--space-xs) var(--space-sm)" onclick="editArtwork('${artwork.id}', event)">Edit</button>
-      <button class="btn btn-secondary" style="font-size:var(--font-size-sm);padding:var(--space-xs) var(--space-sm);color:#e06c75;border-color:#e06c75" onclick="deleteArtwork('${artwork.id}', event)">Delete</button>
+      <button class="btn btn-secondary" style="font-size:var(--font-size-sm);padding:var(--space-xs) var(--space-sm)" onclick="editArtwork('${artwork.id}', '${artwork.status}', event)">Edit</button>
+      <button class="btn btn-secondary" style="font-size:var(--font-size-sm);padding:var(--space-xs) var(--space-sm);color:#e06c75;border-color:#e06c75" onclick="deleteArtwork('${artwork.id}', '${artwork.status}', event)">Delete</button>
     </div>
-  ` : '';
+  `;
   
   card.innerHTML = `
     <img src="${imageSrc}" alt="${artwork.title}" class="artwork-image" 
@@ -228,18 +228,36 @@ function createArtworkCard(artwork) {
 }
 
 // Edit artwork - redirect to artwork-submit page in edit mode
-window.editArtwork = function(artworkId, event) {
+window.editArtwork = async function(artworkId, status, event) {
   event.stopPropagation(); // Prevent card click
+  
+  // Warn if editing approved artwork
+  if (status === 'approved') {
+    const confirmed = await showConfirmation(
+      'Edit Approved Artwork?',
+      'Editing this approved artwork will change its status back to "pending" and require admin re-approval. Continue?'
+    );
+    
+    if (!confirmed) return;
+  }
+  
   window.location.href = `artwork-submit.html?edit=true&id=${artworkId}`;
 };
 
 // Delete artwork
-window.deleteArtwork = async function(artworkId, event) {
+window.deleteArtwork = async function(artworkId, status, event) {
   event.stopPropagation(); // Prevent card click
   
-  if (!confirm('Are you sure you want to delete this artwork? This action cannot be undone.')) {
-    return;
-  }
+  const statusWarning = status === 'approved' 
+    ? 'This artwork is currently approved and visible to the public. ' 
+    : '';
+  
+  const confirmed = await showConfirmation(
+    'Delete Artwork?',
+    `${statusWarning}Are you sure you want to delete this artwork? This action cannot be undone.`
+  );
+  
+  if (!confirmed) return;
   
   try {
     await api.deleteArtwork(artworkId);
@@ -304,6 +322,49 @@ function showNotification(type, title, message) {
     style.setAttribute('data-notification-styles', 'true');
     document.head.appendChild(style);
   }
+}
+
+// Confirmation modal function
+function showConfirmation(title, message) {
+  return new Promise((resolve) => {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:9999;animation:fadeIn 0.2s ease';
+    
+    const popup = document.createElement('div');
+    popup.style.cssText = 'background:var(--elev-1);padding:var(--space-xl);border-radius:var(--border-radius-lg);max-width:500px;width:90%;box-shadow:var(--shadow-xl);animation:slideUp 0.3s ease;text-align:center';
+    
+    popup.innerHTML = `
+      <div style="font-size:48px;margin-bottom:var(--space-md)">⚠️</div>
+      <h3 style="font-size:var(--font-size-xl);font-weight:600;margin-bottom:var(--space-sm);color:#f59e0b">${title}</h3>
+      <p style="color:var(--muted);margin-bottom:var(--space-lg)">${message}</p>
+      <div style="display:flex;gap:var(--space-sm);justify-content:center">
+        <button class="btn btn-secondary" id="confirm-cancel">Cancel</button>
+        <button class="btn btn-primary" id="confirm-ok">Continue</button>
+      </div>
+    `;
+    
+    overlay.appendChild(popup);
+    document.body.appendChild(overlay);
+    
+    const cleanup = () => overlay.remove();
+    
+    popup.querySelector('#confirm-ok').onclick = () => {
+      cleanup();
+      resolve(true);
+    };
+    
+    popup.querySelector('#confirm-cancel').onclick = () => {
+      cleanup();
+      resolve(false);
+    };
+    
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) {
+        cleanup();
+        resolve(false);
+      }
+    });
+  });
 }
 
 // Initialize page
