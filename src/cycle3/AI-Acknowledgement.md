@@ -351,7 +351,7 @@ require_once 'config.php';
 
 ### Agentic Workflow Build
 
-Claude Sonnet also helped me when building and refactoring backend, especially for new features by using an agentic workflow.
+Claude Sonnet also helped me when building and refactoring backend, especially for new features by using an agentic workflow via Cursor
 
 The individual acknowledgement can be found at the bottom of each source files, in the format like:
 ```php
