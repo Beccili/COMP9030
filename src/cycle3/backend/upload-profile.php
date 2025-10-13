@@ -1,10 +1,4 @@
 <?php
-/**
- * Public Profile Picture Upload Handler
- * Allows unauthenticated uploads for user registration
- * NOTE: This is for educational purposes. Production should have rate limiting.
- */
-
 require_once 'config.php';
 
 // Only allow POST requests
@@ -62,3 +56,10 @@ if (move_uploaded_file($fileTmpName, $targetPath)) {
     sendError('Failed to save profile picture');
 }
 ?>
+<!-- 
+#-# START COMMENT BLOCK #-#
+AI Tool used: Claude Sonnet (Anthropic) via Cursor
+AI-Acknowledgement.md line: 372
+AI helped me complete the vast majority of lengthy, repetitive code. It significantly saved me time, allowing me to focus on bug fixes and multi-file code integration.
+#-# END COMMENT BLOCK #-#
+-->
