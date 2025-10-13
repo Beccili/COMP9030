@@ -167,3 +167,10 @@ function validateSession($sessionId) {
     return false;
 }
 ?>
+<!-- 
+#-# START COMMENT BLOCK #-#
+AI Tool used: Claude Sonnet (Anthropic) via Cursor
+AI-Acknowledgement.md line: 370
+AI helped me complete the vast majority of lengthy, repetitive code. It significantly saved me time, allowing me to focus on bug fixes and multi-file code integration.
+#-# END COMMENT BLOCK #-#
+-->

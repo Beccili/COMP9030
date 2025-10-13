@@ -349,6 +349,31 @@ AI suggested detailed header:
 require_once 'config.php';
 ```
 
+### Agentic Workflow Build
+
+Claude Sonnet also helped me when building and refactoring backend, especially for new features by using an agentic workflow.
+
+The individual acknowledgement can be found at the bottom of each source files, in the format like:
+```php
+<!-- 
+#-# START COMMENT BLOCK #-#
+AI Tool used: Claude Sonnet (Anthropic) via Cursor
+AI-Acknowledgement.md
+AI helped me complete the vast majority of lengthy, repetitive code. It significantly saved me time, allowing me to focus on bug fixes and multi-file code integration.
+#-# END COMMENT BLOCK #-#
+-->
+```
+
+This includes:
+- backend/admin.php (bug fix)
+- backend/index.php (code review)
+- backend/likes.php (new feature)
+- backend/reports.php (new feature + bug fix)
+- backend/upload-profile.php (new feature)
+- backend/upload.php (bug fix + code review)
+- backend/artworks.php (bug fix + code review)
+- backend/auth.php (bug fix + code review)
+
 ### Personal Interpretation
 
 I independently designed and implemented the complete Indigenous Art Atlas backend system. This included analyzing the existing frontend requirements, architecting the backend solution, implementing all CRUD operations, designing the authentication system, and creating the admin management functionality.
@@ -392,3 +417,5 @@ Claude 3.5 Sonnet. (October 2024). Anthropic. https://claude.ai
 ChatGPT GPT-5. (2025). OpenAI. https://chat.openai.com
 
 Claude 4 Opus. (2024). Anthropic. https://claude.ai
+
+Claude 4.5 Sonnet. (2025). Anthropic. https://claude.ai

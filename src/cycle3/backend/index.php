@@ -50,3 +50,10 @@ if (empty($pathParts) || $pathParts[0] === '' || $pathParts[0] === 'index.php') 
     }
 }
 ?>
+<!-- 
+#-# START COMMENT BLOCK #-#
+AI Tool used: Claude Sonnet (Anthropic) via Cursor
+AI-Acknowledgement.md line: 369
+AI helped me complete the vast majority of lengthy, repetitive code. It significantly saved me time, allowing me to focus on bug fixes and multi-file code integration.
+#-# END COMMENT BLOCK #-#
+-->

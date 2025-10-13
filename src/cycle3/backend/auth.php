@@ -300,3 +300,10 @@ function handleUpdateProfile($input) {
     sendError('User not found', 404);
 }
 ?>
+<!-- 
+#-# START COMMENT BLOCK #-#
+AI Tool used: Claude Sonnet (Anthropic) via Cursor
+AI-Acknowledgement.md line: 375
+AI helped me complete the vast majority of lengthy, repetitive code. It significantly saved me time, allowing me to focus on bug fixes and multi-file code integration.
+#-# END COMMENT BLOCK #-#
+-->
