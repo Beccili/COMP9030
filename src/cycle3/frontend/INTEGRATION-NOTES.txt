@@ -1,0 +1,26 @@
+Integration Notes (Frontend → PHP API)
+-----------------------------------
+1) Place these files in your frontend root:
+   - api.js
+   - register.js   (replaces your old register.js)
+   - artwork-submit.js (new; referenced by artwork-submit.html)
+
+2) Ensure your pages include the scripts as ES modules, e.g.:
+   <script>window.API_BASE = "http://localhost/backend";</script>
+   <script type="module" src="api.js"></script>
+   <script type="module" src="register.js"></script>
+   or
+   <script type="module" src="artwork-submit.js"></script>
+
+3) Endpoints used follow README:
+   - POST /auth.php?action=register
+   - POST /auth.php?action=login
+   - GET  /auth.php?action=verify
+   - GET  /artworks.php
+   - GET  /artworks.php?id={id}
+   - POST /artworks.php?session_id={...}
+
+4) Save session_id after login:
+   localStorage.setItem("IAA_session_id", sessionId)
+
+5) CORS: If frontend and backend are on different origins, set proper CORS headers in PHP.
