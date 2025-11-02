@@ -1,4 +1,243 @@
 # COMP9030 Cycle 4 Usability Test
+# Evaluation Report
+
+## Introduction
+The **Indigenous Art Atlas (IAA)** is a purpose-built web platform designed to document, visualise, and disseminate information about Indigenous artworks — including traditional, contemporary and culturally significant installations — within their geographical and cultural contexts.
+
+From a developer’s perspective, the core objectives were:
+
+1. Provide a robust, user‑centric interactive experience  
+2. Support accurate and respectful cultural representation  
+3. Facilitate sustainable, non‑commercial educational access  
+
+---
+
+## Functional Overview
+
+### ✅ Interactive Map View
+- Spatial map interface displaying artwork markers
+- Clicking markers reveals artwork metadata, cultural provenance & historical significance  
+- Emphasises connection between art, land, and culture  
+
+> _Homepage text: “Click on the markers to discover Indigenous artworks in their geographical context.”_
+
+### ✅ Search Functionality
+- Users can search artworks, artists, and locations by filters or keywords
+- Supports academic, community and casual exploration
+
+### ✅ User Registration & Login
+- Enables user accounts for future features (contributions, moderation, preferences)
+
+### ✅ Featured Artworks
+- Highlights culturally significant artworks on homepage
+- Enhances storytelling and user engagement
+
+### ✅ About, Guidelines & Ethics Pages
+- Communicates mission, cultural respect principles & usage guidelines  
+- Ensures ethical handling of sensitive Indigenous cultural content
+
+---
+
+## Design Purpose & Rationale
+
+### ✨ Cultural Respect & Protocols
+- Acknowledgment of Country displayed prominently
+- Ethical guidelines and non‑commercial framing maintained
+
+### 🎓 Educational & Community‑Driven Aim
+- Prioritises accessibility and long‑term cultural sustainability
+- Designed for community, artists and researchers
+
+### 🧩 Scalability & Robustness
+- Modular front‑end and back‑end components  
+- Support for future multilingual, content and user‑generated expansion
+
+### 📍 Location‑Based Storytelling
+- Map‑based navigation emphasises land‑art connection
+- Zoom & interactive markers allow exploration
+
+### 👥 Accessibility & User Engagement
+- Clear navigation (Map, Search, About Us, Register, Login)
+- Featured content and call‑to‑actions to increase engagement
+
+---
+
+## Platform Purpose Summary
+
+The Indigenous Art Atlas aims to:
+
+- Document Indigenous artworks within land‑based cultural context  
+- Provide respectful learning access and cultural acknowledgement  
+- Support community involvement and educational use  
+- Maintain ethical and non‑commercial values  
+- Provide a scalable and user‑friendly platform
+
+---
+
+## Usability Testing
+
+### ✅ Evaluation Tasks
+1. Register new user  
+2. Update personal information  
+3. Admin user management  
+4. Artist submits artwork  
+5. Admin reviews artwork  
+6. Artist edits/deletes approved artwork  
+7. User reports artwork  
+8. Admin handles reports  
+9. View artworks via map  
+10. Search artworks  
+11. Bookmark artwork  
+
+---
+
+## Specific Test Scenarios
+
+### **1. Register a New User**
+**Participant:** Tian Yuan (Tim) and tester (group member)
+- Role: User and Admin played by system moderator (group member) 
+- Number: 2
+
+**Purpose:** To evaluate whether new visitors can successfully create an account without assistance.  
+
+**Pre‑conditions:**  
+- User is not logged in 
+- User does not have an existing account
+
+**Steps:**  
+- Navigate to the homepage. 
+- Click “Register” in the navigation menu. 
+- Fill in required registration fields (name, email, password, etc.). 
+- Submit the registration form. 
+- Attempt login using newly created credentials.
+
+**Expected Results:**  
+- Form accepts valid inputs 
+- User receives success feedback (e.g., “Registration successful”) 
+- User can log in immediately after registration
+
+**Success Indicators:**  
+- Task completed without errors 
+- Completion time ≤ 1 minute 
+- User expresses confidence about registration process 
+- User updates personal information 
+- Admin manages registered users 
+- Artist submits artwork information 
+
+---
+
+### **2. User Updates Personal Information**
+**Participant:** Tian Yuan (Tim) 
+- Role: User 
+- Number: 1 
+
+**Purpose:** To examine user ability to locate, edit, and successfully update their personal 
+profile details. 
+
+**Pre‑conditions:**  
+- User has an existing account 
+- User is logged in
+
+**Steps:**  
+- Log in to the website. 
+- Click the User profile icon to navigate to “My Profile” 
+- Click the “Edit” button to profile information (e.g., display name, bio, email 
+preferences). 
+- Fill in the information on the new page and Save changes. 
+- Refresh the page to confirm persistent updates. 
+
+**Expected Results:**  
+- User can find profile settings easily 
+- System accepts valid edits & stores them 
+- Visible confirmation message (e.g., “Profile updated successfully”) 
+- Changes persist after refresh 
+
+**Success Indicators:**  
+- Completion time ≤ 1.5 minutes 
+- No help required 
+- User states they feel confident editing their profile
+
+---
+
+### **3. Admin Manages Registered Users**
+**Participant:** Tian Yuan (Tim) and tester (group member)
+- Role: User (provide information and account) and Admin(Played by group member) 
+- Number: 2 
+
+**Purpose:** To test whether administrative users can locate, view, and manage registered user 
+accounts effectively.   
+
+**Pre‑conditions:** Admin user is logged in 
+- Website has existing registered users   
+
+**Steps:**  
+- Log in as an admin. 
+- Navigate to admin dashboard. 
+- Open “Users” 
+- View a list of users. 
+- Select a user and perform an action (e.g., view details / edit role / remove user). 
+- Confirm the changes. 
+
+**Expected Results:**  
+- Admin dashboard displays user list clearly 
+- Admin can successfully edit or remove a user 
+- System provides confirmation feedback 
+- Updated user status reflects correctly in list
+
+**Success Indicators:**  
+- Completion time ≤ 2 minutes 
+- Admin navigates without confusion 
+- Changes apply in real-time & persist
+
+---
+
+### **4. Artist Submits Artwork**
+**Participant:** Tian Yuan (Tim) and Admin tester.
+- Role: Artist (changed by different roles of account) and Admin who responsible for compliance review of the content of artworks. 
+- Number: 2 
+
+**Purpose:** To evaluate clarity and usability of the artwork submission workflow for artist users.  
+
+**Pre‑conditions:** Artist account exists and is logged in
+
+**Steps:**  
+- Log in as an artist user. In this case,  
+- Navigate to “Artwork information submission form.” 
+- Enter artwork details (title, description, cultural context, location, image). 
+- Submit the form. 
+- View confirmation and verify artwork appears in pending/published list (based on 
+platform rule).   
+
+**Expected Results:**  
+- Form fields are clear and complete 
+- Artwork successfully submitted without error 
+- Artist receives confirmation message 
+- Artwork appears in submission list / awaits admin approval 
+
+**Success Indicators:**  
+- Completion time ≤ 3 minutes 
+
+- Minimal hesitation during input 
+
+- User reports clear understanding of submission fields 
+
+
+**Appendices:**
+
+
+![questionnaire](images1/questionnaire.png)
+
+
+
+
+
+---
+
+_File created based on evaluation script and system objectives._  
+
+
+
+
 ## Recommendations 
 
 ### 1) Summary of Findings 
