@@ -97,7 +97,7 @@ The Indigenous Art Atlas aims to:
 **Participant:** Tian Yuan (Tim) and tester (group member)
 - Role: User and Admin played by system moderator (group member) 
 - Number:2
-- 
+
 **Purpose:** To evaluate whether new visitors can successfully create an account without assistance.  
 
 **Pre‑conditions:**  
