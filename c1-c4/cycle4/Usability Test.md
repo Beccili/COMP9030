@@ -96,9 +96,9 @@ The Indigenous Art Atlas aims to:
 ### **1. Register a New User**
 **Purpose:** To evaluate whether new visitors can successfully create an account without assistance.  
 
-**Participant:** Tian Yuan (Tim) 
-- Role: User and Admin (played by group member) 
-- Number:1 
+**Participant:** Tian Yuan (Tim) and tester (group member)
+- Role: User and Admin played by system moderator (group member) 
+- Number:2 
 
 **Pre‑conditions:**  
 - User is not logged in 
@@ -127,7 +127,7 @@ The Indigenous Art Atlas aims to:
 ---
 
 ### **2. User Updates Personal Information**
-**Participant:** Tian Yuan (Tim) 
+**Participant:** Tian Yuan (Tim) and tester (group member)
 - Role: User 
 - Number:1 
 
@@ -160,9 +160,9 @@ preferences).
 ---
 
 ### **3. Admin Manages Registered Users**
-**Participant:** Tian Yuan (Tim) 
+**Participant:** Tian Yuan (Tim) and tester (group member)
 - Role: User (provide information and account) and Admin(Played by group member) 
-- Number:1 
+- Number:2 
 
 **Purpose:** To test whether administrative users can locate, view, and manage registered user 
 accounts effectively.   
@@ -192,9 +192,9 @@ accounts effectively.
 ---
 
 ### **4. Artist Submits Artwork**
-**Participant:** Tian Yuan (Tim) 
-- Role: Artist (changed by different roles of account) 
-- Number:1 
+**Participant:** Tian Yuan (Tim) and Admin tester.
+- Role: Artist (changed by different roles of account) and Admin who responsible for compliance review of the content of artworks. 
+- Number:2 
 
 **Purpose:** To evaluate clarity and usability of the artwork submission workflow for artist users.  
 
