@@ -127,7 +127,7 @@ The Indigenous Art Atlas aims to:
 ---
 
 ### **2. User Updates Personal Information**
-**Participant:** Tian Yuan (Tim) and tester (group member)
+**Participant:** Tian Yuan (Tim) 
 - Role: User 
 - Number:1 
 
