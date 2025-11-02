@@ -94,11 +94,11 @@ The Indigenous Art Atlas aims to:
 ## Specific Test Scenarios
 
 ### **1. Register a New User**
-**Purpose:** To evaluate whether new visitors can successfully create an account without assistance.  
-
 **Participant:** Tian Yuan (Tim) and tester (group member)
 - Role: User and Admin played by system moderator (group member) 
-- Number:2 
+- Number:2
+- 
+**Purpose:** To evaluate whether new visitors can successfully create an account without assistance.  
 
 **Pre‑conditions:**  
 - User is not logged in 
