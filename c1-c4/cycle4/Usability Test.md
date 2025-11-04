@@ -528,19 +528,38 @@ Participants praised the visual storytelling elements, describing them as “imm
 ---
 
 #### System Usability Scale (SUS)
+| Question | user1 | user2 | user3 | user4 | user5 |
+|---|---:|---:|---:|---:|---:|
+| Q1. Registering a new user was easy. | 4 | 4 | 4 | 4 | 5 |
+| Q2. Updating my personal information was straightforward. | 4 | 4 | 3 | 5 | 5 |
+| Q3. Managing registered users was easy. | 3 | 3 | 3 | 3 | 4 |
+| Q4. Submitting artwork information was easy. | 4 | 4 | 4 | 4 | 3 |
+| Q5. Reviewing/approving artwork was easy. | 4 | 4 | 4 | 4 | 4 |
+| Q6. Editing/deleting approved artworks was easy. | 3 | 4 | 3 | 4 | 5 |
+| Q7. Reporting an artwork entry was easy. | 3 | 4 | 4 | 5 | 4 |
+| Q8. Reviewing/handling reports was easy. | 4 | 4 | 3 | 4 | 4 |
+| Q9. Viewing artworks on the map was easy. | 4 | 5 | 5 | 3 | 4 |
+| Q10. Searching artworks by keywords was easy. | 5 | 5 | 5 | 5 | 4 |
+| Q11. Bookmarking an artwork was easy. | 4 | 4 | 4 | 4 | 4 |
+
+Score each item on a 1–5 scale (1 = Strongly disagree, 5 = Strongly agree). Because all 11 items are positively worded, the scoring formula is:
+$C_i = r_i - 1$
+$$
+\mathrm{SUS} = 2.5 \times \sum_{i=1}^{10} C_i
+$$
 
 | User   | SUS Score | Comments                                                            |
 | ------ | --------- | ------------------------------------------------------------------- |
 | User 1 | 78        | Found navigation intuitive; liked the color and layout.             |
 | User 2 | 80        | Smooth overall but wanted clearer feedback messages.                |
-| User 3 | 84        | Enjoyed browsing artworks; minor upload confusion.                  |
-| User 4 | 76        | Positive about clarity and layout; mentioned map delay.             |
+| User 3 | 85        | Enjoyed browsing artworks; minor upload confusion.                  |
+| User 4 | 75        | Positive about clarity and layout; mentioned map delay.             |
 | User 5 | 88        | Loved design and readability; wanted confirmation after commenting. |
 
-**Average SUS Score:** **82 / 100**
+**Average SUS Score:** **81 / 100**
 
 **Interpretation:**  
-A mean SUS score of **82** indicates _excellent usability_ according to industry benchmarks.  
+A mean SUS score of **81** indicates _excellent usability_ according to industry benchmarks.  
 All participants rated the system as easy to learn, visually cohesive, and culturally engaging.  
 Minor suggestions included adding clearer confirmation feedback and optimizing map performance.
 
@@ -553,8 +572,12 @@ Minor suggestions included adding clearer confirmation feedback and optimizing m
 | **Task Completion Rate**               | 89%     | Most tasks completed successfully; admin and comment sections caused small delays. |
 | **Average Task Time**                  | 61 s    | Consistent across users; upload tasks took longer.                                 |
 | **Error Rate**                         | 9%      | Mostly from unclear submission feedback and slow map updates.                      |
-| **User Satisfaction (SUS mean score)** | 82      | Represents “excellent” usability by SUS standards.                                 |
+| **User Satisfaction (SUS mean score)** | 81      | Represents “excellent” usability by SUS standards.                                 |
 
+- **Task Completion Rate**：Completion rate = Successful attempts / Total attempts × 100%
+- **Average Task Time**：Average task time = Sum of times for successful attempts / Number of successful attempts
+- **Error Rate**：Error rate = Attempts with ≥1 error / Total attempts × 100%
+- **User Satisfaction**: from upper formula.
 ---
 
 ### Qualitative Feedback
@@ -672,9 +695,14 @@ Support batch edit/delete for approved works; provide confirmation and undo.
 
 
 ![questionnaire](images/questionnaire01.png)
+![questionnaire](images/questionnaire_01_sus.png)
 ![questionnaire](images/questionnaire02.png)
+![questionnaire](images/questionnaire_02_sus.png)
 ![questionnaire](images/questionnaire03.png)
+![questionnaire](images/questionnaire_03_sus.png)
 ![questionnaire](images/questionaire-Buyin.png)
+![questionnaire](images/questionnaire_04_sus.png)
 ![questionnaire](images/questionaire-Asif.png)
+![questionnaire](images/questionnaire_05_sus.png)
 
 
